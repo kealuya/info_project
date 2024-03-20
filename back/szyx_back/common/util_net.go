@@ -7,41 +7,41 @@ import (
 )
 
 //获取网报发票夹getURL接口
-var InvoiceListUrl = "http://124.70.111.57:8088/api/v1/wsyyE3c-api/wsyy/invoices"
+var InvoiceListUrl = "http://XXXXXXXXX/wsyy/invoices"
 
 //网报发票夹识别获取token
-var GetToken = "http://124.70.111.57:8088/api/v1/wsyyE3c-api/wsyy/authLogin"
+var GetToken = "http://XXXXXXXXX/wsyy/authLogin"
 
 //网报发票夹删除发票
-var DeleteInvoiceToWb = "http://124.70.111.57:8088/api/v1/wsyyE3c-api/invManage/deleteInv"
+var DeleteInvoiceToWb = "http://XXXXXXXXX/invManage/deleteInv"
 
 //获取网报发票图片地址接口
-var InvoiceImgUrl = "http://124.70.111.57:8088/api/v1/wsyyE3c-api/invocr/loadImage"
+var InvoiceImgUrl = "http://XXXXXXXXX/invocr/loadImage"
 
 //获取单条网报发票getURL接口
-var InvoiceByIDUrl = "http://124.70.111.57:8088/api/v1/wsyyE3c-api/invManage/invDetails"
+var InvoiceByIDUrl = "http://XXXXXXXXX/invManage/invDetails"
 
 //PDF文件地址转OBS中间件地址
 var PDFTojpgObsUrl = "http://124.70.111.57:10009/v1/openApi/pdfTojpgObs"
 
 //网报上传图片base64
-var UploadBase64 = "http://124.70.111.57:8088/api/v1/wsyyE3c-api/file/uploadBase64"
+var UploadBase64 = "http://XXXXXXXXX/file/uploadBase64"
 
 //网报获取手动输入发票类型列表
-var GetFpInputTypeList = "http://124.70.111.57:8088/api/v1/wsyyE3c-api/invManage/getFpInputTypeList"
+var GetFpInputTypeList = "http://XXXXXXXXX/invManage/getFpInputTypeList"
 
 //网报发票保存
-var InvVerifyWb = "http://124.70.111.57:8088/api/v1/wsyyE3c-api/invManage/invVerify"
+var InvVerifyWb = "http://XXXXXXXXX/invManage/invVerify"
 
 //更新网报发票使用状态接口
-var InvoiceStates = "http://124.70.111.57:8088/api/v1/wsyyE3c-api/wsyy/updateDzfpgl"
+var InvoiceStates = "http://XXXXXXXXX/wsyy/updateDzfpgl"
 
 //网报发票夹图片识别
-//var GetInvOcrResultWb = "http://124.70.111.57:8088/api/v1/wsyyE3c-api/invocr/getInvOcrResult"
-var GetInvOcrResultWb = "http://124.70.111.57:8088/api/v1/wsyyE3c-api/invUnifiedOcr/getInvUnifiedOcrResult"
+//var GetInvOcrResultWb = "http://XXXXXXXXX/invocr/getInvOcrResult"
+var GetInvOcrResultWb = "http://XXXXXXXXX/invUnifiedOcr/getInvUnifiedOcrResult"
 
 //网报发票夹pdf网络文件识别
-var GetInvOcrResultByPdfWeb = "http://124.70.111.57:8088/api/v1/wsyyE3c-api/invUnifiedOcr/getInvUnifiedOcrResultByWebPdf"
+var GetInvOcrResultByPdfWeb = "http://XXXXXXXXX/invUnifiedOcr/getInvUnifiedOcrResultByWebPdf"
 
 //http Post 请求
 func DoHttpPost(url string, param string, options ...map[string]string) (respBody string) {
