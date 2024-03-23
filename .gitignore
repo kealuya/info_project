@@ -26,3 +26,5 @@ logs
 hs_err_pid*
 
 back/szyx_back/secret_key.go
+
+back/szyx_back/secret/secret.go

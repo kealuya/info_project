@@ -1,12 +1,13 @@
 module szyx_back
 
-go 1.17
+go 1.19
 
 require (
 	github.com/astaxie/beego v1.12.3
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/getsentry/sentry-go v0.10.0
 	github.com/go-sql-driver/mysql v1.6.0
+	github.com/gorilla/websocket v1.4.1
 	github.com/json-iterator/go v1.1.10
 	github.com/mojocn/base64Captcha v1.3.5
 	github.com/mozillazg/go-pinyin v0.18.0
