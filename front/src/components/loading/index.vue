@@ -1,6 +1,6 @@
 <template>
 <div>
-  <van-overlay :show="show">
+<!--  <van-overlay :show="show">-->
     <div class="wrapper" @click.stop>
       <div class="block">
         <div class="banter-loader">
@@ -16,10 +16,10 @@
         </div>
         <div class="tc mb10 f12" style="color: white">{{title}}....</div>
       </div>
-   
+
     </div>
-  </van-overlay>
- 
+<!--  </van-overlay>-->
+
 </div>
 </template>
 
@@ -95,43 +95,43 @@ defineProps<Props>();
   9.0909090909% {
     transform: translate(-26px, 0);
   }
-  
+
   18.1818181818% {
     transform: translate(0px, 0);
   }
-  
+
   27.2727272727% {
     transform: translate(0px, 0);
   }
-  
+
   36.3636363636% {
     transform: translate(26px, 0);
   }
-  
+
   45.4545454545% {
     transform: translate(26px, 26px);
   }
-  
+
   54.5454545455% {
     transform: translate(26px, 26px);
   }
-  
+
   63.6363636364% {
     transform: translate(26px, 26px);
   }
-  
+
   72.7272727273% {
     transform: translate(26px, 0px);
   }
-  
+
   81.8181818182% {
     transform: translate(0px, 0px);
   }
-  
+
   90.9090909091% {
     transform: translate(-26px, 0px);
   }
-  
+
   100% {
     transform: translate(0px, 0px);
   }
@@ -145,43 +145,43 @@ defineProps<Props>();
   9.0909090909% {
     transform: translate(0, 0);
   }
-  
+
   18.1818181818% {
     transform: translate(26px, 0);
   }
-  
+
   27.2727272727% {
     transform: translate(0px, 0);
   }
-  
+
   36.3636363636% {
     transform: translate(26px, 0);
   }
-  
+
   45.4545454545% {
     transform: translate(26px, 26px);
   }
-  
+
   54.5454545455% {
     transform: translate(26px, 26px);
   }
-  
+
   63.6363636364% {
     transform: translate(26px, 26px);
   }
-  
+
   72.7272727273% {
     transform: translate(26px, 26px);
   }
-  
+
   81.8181818182% {
     transform: translate(0px, 26px);
   }
-  
+
   90.9090909091% {
     transform: translate(0px, 26px);
   }
-  
+
   100% {
     transform: translate(0px, 0px);
   }
@@ -195,43 +195,43 @@ defineProps<Props>();
   9.0909090909% {
     transform: translate(-26px, 0);
   }
-  
+
   18.1818181818% {
     transform: translate(-26px, 0);
   }
-  
+
   27.2727272727% {
     transform: translate(0px, 0);
   }
-  
+
   36.3636363636% {
     transform: translate(-26px, 0);
   }
-  
+
   45.4545454545% {
     transform: translate(-26px, 0);
   }
-  
+
   54.5454545455% {
     transform: translate(-26px, 0);
   }
-  
+
   63.6363636364% {
     transform: translate(-26px, 0);
   }
-  
+
   72.7272727273% {
     transform: translate(-26px, 0);
   }
-  
+
   81.8181818182% {
     transform: translate(-26px, -26px);
   }
-  
+
   90.9090909091% {
     transform: translate(0px, -26px);
   }
-  
+
   100% {
     transform: translate(0px, 0px);
   }
@@ -245,43 +245,43 @@ defineProps<Props>();
   9.0909090909% {
     transform: translate(-26px, 0);
   }
-  
+
   18.1818181818% {
     transform: translate(-26px, 0);
   }
-  
+
   27.2727272727% {
     transform: translate(-26px, -26px);
   }
-  
+
   36.3636363636% {
     transform: translate(0px, -26px);
   }
-  
+
   45.4545454545% {
     transform: translate(0px, 0px);
   }
-  
+
   54.5454545455% {
     transform: translate(0px, -26px);
   }
-  
+
   63.6363636364% {
     transform: translate(0px, -26px);
   }
-  
+
   72.7272727273% {
     transform: translate(0px, -26px);
   }
-  
+
   81.8181818182% {
     transform: translate(-26px, -26px);
   }
-  
+
   90.9090909091% {
     transform: translate(-26px, 0px);
   }
-  
+
   100% {
     transform: translate(0px, 0px);
   }
@@ -295,43 +295,43 @@ defineProps<Props>();
   9.0909090909% {
     transform: translate(0, 0);
   }
-  
+
   18.1818181818% {
     transform: translate(0, 0);
   }
-  
+
   27.2727272727% {
     transform: translate(0, 0);
   }
-  
+
   36.3636363636% {
     transform: translate(26px, 0);
   }
-  
+
   45.4545454545% {
     transform: translate(26px, 0);
   }
-  
+
   54.5454545455% {
     transform: translate(26px, 0);
   }
-  
+
   63.6363636364% {
     transform: translate(26px, 0);
   }
-  
+
   72.7272727273% {
     transform: translate(26px, 0);
   }
-  
+
   81.8181818182% {
     transform: translate(26px, -26px);
   }
-  
+
   90.9090909091% {
     transform: translate(0px, -26px);
   }
-  
+
   100% {
     transform: translate(0px, 0px);
   }
@@ -345,43 +345,43 @@ defineProps<Props>();
   9.0909090909% {
     transform: translate(0, 0);
   }
-  
+
   18.1818181818% {
     transform: translate(-26px, 0);
   }
-  
+
   27.2727272727% {
     transform: translate(-26px, 0);
   }
-  
+
   36.3636363636% {
     transform: translate(0px, 0);
   }
-  
+
   45.4545454545% {
     transform: translate(0px, 0);
   }
-  
+
   54.5454545455% {
     transform: translate(0px, 0);
   }
-  
+
   63.6363636364% {
     transform: translate(0px, 0);
   }
-  
+
   72.7272727273% {
     transform: translate(0px, 26px);
   }
-  
+
   81.8181818182% {
     transform: translate(-26px, 26px);
   }
-  
+
   90.9090909091% {
     transform: translate(-26px, 0px);
   }
-  
+
   100% {
     transform: translate(0px, 0px);
   }
@@ -395,43 +395,43 @@ defineProps<Props>();
   9.0909090909% {
     transform: translate(26px, 0);
   }
-  
+
   18.1818181818% {
     transform: translate(26px, 0);
   }
-  
+
   27.2727272727% {
     transform: translate(26px, 0);
   }
-  
+
   36.3636363636% {
     transform: translate(0px, 0);
   }
-  
+
   45.4545454545% {
     transform: translate(0px, -26px);
   }
-  
+
   54.5454545455% {
     transform: translate(26px, -26px);
   }
-  
+
   63.6363636364% {
     transform: translate(0px, -26px);
   }
-  
+
   72.7272727273% {
     transform: translate(0px, -26px);
   }
-  
+
   81.8181818182% {
     transform: translate(0px, 0px);
   }
-  
+
   90.9090909091% {
     transform: translate(26px, 0px);
   }
-  
+
   100% {
     transform: translate(0px, 0px);
   }
@@ -445,43 +445,43 @@ defineProps<Props>();
   9.0909090909% {
     transform: translate(0, 0);
   }
-  
+
   18.1818181818% {
     transform: translate(-26px, 0);
   }
-  
+
   27.2727272727% {
     transform: translate(-26px, -26px);
   }
-  
+
   36.3636363636% {
     transform: translate(0px, -26px);
   }
-  
+
   45.4545454545% {
     transform: translate(0px, -26px);
   }
-  
+
   54.5454545455% {
     transform: translate(0px, -26px);
   }
-  
+
   63.6363636364% {
     transform: translate(0px, -26px);
   }
-  
+
   72.7272727273% {
     transform: translate(0px, -26px);
   }
-  
+
   81.8181818182% {
     transform: translate(26px, -26px);
   }
-  
+
   90.9090909091% {
     transform: translate(26px, 0px);
   }
-  
+
   100% {
     transform: translate(0px, 0px);
   }
@@ -495,43 +495,43 @@ defineProps<Props>();
   9.0909090909% {
     transform: translate(-26px, 0);
   }
-  
+
   18.1818181818% {
     transform: translate(-26px, 0);
   }
-  
+
   27.2727272727% {
     transform: translate(0px, 0);
   }
-  
+
   36.3636363636% {
     transform: translate(-26px, 0);
   }
-  
+
   45.4545454545% {
     transform: translate(0px, 0);
   }
-  
+
   54.5454545455% {
     transform: translate(0px, 0);
   }
-  
+
   63.6363636364% {
     transform: translate(-26px, 0);
   }
-  
+
   72.7272727273% {
     transform: translate(-26px, 0);
   }
-  
+
   81.8181818182% {
     transform: translate(-52px, 0);
   }
-  
+
   90.9090909091% {
     transform: translate(-26px, 0);
   }
-  
+
   100% {
     transform: translate(0px, 0);
   }

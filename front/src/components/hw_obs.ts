@@ -1,16 +1,16 @@
 import moment from "moment";
 import {Toast} from 'vant';
 
-const server = "obs.cn-north-4.myhuaweicloud.com";
-const Ak = "SNZGBWTDEF0IRJKXJGJF";
-const Sk = "W3H3nbgxHU3zDAblqwvTjO18V6X9ZeIexyn7Ter1";
-const bucket = "file-report-store";
+const server = "";
+const Ak = "";
+const Sk = "";
+const bucket = "";
 
 export async function UpLoadImg(imageList: Array<any>) {
     let phone = "no-phone";
     let imgUrlResult: string[] = [];
     // 登录人手机号
-    phone = "15201618718"
+    phone = ""
     let df = moment().format("yyyyMMDDHHmmssSSS");
     for (let item of imageList) {
         let fileName = `${phone}-${df}${item.file.name.substring(item.file.name.lastIndexOf('.'))}`
@@ -23,7 +23,7 @@ export async function UpLoadImg(imageList: Array<any>) {
             SourceFile: item.file
         }).then(function (result: any) {
             if (result.CommonMsg.Status < 300) {
-                imgUrlResult.push(`https://file-report-store.obs.cn-north-4.myhuaweicloud.com/${fileName}`)
+                imgUrlResult.push(`/${fileName}`)
             }
         })
     }

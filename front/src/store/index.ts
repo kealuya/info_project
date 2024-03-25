@@ -30,12 +30,16 @@ export const userInfoData = defineStore("userInfo", {
         strategies: [
             {
                 key: 'userInfo',//给一个要保存的名称
-                storage: localStorage,//sessionStorage / localStorage 存储方式
+                storage: sessionStorage,//sessionStorage / localStorage 存储方式
             }
         ]
     },
     state: () => ({
-        userInfo: {}
+        userInfo: {},
+        functionConfig: [],
+        userTravelConfig: [],
+        unReadMessageNum:0,//消息未读数量
+        pullMessage:{},
     }),
     getters: {
 
@@ -44,5 +48,19 @@ export const userInfoData = defineStore("userInfo", {
         setData(data: any) {
             this.userInfo = data;
         },
+        setFunctionConfig(data: any) {
+            this.functionConfig = data;
+        },
+        setUserTravelConfig(data: any) {
+            this.userTravelConfig = data;
+        },
+        setUnReadMessageNum(data: any){
+            this.unReadMessageNum = data
+        },
+        setPullMessage(data: any){
+            this.pullMessage = data
+
+        }
+
     },
 })

@@ -30,6 +30,15 @@ html, body{
 .red{
     color:red;
 }
+.f_white {
+    color: white;
+}
+.font_gray {
+    color: rgba(153, 153, 153, 1);
+}
+.font_blue{
+    color:#0088ff;
+}
 .tc {
     text-align: center;
 }
@@ -59,6 +68,9 @@ html, body{
 }
 .f22 {
     font-size: 22px;
+}
+.f26{
+    font-size: 26px;
 }
 .flex-row {
     display: flex;
@@ -151,12 +163,11 @@ html, body{
     margin-top: 15px;
 }
 .bold{
-    font-weight: bolder;
+    font-weight: bold;
 }
 .graytxt{
     font-weight: normal;
     color:rgba(23,26,29,0.40);
-    font-size:14px
 }
 .card{
     margin: 8px 15px;
@@ -196,4 +207,17 @@ html, body{
 }
 .line2{
     padding: 0 20px; margin: 10px 15px;border-bottom: 2px dashed #EFE9DF
+}
+.orange{
+    color: #FA6131;
+}
+p {
+    margin: 0;
+    padding: 0;
+}
+.content_center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }

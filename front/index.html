@@ -2,14 +2,22 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+      <link rel="icon" type="image/x-icon" href="./logo.png">
       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, viewport-fit=cover">
       <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0,viewport-fit=cover" name="viewport"/>
-    <title>差旅管家发票夹</title>
+    <title>XXXXXX</title>
   </head>
   <body>
     <div id="app"></div>
     <script src="esdk-obs-browserjs-without-polyfill-3.21.8.min.js"></script>
+
+<!--    &lt;!&ndash;语音识别 &ndash;&gt;-->
+<!--    <script src="./src/pages/speech/kdxf/hmac-sha256.js"></script>-->
+<!--    <script src="./src/pages/speech/kdxf/HmacSHA1.js"></script>-->
+<!--    <script src="./src/pages/speech/kdxf/md5.js"></script>-->
+<!--    <script src="./src/pages/speech/kdxf/enc-base64-min.js"></script>-->
+<!--    <script src="./src/pages/speech/kdxf/index.umd.js"></script>-->
+
     <script type="text/javascript">
     // 利用index.html引入js组件
     window.document.getObsClient = (ak, sk, server) => {
@@ -22,6 +30,7 @@
     return obsClient;
     };
     </script>
+
     <script type="module" src="/src/main.ts"></script>
 
   </body>
