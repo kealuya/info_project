@@ -3,7 +3,7 @@ import request from "./request";
 export function getInvoiceWbList(query :object){
     return new Promise(function (resolve, reject) {
         request({
-            url:'/invoice/getInvoiceWbList',
+            url:'/v2/accountBook/getInvoiceWbList',
             data: query
         }).then((response: object) => {
             resolve(response)
@@ -16,7 +16,7 @@ export function getInvoiceWbList(query :object){
 export function getWxConfig(query :object){
     return new Promise(function (resolve, reject) {
         request({
-            url:'/invoice/getInvoiceWbList',
+            url:'/v2/accountBook/getInvoiceWbList',
             data: query
         }).then((response: object) => {
             resolve(response)
@@ -29,7 +29,7 @@ export function getWxConfig(query :object){
 export function getInvOcrResultWb(query :object){
     return new Promise(function (resolve, reject) {
         request({
-            url:'/invoice/getInvOcrResultWb',
+            url:'/v2/accountBook/getInvOcrResultWb',
             data: query
         }).then((response: object) => {
             resolve(response)
@@ -42,7 +42,7 @@ export function getInvOcrResultWb(query :object){
 export function getInvOcrResultByPdfWb(query :object){
     return new Promise(function (resolve, reject) {
         request({
-            url:'/invoice/getInvOcrResultByPdfWb',
+            url:'/v2/accountBook/getInvOcrResultByPdfWb',
             data: query
         }).then((response: object) => {
             resolve(response)
@@ -55,7 +55,7 @@ export function getInvOcrResultByPdfWb(query :object){
 export function invVerifyWb(query :object) {
     return new Promise(function (resolve, reject) {
         request({
-            url:'/invoice/invVerifyWb',
+            url:'/v2/accountBook/invVerifyWb',
             data: query
         }).then((response: object) => {
             resolve(response)
@@ -68,7 +68,7 @@ export function invVerifyWb(query :object) {
 export function getWxTokenTicket(query :object) {
     return new Promise(function (resolve, reject) {
         request({
-            url:'/invoice/getAccess_tokenTicket',
+            url:'/v2/accountBook/getAccess_tokenTicket',
             data: query
         }).then((response: object) => {
             resolve(response)
@@ -82,7 +82,7 @@ export function getWxTokenTicket(query :object) {
 export function getWxSignToken(query :object) {
     return new Promise(function (resolve, reject) {
         request({
-            url:'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx5276498b4494a34a&secret=e8bf9e603d92ddc5076459e673d49014',
+            url:'',
             data: query
         }).then((response: object) => {
             resolve(response)
@@ -95,7 +95,7 @@ export function getWxSignToken(query :object) {
 export function getToken(query :object) {
     return new Promise(function (resolve, reject) {
         request({
-            url:'/invoice/getToken',
+            url:'/v2/accountBook/getToken',
             data: query
         }).then((response: object) => {
             resolve(response)
@@ -108,7 +108,7 @@ export function getToken(query :object) {
 export function getImgDetail(query :object){
     return new Promise(function (resolve, reject) {
         request({
-            url:'/invoice/getInvoiceImgUrl',
+            url:'/v2/accountBook/getInvoiceImgUrl',
             data: query
         }).then((response: object) => {
             resolve(response)
@@ -121,7 +121,33 @@ export function getImgDetail(query :object){
 export function deleteInv(query :object){
     return new Promise(function (resolve, reject) {
         request({
-            url:'/invoice/deleteInvoiceToWb',
+            url:'/v2/accountBook/deleteInvoiceToWb',
+            data: query
+        }).then((response: object) => {
+            resolve(response)
+        }).catch((error :string) => {
+            resolve({})
+        })
+    })
+}
+// 查看发票信息
+export function getInvoiceWbById(query :object){
+    return new Promise(function (resolve, reject) {
+        request({
+            url:'/v2/accountBook/getInvoiceWbById',
+            data: query
+        }).then((response: object) => {
+            resolve(response)
+        }).catch((error :string) => {
+            resolve({})
+        })
+    })
+}
+// 获取开票信息列表
+export function getInvoiceBillingList(query :object){
+    return new Promise(function (resolve, reject) {
+        request({
+            url:'/v2/invoice/getInvoiceInfoList',
             data: query
         }).then((response: object) => {
             resolve(response)

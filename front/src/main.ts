@@ -9,7 +9,7 @@ import router from './router'
 import 'vant/es/notify/style';
 import 'vant/es/dialog/style';
 import './assets/main.css'
-// @ts-ignore
+import 'vant/es/toast/style';
 import VueHashCalendar from 'vue3-hash-calendar';
 import 'vue3-hash-calendar/es/index.css';
 const app = createApp(App)
