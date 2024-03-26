@@ -18,9 +18,24 @@ import (
 
 // 调用样例
 func Test() {
-	c, err := SparkV35(`
-									请问你能解读我的病例吗
-						`)
+
+	// 追加systemcontent描述信息，以及传入的问题需要符合Message规范，为了传入历史上下文
+	msgs := []Message{
+		{
+			Role:    User,
+			Content: "你是谁",
+		},
+		{
+			Role:    Assistant,
+			Content: "我是星火大模型",
+		},
+		{
+			Role:    User,
+			Content: "你会做什么",
+		},
+	}
+
+	c, err := SparkV35("你是一个医生，只回答医疗相关问题，如果没关系的问题，请礼貌的拒绝", msgs)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -38,9 +53,9 @@ var (
 )
 
 // const SYSTEM_CONTENT = "你是一个展业的文职秘书，可以把描述的事情变成标准的会议纪要，其中可能包括参会人员、会议总结、各个角色的会话要点及后续计划等。"
-const SYSTEM_CONTENT = "你是一个医生，只回答医疗相关问题，如果没关系的问题，请礼貌的拒绝"
+//const SYSTEM_CONTENT = "你是一个医生，只回答医疗相关问题，如果没关系的问题，请礼貌的拒绝"
 
-func SparkV35(question string) (<-chan map[string]any, error) {
+func SparkV35(systemContent string, questions []Message) (<-chan map[string]any, error) {
 
 	d := websocket.Dialer{
 		HandshakeTimeout: 5 * time.Second,
@@ -62,7 +77,7 @@ func SparkV35(question string) (<-chan map[string]any, error) {
 	go func() {
 
 		answer := ""
-		data := genParams1(appidSpark, question)
+		data := genParams1(appidSpark, systemContent, questions)
 		_ = conn.WriteJSON(data)
 		for {
 			_, msg, err := conn.ReadMessage()
@@ -109,7 +124,7 @@ func SparkV35(question string) (<-chan map[string]any, error) {
 				fmt.Println("total_tokens:", totalTokens)
 				conn.Close()
 				// todo 考虑存入db
-				logs.Info("问答记录::", fmt.Sprintf("question->%s , answer->%s", question, answer))
+				logs.Info("问答记录::", fmt.Sprintf("question->%s , answer->%s", questions, answer))
 				logs.Async()
 				m["content"] = content
 				m["status"] = status
@@ -145,13 +160,14 @@ type Answer struct {
 }
 
 // 生成参数
-func genParams1(appid, question string) map[string]interface{} { // 根据实际情况修改返回的数据结构和字段名
+func genParams1(appid, systemContent string, questions []Message) map[string]interface{} { // 根据实际情况修改返回的数据结构和字段名
 
 	messages := []Message{
 
-		{Role: "system", Content: SYSTEM_CONTENT},
-		{Role: "user", Content: question},
+		{Role: "system", Content: systemContent},
+		//{Role: "user", Content: question},
 	}
+	messages = append(messages, questions...)
 
 	data := map[string]interface{}{ // 根据实际情况修改返回的数据结构和字段名
 		"header": map[string]interface{}{ // 根据实际情况修改返回的数据结构和字段名
@@ -225,7 +241,14 @@ func readResp(resp *http.Response) string {
 	return fmt.Sprintf("code=%d,body=%s", resp.StatusCode, string(b))
 }
 
+type SparkRole string
+
+const (
+	User      SparkRole = "user"
+	Assistant           = "assistant"
+)
+
 type Message struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
+	Role    SparkRole `json:"role"`
+	Content string    `json:"content"`
 }
