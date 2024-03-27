@@ -10,22 +10,14 @@
               <div style="height:100px;width:100%;" class="recwave"></div>
             </div>
             <div style="height:20px;width:100%;margin-top:5px;display:inline-block;vertical-align:bottom;background:#999;position:relative;">
-              <div class="recpowerx" style="height:40px;background:#0B1;position:absolute;"></div>
-              <div class="recpowert" style="padding-left:50px; line-height:40px; position: relative;"></div>
+              <div class="recpowerx" style="height:20px;background:#0B1;position:absolute;"></div>
+              <div class="recpowert" style="padding-left:50px; line-height:20px; position: relative;"></div>
             </div>
           </div>
         </div>
 
 
-        <van-card
-            num="2"
-            tag="标签"
-            price="2.00"
-            desc="描述信息"
-            title="商品标题"
-            thumb="https://fastly.jsdelivr.net/npm/@vant/assets/ipad.jpeg"
-            origin-price="10.00"
-        />
+
         <van-card
             num="2"
             tag="标签"
@@ -38,23 +30,28 @@
 
 
         <div class="cardTable">
-          <van-button type="primary" plain block round>播放</van-button>
+          <van-button type="primary" plain block round onclick="recPlay()">播放</van-button>
           <van-divider />
-          <van-button type="primary" plain block round>上传</van-button>
+          <van-button type="primary" plain block round onclick="recUpload()">上传</van-button>
           <van-divider />
-          <van-button type="primary" plain block round>本地下载</van-button>
+          <van-button type="primary" plain block round onclick="recLocalDown()">本地下载</van-button>
         </div>
 
-        <div class="bottom_box" >
+        <div  >
           <van-row>
             <van-col span="8">
-              <van-button plain icon="stop-circle-o" type="primary" round="true"/>
+              <van-button plain icon="stop-circle-o" type="primary" round="true" onclick="recOpen()">打开权限</van-button>
+
+              <van-button plain icon="stop-circle-o" type="primary" round="true" onclick="recClose()">关闭权限</van-button>
             </van-col>
             <van-col span="8">
-              <van-button plain icon="stop-circle-o" type="primary" round="true"/>
+              <van-button plain icon="stop-circle-o" type="primary" round="true" onclick="recStart()">开始录制</van-button>
+
+              <van-button plain icon="stop-circle-o" type="primary" round="true" onclick="recStop()">结束录制</van-button>
             </van-col>
             <van-col span="8">
-              <van-button plain icon="stop-circle-o" type="primary" round="true"/>
+              <van-button plain icon="stop-circle-o" type="primary" round="true" onclick="recPause()">暂停</van-button>
+              <van-button plain icon="stop-circle-o" type="primary" round="true" onclick="recResume()">恢复</van-button>
             </van-col>
           </van-row>
         </div>
@@ -95,6 +92,11 @@
 <script setup lang="ts">
 import {ref, inject} from "vue";
 import Recorder from 'recorder-core' //已包含recorder-core和mp3格式支持
+//可选的插件支持项 波形绘制的插件支持
+import 'recorder-core/src/extensions/waveview'
+//引入相应格式支持文件；如果需要多个格式支持，把这些格式的编码引擎js文件放到后面统统引入进来即可
+import 'recorder-core/src/engine/mp3'
+import 'recorder-core/src/engine/mp3-engine'
 
 const active = ref(0);
 let userInfoData: any = inject("userInfo");
@@ -228,7 +230,7 @@ win.recUpload=function(){
 
   //本例子假设使用原始XMLHttpRequest请求方式，实际使用中自行调整为自己的请求方式
   //录音结束时拿到了blob文件对象，可以用FileReader读取出内容，或者用FormData上传
-  var api="https://xx.xx/test_request";
+  var api=" ";
   var onreadystatechange=function(title:any){
     return function(){
       if(xhr.readyState==4){
