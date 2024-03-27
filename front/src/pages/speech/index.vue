@@ -110,7 +110,7 @@ win.recOpen=function(){//一般在显示出录音按钮或相关的录音界面�
   rec=null;
   wave=null;
   recBlob=null;
-  var newRec=Recorder({
+  let newRec=Recorder({
     type:"mp3",sampleRate:16000,bitRate:16 //mp3格式，指定采样率hz、比特率kbps，其他参数使用默认配置；注意：是数字的参数必须提供数字，不要用字符串；需要使用的type类型，需提前把格式支持文件加载进来，比如使用wav格式需要提前加载wav.js编码引擎
     ,onProcess:function(buffers:any,powerLevel:any,bufferDuration:any,bufferSampleRate:any,newBufferIdx:any,asyncEnd:any){
       //录音实时回调，大约1秒调用12次本回调
@@ -206,9 +206,9 @@ win.recPlay=function(){
     console.log("请先录音，然后停止后再播放",1);
     return;
   };
-  var cls=("a"+Math.random()).replace(".","");
+  let cls=("a"+Math.random()).replace(".","");
   console.log('播放中: <span class="'+cls+'"></span>');
-  var audio=doc.createElement("audio");
+  let audio=doc.createElement("audio");
   audio.controls=true;
   doc.querySelector("."+cls).appendChild(audio);
   //简单利用URL生成播放地址，注意不用了时需要revokeObjectURL，否则霸占内存
@@ -222,7 +222,7 @@ win.recPlay=function(){
 
 /**上传**/
 win.recUpload=function(){
-  var blob=recBlob;
+  let blob=recBlob;
   if(!blob){
     console.log("请先录音，然后停止后再上传",1);
     return;
@@ -230,8 +230,9 @@ win.recUpload=function(){
 
   //本例子假设使用原始XMLHttpRequest请求方式，实际使用中自行调整为自己的请求方式
   //录音结束时拿到了blob文件对象，可以用FileReader读取出内容，或者用FormData上传
-  var api=" ";
-  var onreadystatechange=function(title:any){
+  let api="http://localhost:7001/v4/meeting/uploadMeetingAudioFile";
+
+  let onreadystatechange=function(title:any){
     return function(){
       if(xhr.readyState==4){
         if(xhr.status==200){
@@ -245,29 +246,30 @@ win.recUpload=function(){
     };
   };
   console.log("开始上传到"+api+"，请求稍后...");
-
-  /***方式一：将blob文件转成base64纯文本编码，使用普通application/x-www-form-urlencoded表单上传***/
-  var reader=new win.FileReader();
-  reader.onloadend=function(){
-    var postData="";
-    postData+="mime="+encodeURIComponent(blob.type);//告诉后端，这个录音是什么格式的，可能前后端都固定的mp3可以不用写
-    postData+="&upfile_b64="+encodeURIComponent((/.+;\s*base64\s*,\s*(.+)$/i.exec(reader.result)||[])[1]) //录音文件内容，后端进行base64解码成二进制
-    //...其他表单参数
-
-    var xhr=new XMLHttpRequest();
-    xhr.open("POST", api);
-    xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-    xhr.onreadystatechange=onreadystatechange("上传方式一【Base64】");
-    xhr.send(postData);
-  };
-  reader.readAsDataURL(blob);
+  //
+  // /***方式一：将blob文件转成base64纯文本编码，使用普通application/x-www-form-urlencoded表单上传***/
+  // let reader=new win.FileReader();
+  // reader.onloadend=function(){
+  //   let postData="";
+  //   postData+="mime="+encodeURIComponent(blob.type);//告诉后端，这个录音是什么格式的，可能前后端都固定的mp3可以不用写
+  //   postData+="&upfile_b64="+encodeURIComponent((/.+;\s*base64\s*,\s*(.+)$/i.exec(reader.result)||[])[1]) //录音文件内容，后端进行base64解码成二进制
+  //   //...其他表单参数
+  //
+  //   let xhr=new XMLHttpRequest();
+  //   xhr.open("POST", api);
+  //   xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+  //   xhr.onreadystatechange=onreadystatechange("上传方式一【Base64】");
+  //   xhr.send(postData);
+  // };
+  // reader.readAsDataURL(blob);
 
   /***方式二：使用FormData用multipart/form-data表单上传文件***/
-  var form=new FormData();
-  form.append("upfile",blob,"recorder.mp3"); //和普通form表单并无二致，后端接收到upfile参数的文件，文件名为recorder.mp3
+  let form=new FormData();
+  let filename = "会议ID_"+new Date().getTime()+".mp3"
+  form.append("file",blob,filename); //和普通form表单并无二致，后端接收到file参数的文件，文件名为 "会议ID_"+new Date()+".mp3"
   //...其他表单参数
 
-  var xhr=new XMLHttpRequest();
+  let xhr=new XMLHttpRequest();
   xhr.open("POST", api);
   xhr.onreadystatechange=onreadystatechange("上传方式二【FormData】");
   xhr.send(form);
@@ -280,13 +282,13 @@ win.recLocalDown=function(){
     console.log("请先录音，然后停止后再下载",1);
     return;
   };
-  var cls=("a"+Math.random()).replace(".","");
+  let cls=("a"+Math.random()).replace(".","");
   win.recdown64.lastCls=cls;
   console.log('点击 <span class="'+cls+'"></span> 下载，或复制文本'
       +'<button onclick="recdown64(\''+cls+'\')">生成Base64文本</button><span class="'+cls+'_b64"></span>');
 
-  var fileName="recorder-"+Date.now()+".mp3";
-  var downA=doc.createElement("A");
+  let fileName="recorder-"+Date.now()+".mp3";
+  let downA=doc.createElement("A");
   downA.innerHTML="下载 "+fileName;
   downA.href=(win.URL||webkitURL).createObjectURL(recBlob);
   downA.download=fileName;
@@ -301,12 +303,12 @@ win.recLocalDown=function(){
   //(win.URL||webkitURL).revokeObjectURL(downA.href);
 };
 win.recdown64=function(cls:any){
-  var el=doc.querySelector("."+cls+"_b64");
+  let el=doc.querySelector("."+cls+"_b64");
   if(win.recdown64.lastCls!=cls){
     el.innerHTML='<span style="color:red">老的数据没有保存，只支持最新的一条</span>';
     return;
   }
-  var reader = new FileReader();
+  let reader = new FileReader();
   reader.onloadend = function() {
     el.innerHTML='<textarea></textarea>';
     el.querySelector("textarea").value=reader.result;
@@ -322,9 +324,9 @@ win.recdown64=function(cls:any){
 
 
 
-var formatMs=function(ms:any,all?:any){
-  var f=Math.floor(ms/60000),m=Math.floor(ms/1000)%60;
-  var s=(all||f>0?(f<10?"0":"")+f+":":"")
+const formatMs=function(ms:any,all?:any){
+  let f=Math.floor(ms/60000),m=Math.floor(ms/1000)%60;
+  let s=(all||f>0?(f<10?"0":"")+f+":":"")
       +(all||f>0||m>0?("0"+m).substr(-2)+"″":"")
       +("00"+ms%1000).substr(-3);
   return s;
