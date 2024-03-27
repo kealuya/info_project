@@ -14,7 +14,7 @@ import (
 func init() {
 
 	namespace :=
-		beego.NewNamespace("/v1",
+		beego.NewNamespace("/v4",
 			beego.NSNamespace("/log",
 				beego.NSInclude(&controllers.LogInfoController{}),
 			),
@@ -23,6 +23,9 @@ func init() {
 			),
 			beego.NSNamespace("/token",
 				beego.NSInclude(&controllers.JwtController{}),
+			),
+			beego.NSNamespace("/meeting",
+				beego.NSInclude(&controllers.MeetingCtrl{}),
 			),
 			//----------发票识别、验真相关- 开始 ----------------
 			beego.NSNamespace("/invoice",
