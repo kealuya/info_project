@@ -1,0 +1,18 @@
+server.port: 8080
+
+solon.app:
+  name: 'demo-app'
+  group: 'demo'
+# 以下为默认值，可以都不加，或者想改哪行加哪行(支持"云端配置服务"进行配置，支持写到"云端日志服务")
+solon.logging.appender:
+  console:
+    level: TRACE
+    enable: true #是否启用
+  file:
+    name: "logs/${solon.app.name}"
+    rolling: "logs/${solon.app.name}_%d{yyyy-MM-dd}_%i.log"
+    level: INFO
+    enable: true #是否启用
+    extension: ".log"   #v2.2.18 后支持（例：.log, .log.gz, .log.zip）
+    maxFileSize: "10 MB"
+    maxHistory: "7"
