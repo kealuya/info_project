@@ -7,6 +7,7 @@ import com.szhtjykj.speech.model.KdxfSpeech;
 import com.szhtjykj.speech.xfyun.sign.LfasrSignature;
 import com.szhtjykj.speech.xfyun.utils.HttpUtil;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.beetl.sql.core.SQLReady;
 import org.beetl.sql.solon.annotation.Db;
 import org.noear.solon.annotation.Component;
 import org.slf4j.Logger;
@@ -42,7 +43,7 @@ public class XfyunService {
 //        getResult(orderId);
 //    }
 
-    public String upload(File audio) throws SignatureException, IOException {
+    public String upload(File audio, String orderId2) throws SignatureException, IOException {
         HashMap<String, Object> map = new HashMap<>(16);
 
         String fileName = audio.getName();
@@ -54,7 +55,7 @@ public class XfyunService {
         LfasrSignature lfasrSignature = new LfasrSignature(appid, keySecret);
         map.put("signa", lfasrSignature.getSigna());
         map.put("ts", lfasrSignature.getTs());
-//        todo 此处后续追加 mp3 判断，需要追加接口参数 lama
+//          此处后续追加 mp3 判断，需要追加接口参数 lame ：：暂时不考虑，因为普通语音转写不需要格式区别。
         String paramString = HttpUtil.parseMapToPathParam(map);
 //        System.out.println("upload paramString:" + paramString);
         log.info("upload paramString:" + paramString);
@@ -72,7 +73,7 @@ public class XfyunService {
         executor.submit(() -> {
             // 处理文件的逻辑
             try {
-                getResult(orderId, fileName);
+                getResult(orderId, fileName, orderId2);
             } catch (Exception e) {
                 log.error("获取音频翻译发生错误::", e);
 
@@ -89,7 +90,7 @@ public class XfyunService {
         return orderId;
     }
 
-    public void getResult(String orderId, String fileName) throws SignatureException, InterruptedException {
+    public void getResult(String orderId, String fileName, String orderId2) throws Exception {
         HashMap<String, Object> map = new HashMap<>(16);
         map.put("orderId", orderId);
         LfasrSignature lfasrSignature = new LfasrSignature(appid, keySecret);
@@ -105,7 +106,21 @@ public class XfyunService {
         // 将语音转换信息存入db
 
         KdxfSpeech ks = new KdxfSpeech();
-        ks.setOrder_id(orderId);
+        if (orderId2 == null) {
+            ks.setOrder_id(orderId);
+            ks.setNo(0);
+        } else {
+            // 处理多语音归属同一个会议的情况
+            log.info("***::" + "多语音记录，原始orderId::" + orderId + ",归属orderId2::" + orderId2);
+            SQLReady sqlReady = new SQLReady("select max(no) from kdxf_speech where order_id = ?", new Object[]{orderId2});
+            List<Integer> maxNoList = kdxfSpeechDao.getSQLManager().execute(sqlReady, Integer.class);
+            if (maxNoList.size() != 1) {
+                throw new Exception("数据不正确::orderId::" + orderId + "::orderId2" + orderId2);
+            }
+            Integer maxNo = maxNoList.get(0) + 1;
+            ks.setNo(maxNo);
+            ks.setOrder_id(orderId2);
+        }
         ks.setDatetime(new Date());
         ks.setFile_name(fileName);
         ks.setState(0); // 进行中
@@ -119,7 +134,13 @@ public class XfyunService {
                 log.info("订单完成:" + orderId + "::" + getContentForNormal(jsonParse.content.orderResult));
 
                 // 将语音转换信息存入db
-                KdxfSpeech ksForUpdate = kdxfSpeechDao.unique(orderId);
+                KdxfSpeech ksForUpdate;
+                if (orderId2 == null) {
+                    ksForUpdate = kdxfSpeechDao.unique(orderId);
+                } else {
+                    ksForUpdate = kdxfSpeechDao.unique(orderId2);
+                }
+
                 ksForUpdate.setState(1); // 完成
                 ksForUpdate.setContent(getContentForNormal(jsonParse.content.orderResult));
                 ksForUpdate.setReal_duration(jsonParse.content.orderInfo.realDuration);
