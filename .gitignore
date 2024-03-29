@@ -30,3 +30,5 @@ back/szyx_back/secret_key.go
 back/szyx_back/secret/secret.go
 
 back/szyx_back/secret/secret_key.go
+
+back/szyx_back/.DS_Store

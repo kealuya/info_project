@@ -1,10 +1,9 @@
-package com.example.demo;
+package com.szhtjykj.speech.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.noear.solon.annotation.Controller;
 import org.noear.solon.annotation.Mapping;
-import org.noear.solon.annotation.Param;
 import org.noear.solon.annotation.Post;
 import org.noear.solon.core.handle.Context;
 import org.noear.solon.core.handle.UploadedFile;

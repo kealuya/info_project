@@ -1,4 +1,4 @@
-package com.xfyun.utils;
+package com.szhtjykj.speech.xfyun.utils;
 
 import org.apache.http.Consts;
 import org.apache.http.HttpEntity;

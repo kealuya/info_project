@@ -1,6 +1,6 @@
 package features;
 
-import com.example.demo.App;
+import com.szhtjykj.speech.App;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

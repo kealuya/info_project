@@ -36,12 +36,24 @@
             <groupId>org.noear</groupId>
             <artifactId>solon-web</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.28</version> <!-- Use the latest version available -->
+        </dependency>
         <dependency>
             <groupId>org.noear</groupId>
             <artifactId>solon.logging.simple</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.noear</groupId>
+            <artifactId>beetlsql-solon-plugin</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>4.0.3</version>
+        </dependency>
         <dependency>
             <groupId>org.noear</groupId>
             <artifactId>solon-test</artifactId>
@@ -50,6 +62,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>

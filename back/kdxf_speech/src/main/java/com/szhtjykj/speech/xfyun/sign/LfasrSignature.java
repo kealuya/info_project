@@ -1,8 +1,8 @@
-package com.xfyun.sign;
+package com.szhtjykj.speech.xfyun.sign;
 
 
 import cn.hutool.core.util.ObjectUtil;
-import cn.xfyun.utils.CryptTools;
+import com.szhtjykj.speech.xfyun.utils.CryptTools;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;

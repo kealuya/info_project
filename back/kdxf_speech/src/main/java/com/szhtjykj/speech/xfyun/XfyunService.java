@@ -1,41 +1,39 @@
-package com.xfyun;
+package com.szhtjykj.speech.xfyun;
 
 import cn.hutool.json.JSONUtil;
-import com.xfyun.sign.LfasrSignature;
-import com.xfyun.utils.HttpUtil;
 import com.google.gson.Gson;
+import com.szhtjykj.speech.dao.KdxfSpeechDao;
+import com.szhtjykj.speech.model.KdxfSpeech;
+import com.szhtjykj.speech.xfyun.sign.LfasrSignature;
+import com.szhtjykj.speech.xfyun.utils.HttpUtil;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.beetl.sql.solon.annotation.Db;
+import org.noear.solon.annotation.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.net.URISyntaxException;
 import java.security.SignatureException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+@Component
+public class XfyunService {
 
-public class SpeechUtil {
     private static final String HOST = "https://raasr.xfyun.cn";
-    private static String AUDIO_FILE_PATH;
     private static final String appid = "60f7d982";
     private static final String keySecret = "06af4e9a1a3cf5c55d85295d9b0476bd";
 
     private static final Gson gson = new Gson();
-    static Logger log = LoggerFactory.getLogger(SpeechUtil.class);
+    static Logger log = LoggerFactory.getLogger(XfyunService.class);
 
-    static {
-        try {
-            AUDIO_FILE_PATH = SpeechUtil.class.getResource("/").toURI().getPath() + "/audio/合成音频.wav";
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-    }
 
-    private ExecutorService executor = Executors.newFixedThreadPool(3); // 创建一个固定大小为3的线程池
-
+    private static ExecutorService executor = Executors.newFixedThreadPool(10); // 创建一个固定大小为10的线程池
+    @Db
+    KdxfSpeechDao kdxfSpeechDao;
 
 //    public static void main(String[] args) throws Exception {
 //        String result = upload();
@@ -44,7 +42,7 @@ public class SpeechUtil {
 //        getResult(orderId);
 //    }
 
-    public static String upload(File audio) throws SignatureException, IOException, InterruptedException {
+    public String upload(File audio) throws SignatureException, IOException {
         HashMap<String, Object> map = new HashMap<>(16);
 
         String fileName = audio.getName();
@@ -52,7 +50,7 @@ public class SpeechUtil {
         map.put("appId", appid);
         map.put("fileSize", fileSize);
         map.put("fileName", fileName);
-        map.put("duration", "200");
+        map.put("duration", "200");// 音频真实时长.当前未验证，可随机传一个数字
         LfasrSignature lfasrSignature = new LfasrSignature(appid, keySecret);
         map.put("signa", lfasrSignature.getSigna());
         map.put("ts", lfasrSignature.getTs());
@@ -69,11 +67,29 @@ public class SpeechUtil {
         log.info("upload response:" + response);
         String jsonStr = StringEscapeUtils.unescapeJavaScript(response);
         String orderId = String.valueOf(JSONUtil.getByPath(JSONUtil.parse(jsonStr), "content.orderId"));
-        getResult(orderId);
+
+        // 提交任务给线程池执行
+        executor.submit(() -> {
+            // 处理文件的逻辑
+            try {
+                getResult(orderId, fileName);
+            } catch (Exception e) {
+                log.error("获取音频翻译发生错误::", e);
+
+                // 将语音转换信息存入db
+                KdxfSpeech ksForUpdate = new KdxfSpeech();
+                ksForUpdate.setOrder_id(orderId);
+                ksForUpdate.setState(2); // 错误
+                ksForUpdate.setComment(e.getMessage());
+                kdxfSpeechDao.updateById(ksForUpdate);
+            }
+        });
+
+
         return orderId;
     }
 
-    public static String getResult(String orderId) throws SignatureException, InterruptedException, IOException {
+    public void getResult(String orderId, String fileName) throws SignatureException, InterruptedException {
         HashMap<String, Object> map = new HashMap<>(16);
         map.put("orderId", orderId);
         LfasrSignature lfasrSignature = new LfasrSignature(appid, keySecret);
@@ -85,17 +101,35 @@ public class SpeechUtil {
         String url = HOST + "/v2/api/getResult" + "?" + paramString;
 //        System.out.println("\nget_result_url:" + url);
         log.info("\nget_result_url:" + url);
+
+        // 将语音转换信息存入db
+
+        KdxfSpeech ks = new KdxfSpeech();
+        ks.setOrder_id(orderId);
+        ks.setDatetime(new Date());
+        ks.setFile_name(fileName);
+        ks.setState(0); // 进行中
+        kdxfSpeechDao.insert(ks);
+
         while (true) {
             String response = HttpUtil.iflyrecGet(url);
             JsonParse jsonParse = gson.fromJson(response, JsonParse.class);
             if (jsonParse.content.orderInfo.status == 4 || jsonParse.content.orderInfo.status == -1) {
 //                System.out.println("订单完成:" + response);
-                log.info("订单完成:" + orderId);
-                System.out.println(getContentForNormal(jsonParse.content.orderResult));
-                write(response);
-                return response;
+                log.info("订单完成:" + orderId + "::" + getContentForNormal(jsonParse.content.orderResult));
+
+                // 将语音转换信息存入db
+                KdxfSpeech ksForUpdate = kdxfSpeechDao.unique(orderId);
+                ksForUpdate.setState(1); // 完成
+                ksForUpdate.setContent(getContentForNormal(jsonParse.content.orderResult));
+                ksForUpdate.setReal_duration(jsonParse.content.orderInfo.realDuration);
+                kdxfSpeechDao.updateById(ksForUpdate);
+//                System.out.println(getContentForNormal(jsonParse.content.orderResult));
+//                log.info("response:" + response);
+//                response:{"code":"000000","descInfo":"success","content":{"orderInfo":{"orderId":"DKHJQ20240328145032273GTx6Tc2agamHqLso","failType":11,"status":-1,"originalDuration":200,"realDuration":98026,"expireTime":1711867724584},"orderResult":""
+                return;
             } else {
-                System.out.println("orderId::" + orderId + "::进行中...，状态为:" + jsonParse.content.orderInfo.status);
+                log.info("orderId::" + orderId + "::进行中...，状态为:" + jsonParse.content.orderInfo.status);
                 //建议使用回调的方式查询结果，查询接口有请求频率限制
                 Thread.sleep(7000);
             }
@@ -123,6 +157,7 @@ public class SpeechUtil {
 
     class OrderInfo {
         Integer status;
+        Long realDuration;
     }
 
     public static String getContentForNormal(String sb) {

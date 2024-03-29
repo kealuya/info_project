@@ -16,3 +16,38 @@ solon.logging.appender:
     extension: ".log"   #v2.2.18 后支持（例：.log, .log.gz, .log.zip）
     maxFileSize: "10 MB"
     maxHistory: "7"
+#设定最大的请求包大小（或表单项的值大小）//默认: 2m
+server.request.maxBodySize: 400mb #kb,mb
+#设定最大的上传文件大小
+server.request.maxFileSize: 400mb #kb,mb (默认使用 maxBodySize 配置值)
+#设定最大的请求头大小//默认: 8k
+server.request.maxHeaderSize: 8kb #kb,mb
+#设定上传使用临时文件（v2.7.2 后支持）
+server.request.useTempfile: false
+
+
+demo.db1:
+  schema: info_project
+  jdbcUrl: jdbc:mysql://124.70.48.30:3306/info_project?useUnicode=true&characterEncoding=utf8&autoReconnect=true&rewriteBatchedStatements=true
+  driverClassName: com.mysql.cj.jdbc.Driver
+  username: root
+  password: xxxxx
+
+beetlsql.db1:
+  dialect: mysql
+  dev: true
+  dbStyle: "org.beetl.sql.core.db.MySqlStyle" #字段映射：与 dialect 效果相同
+  interceptorList:
+    - "org.beetl.sql.ext.DebugInterceptor"
+# 配置印射的是 SQLManagerBuilder 字段
+#beetlsql.db1:
+#  dialect: "mysql" #快捷配置：方言
+#  debug: true  #快捷配置：是否调试模式
+#  slaves: "db2,db3"  #快捷配置：从库配置
+#  nc: "org.wisecloud.common.db.beetlsql.JPANameConversion" #字段映射
+#  dbStyle: "org.beetl.sql.core.db.MySqlStyle" #字段映射：与 dialect 效果相同
+#  inters: #字段映射
+#    - "org.beetl.sql.ext.DebugInterceptor" #与 debug 效果相同
+#    - "org.beetl.sql.ext.Slf4JLogInterceptor"
+# ======个人配置=======
+server.audio.save.path: /Users/kealuya/Downloads/demo/audio/

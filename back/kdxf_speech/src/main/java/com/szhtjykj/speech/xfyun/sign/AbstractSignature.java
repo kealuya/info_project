@@ -1,4 +1,4 @@
-package com.xfyun.sign;
+package com.szhtjykj.speech.xfyun.sign;
 
 import java.net.MalformedURLException;
 import java.net.URL;

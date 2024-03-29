@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.szhtjykj.speech;
 
 import org.noear.solon.Solon;
 import org.noear.solon.annotation.SolonMain;
