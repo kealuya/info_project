@@ -54,7 +54,7 @@ public class XfyunService {
         LfasrSignature lfasrSignature = new LfasrSignature(appid, keySecret);
         map.put("signa", lfasrSignature.getSigna());
         map.put("ts", lfasrSignature.getTs());
-
+//        todo 此处后续追加 mp3 判断，需要追加接口参数 lama
         String paramString = HttpUtil.parseMapToPathParam(map);
 //        System.out.println("upload paramString:" + paramString);
         log.info("upload paramString:" + paramString);
