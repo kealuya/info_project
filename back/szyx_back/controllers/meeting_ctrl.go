@@ -25,7 +25,7 @@ type MeetingCtrl struct {
 func (MeetingCtrl *MeetingCtrl) CreateMeeting() {
 	resJson := NewJsonStruct(nil)
 	defer func() {
-		MeetingCtrl.Data["json"] = string(common.Marshal(resJson))
+		MeetingCtrl.Data["json"] = resJson
 		MeetingCtrl.ServeJSON()
 	}()
 	metting := new(meeting.Meeting)
@@ -36,6 +36,7 @@ func (MeetingCtrl *MeetingCtrl) CreateMeeting() {
 	err := models.CreateMeeting(metting)
 	if err == nil {
 		resJson.Success = true
+		resJson.Msg = "会议创建成功"
 		//resJson.Data = meetingRes
 	} else {
 		resJson.Success = false
@@ -59,7 +60,7 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingAudioFile() {
 	flag := true
 
 	defer func() {
-		MeetingCtrl.Data["json"] = string(common.Marshal(resJson))
+		MeetingCtrl.Data["json"] = resJson
 		MeetingCtrl.ServeJSON()
 	}()
 
@@ -122,7 +123,7 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingAudioFile() {
 func (MeetingCtrl *MeetingCtrl) GetMeetingList() {
 	resJson := NewJsonStruct(nil)
 	defer func() {
-		MeetingCtrl.Data["json"] = string(common.Marshal(resJson))
+		MeetingCtrl.Data["json"] = resJson
 		MeetingCtrl.ServeJSON()
 	}()
 	metting := new(meeting.Meeting)
@@ -151,7 +152,7 @@ func (MeetingCtrl *MeetingCtrl) GetMeetingList() {
 func (MeetingCtrl *MeetingCtrl) ModifyMeeting() {
 	resJson := NewJsonStruct(nil)
 	defer func() {
-		MeetingCtrl.Data["json"] = string(common.Marshal(resJson))
+		MeetingCtrl.Data["json"] = resJson
 		MeetingCtrl.ServeJSON()
 	}()
 	metting := new(meeting.Meeting)
@@ -180,7 +181,7 @@ func (MeetingCtrl *MeetingCtrl) ModifyMeeting() {
 func (MeetingCtrl *MeetingCtrl) CreateMeetingMminutes() {
 	resJson := NewJsonStruct(nil)
 	defer func() {
-		MeetingCtrl.Data["json"] = string(common.Marshal(resJson))
+		MeetingCtrl.Data["json"] = resJson
 		MeetingCtrl.ServeJSON()
 	}()
 	metting := new(meeting.Meeting)
@@ -209,7 +210,7 @@ func (MeetingCtrl *MeetingCtrl) CreateMeetingMminutes() {
 func (MeetingCtrl *MeetingCtrl) CreateMeetingBrainMap() {
 	resJson := NewJsonStruct(nil)
 	defer func() {
-		MeetingCtrl.Data["json"] = string(common.Marshal(resJson))
+		MeetingCtrl.Data["json"] = resJson
 		MeetingCtrl.ServeJSON()
 	}()
 	metting := new(meeting.Meeting)
