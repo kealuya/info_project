@@ -126,12 +126,12 @@ func (MeetingCtrl *MeetingCtrl) GetMeetingList() {
 		MeetingCtrl.Data["json"] = resJson
 		MeetingCtrl.ServeJSON()
 	}()
-	metting := new(meeting.Meeting)
+	metting_param := new(meeting.MeetingList_Param)
 	var jsonByte = MeetingCtrl.Ctx.Input.RequestBody
-	common.Unmarshal(jsonByte, &metting)
+	common.Unmarshal(jsonByte, &metting_param)
 	logs.Info("查询会议列表入参：" + string(jsonByte))
 	//业务处理
-	res, err := models.GetMeetingList(metting)
+	res, err := models.GetMeetingList(metting_param)
 	if err == nil {
 		resJson.Success = true
 		resJson.Data = res

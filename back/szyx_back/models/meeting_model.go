@@ -10,9 +10,6 @@ import (
 创建会议，保存到数据库中
 */
 func CreateMeeting(meetingDto *meeting.Meeting) (err error) {
-	defer common.RecoverHandler(func(err error) {
-		err = err
-	})
 	//创建会议
 	err = db.CreateMeeting(meetingDto)
 	return err
@@ -21,8 +18,8 @@ func CreateMeeting(meetingDto *meeting.Meeting) (err error) {
 /**
 会议列表
 */
-func GetMeetingList(meetingDto *meeting.Meeting) (res meeting.Meeting, err error) {
-
+func GetMeetingList(meetingDto *meeting.MeetingList_Param) (res meeting.MeetingList_Result, err error) {
+	res, err = db.GetMeetingList(meetingDto)
 	return res, err
 }
 
@@ -30,7 +27,7 @@ func GetMeetingList(meetingDto *meeting.Meeting) (res meeting.Meeting, err error
 会议修改
 */
 func ModifyMeeting(meetingDto *meeting.Meeting) (res meeting.Meeting, err error) {
-
+	res, err = db.ModifyMeeting(meetingDto)
 	return res, err
 }
 

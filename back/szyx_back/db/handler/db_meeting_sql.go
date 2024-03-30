@@ -1,7 +1,7 @@
 package handler
 
 const (
-	InsertMeeting = `INSERT INTO szyx_meeting 
+	InsertMeeting_sql = `INSERT INTO szyx_meeting 
 						( 
 							MeetingId,
 							MeetingTitle,
@@ -20,4 +20,17 @@ const (
 						) 
 							VALUE
 						(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+
+	ModifyMeetingAudioFileUrl_sql = `update szyx_meeting set
+									MeetingAudioFileUrl = ?
+								where 
+									MeetingId = ?
+								`
+
+	GetMeetingById_sql = `select * from  szyx_meeting where MeetingId = ? `
+
+	GetMeetingList_sql = `select * from  szyx_meeting where corpCode = ? ORDER BY 
+						createTime DESC  limit ?,? `
+
+	GetMeetingListCount_sql = `select * from  szyx_meeting where corpCode = ? ORDER BY createTime DESC `
 )
