@@ -19,38 +19,41 @@
   </div>
   <!-- 按钮部分 -->
   <div class="metting">
-    <div @click="handelMetting">
+    <div @click="handelMettingList">
       <van-image :src="mettingList" width="60px" height="60px" />
       <div>会议列表</div>
     </div>
-    <div @click="handelMetting">
+    <div>
       <van-image :src="mettingList" width="60px" height="60px" />
       <div>xxx</div>
     </div>
-    <div @click="handelMetting">
+    <div>
       <van-image :src="mettingList" width="60px" height="60px" />
       <div>xxxx</div>
     </div>
 
-    <div @click="handelMetting">
+    <div>
       <van-image :src="mettingList" width="60px" height="60px" />
       <div>xxxxx</div>
     </div>
-
   </div>
   <!-- <van-tabs v-model:active="active" sticky> -->
   <!-- <van-tab title="会议记录"> -->
-  <div class="container">
+  <!-- //class="container" -->
+  <div>
     <!-- 波形绘制区域 -->
     <div v-if="isShow">
       <div style="padding-top: 5px">
-        <div style="vertical-align: bottom;">
-          <div style="height: 100px; width: 92%;margin: 0 20px;" class="recwave"></div>
+        <div style="vertical-align: bottom">
+          <div
+                  style="height: 70px; width: 92%; margin: 0 20px"
+                  class="recwave"
+          ></div>
         </div>
         <!-- //灰色的 计时器 -->
         <div
                 style="
-            margin:5px 20px;
+            margin: 5px 20px;
             height: 20px;
             width: 92%;
             display: inline-block;
@@ -60,7 +63,7 @@
         >
           <div
                   class="recpowerx"
-                  style="height: 20px; background: #0b1; position: absolute"
+                  style="height: 20px; background: #07c160; position: absolute"
           ></div>
           <div
                   class="recpowert"
@@ -70,9 +73,8 @@
       </div>
     </div>
 
-    <div v-if="list.length>0" class="scrollable-div">
+    <div v-if="list.length > 0" class="scrollable-div">
       <div class="list" v-for="item in list">
-
         <div class="left">
           <div class="time">{{ item.time }}</div>
           <div>{{ item.date }}</div>
@@ -88,9 +90,9 @@
         </div>
       </div>
     </div>
-    <div style="text-align: center" v-else>
-
+    <div style="text-align: center" v-if="list.length == 0 && isHide">
       <van-image :src="zanwupiaoju" width="300px" height="300px"></van-image>
+      <div>暂无录音</div>
     </div>
     <!-- <van-card
       num="2"
@@ -117,10 +119,10 @@
     </div> -->
     <!-- 按钮部分 -->
     <div class="round-button">
-      <div onclick="recOpen()">
+      <!-- <div onclick="recOpen()">
         <van-image :src="limits" width="50px" height="50px"></van-image>
         <div>打开权限</div>
-      </div>
+      </div> -->
       <div onclick="recStart()">
         <van-image :src="start" width="50px" height="50px"></van-image>
         <div>开始录音</div>
@@ -134,7 +136,7 @@
         <div>暂停录音</div>
       </div>
     </div>
-    <div class="cardTable">
+    <div class="cardTable" @click="handelMetting">
       <van-button type="primary" block round style="width: 92%; margin: 20px"
       >会议结束</van-button
       >
@@ -221,6 +223,28 @@
     <!--				<button onclick="recLocalDown()">本地下载</button>-->
     <!--			</span>-->
     <!--          </div>-->
+    <van-dialog
+            v-model:show="show"
+            :show-cancel-button="false"
+            :showConfirmButton="false"
+    >
+      <van-form @submit="onSubmit" style="padding: 20px" ref="formRef">
+        <van-cell-group inset>
+          <van-field
+                  v-model="username"
+                  name="会议标题"
+                  label="会议标题"
+                  placeholder="会议标题"
+                  :rules="[{ required: true, message: '请填写会议标题' }]"
+          />
+        </van-cell-group>
+        <div style="margin: 16px">
+          <van-button round block type="primary" native-type="submit">
+            提交
+          </van-button>
+        </div>
+      </van-form>
+    </van-dialog>
   </div>
   <!-- </van-tab> -->
   <!-- </van-tabs> -->
@@ -228,7 +252,7 @@
 
 <script setup lang="ts">
   // import logoIcon from "../../assets/img/avatar.jpeg";
-  import logoIcon from '../../assets/icon/szht_logo.png';
+  import logoIcon from "../../assets/icon/szht_logo.png";
   import zanwupiaoju from "../../assets/img/zanwupiaoju.png";
   import mettingList from "../../assets/img/mettingList.png";
   import start from "../../assets/img/start.png";
@@ -245,7 +269,21 @@
   import "recorder-core/src/engine/mp3-engine";
   // import router from "../../router";
   import { useRouter } from "vue-router";
-  const isShow = ref<Boolean>(false)
+  const isShow = ref<Boolean>(false);
+  const isHide = ref<Boolean>(true);
+  const show = ref(false);
+  const username = ref("");
+  const formRef = ref<any>(null); // 定义表单引用
+  const onSubmit = (values) => {
+    const valid = formRef.value.validate();
+    if (valid) {
+      // 如果验证通过，则执行页面跳转
+      // 请确保您已经设置好了Vue Router
+      router.push({
+        name: "metting",
+      });
+    }
+  };
   interface ListItem {
     time: string;
     date: string;
@@ -271,11 +309,17 @@
   let rec: any, wave: any, recBlob: any;
   //点击跳转到会议列表页面
   const handelMetting = () => {
-    console.log("点击了");
+    show.value = true;
+    // console.log("点击了");
+    // router.push({
+    //   name: "metting",
+    // });
+  };
+  const handelMettingList =()=>{
     router.push({
       name: "metting",
     });
-  };
+  }
   /**调用open打开录音请求好录音权限**/
   win.recOpen = function () {
     //一般在显示出录音按钮或相关的录音界面时进行此方法调用，后面用户点击开始录音时就能畅通无阻了
@@ -336,7 +380,8 @@
 
   /**开始录音**/
   win.recStart = function () {
-    isShow.value = true
+    isShow.value = true;
+    isHide.value = false;
     //打开了录音后才能进行start、stop调用
     if (rec && Recorder.IsOpen()) {
       recBlob = null;
@@ -371,7 +416,7 @@
       date: "2024/3/29",
       long: "00:00:14",
     });
-    isShow.value = false
+    isShow.value = false;
     if (!(rec && Recorder.IsOpen())) {
       console.log("未打开录音", 1);
       return;
@@ -549,7 +594,7 @@
     // margin-top: 20px;
     text-align: center;
     position: fixed;
-    bottom: 80px;
+    bottom: 60px;
   }
 
   .touxiangimg {
@@ -607,7 +652,7 @@
     text-align: center;
     font-size: 12px;
     position: fixed;
-    bottom: 150px;
+    bottom: 130px;
     width: 94%;
   }
   .footer {
@@ -636,7 +681,7 @@
     }
   }
   .scrollable-div {
-    max-height: 500px; /* 设置最大高度为300px */
+    max-height: 360px; /* 设置最大高度为300px */
     overflow-y: auto; /* 当内容超出高度时显示垂直滚动条 */
   }
 </style>
