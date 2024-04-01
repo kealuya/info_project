@@ -83,6 +83,14 @@ public class SpeechController {
     }
 
 
+    @Post
+    @Mapping("/getResult")
+    public Map getResult(String orderId, String orderId2) throws Exception {
+
+        return xfyunService.manualGetResult(orderId, orderId2);
+    }
+
+
     @Db
     KdxfSpeechDao kdxfSpeechDao;
 

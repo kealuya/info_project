@@ -18,6 +18,7 @@ import java.security.SignatureException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -132,6 +133,15 @@ public class XfyunService {
         while (true) {
             String response = HttpUtil.iflyrecGet(url);
             JsonParse jsonParse = gson.fromJson(response, JsonParse.class);
+            try {
+                // 很可能返回接口会发生错误，这部分忽略掉
+                Object j = jsonParse.content.orderInfo.status;
+            } catch (Exception e) {
+                log.warn("getResult接口调用错误::" + response, e);
+                continue;
+            }
+
+
             if (jsonParse.content.orderInfo.status == 4 || jsonParse.content.orderInfo.status == -1) {
 //                System.out.println("订单完成:" + response);
                 log.info("订单完成:" + orderId + "::" + getContentForNormal(jsonParse.content.orderResult));
@@ -164,10 +174,74 @@ public class XfyunService {
                 log.info("orderId::" + orderId + "::进行中...，状态为:" + jsonParse.content.orderInfo.status);
                 //建议使用回调的方式查询结果，查询接口有请求频率限制
                 Thread.sleep(7000);
-//                todo 在没有回调之前，此处需要有错误处理机制，在多少次请求后，如果还请求不到需要报错
+
+                /* todo 在没有回调之前，此处需要有错误处理机制，在多少次请求后，如果还请求不到需要报错
+                    或者提供一个 接口，一旦发生错误（就是无法返回翻译 后的文本），那么可以通过该接口直接请求url返回内容
+                */
             }
         }
     }
+
+
+    public Map manualGetResult(String orderId, String orderId2) throws Exception {
+        HashMap<String, Object> map = new HashMap<>(16);
+        // 此处的orderid 是 实际请求音频的订单，需要通过该订单获取新上传音频的翻译
+        map.put("orderId", orderId);
+
+        LfasrSignature lfasrSignature = new LfasrSignature(appid, keySecret);
+        map.put("signa", lfasrSignature.getSigna());
+        map.put("ts", lfasrSignature.getTs());
+        map.put("appId", appid);
+        map.put("resultType", "transfer,predict");
+        String paramString = HttpUtil.parseMapToPathParam(map);
+        String url = HOST + "/v2/api/getResult" + "?" + paramString;
+//        System.out.println("\nget_result_url:" + url);
+        log.info("\nget_result_url:" + url);
+
+
+        String response = HttpUtil.iflyrecGet(url);
+        JsonParse jsonParse = gson.fromJson(response, JsonParse.class);
+        if (jsonParse.content.orderInfo.status == 4 || jsonParse.content.orderInfo.status == -1) {
+            ;
+        } else {
+            Map<String, Object> m = new HashMap<>();
+            m.put("success", false);
+            m.put("msg", "进行中");
+            return m;
+        }
+        Integer maxNo = 0;
+        if (orderId2 == null) {
+            ;
+        } else {
+            SQLReady sqlReady = new SQLReady("select max(no) from kdxf_speech where order_id = ?", new Object[]{orderId2});
+            List<Integer> maxNoList = kdxfSpeechDao.getSQLManager().execute(sqlReady, Integer.class);
+            maxNo = maxNoList.get(0) + 1;
+        }
+
+
+        // 将语音转换信息存入db
+        KdxfSpeech ksForUpdate;
+        Object[] sqlParam;
+        if (orderId2 == null) {
+            sqlParam = new Object[]{orderId, 0};
+        } else {
+            sqlParam = new Object[]{orderId2, maxNo};
+        }
+        SQLReady sqlReady = new SQLReady("select * from kdxf_speech where order_id = ? and no = ?", sqlParam);
+        List<KdxfSpeech> listForSpeech = kdxfSpeechDao.getSQLManager().execute(sqlReady, KdxfSpeech.class);
+        ksForUpdate = listForSpeech.get(0);
+
+        ksForUpdate.setState(1); // 完成
+        ksForUpdate.setContent(getContentForNormal(jsonParse.content.orderResult));
+        ksForUpdate.setReal_duration(jsonParse.content.orderInfo.realDuration);
+        // 复合主键更新 cao
+        kdxfSpeechDao.updateTemplateById(ksForUpdate);
+        Map<String, Object> m = new HashMap<>();
+        m.put("success", true);
+        m.put("msg", "成功存入");
+        return m;
+    }
+
 
     public static void write(String resp) throws IOException {
         //将写入转化为流的形式
