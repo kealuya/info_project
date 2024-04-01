@@ -92,7 +92,9 @@ public class XfyunService {
 
     public void getResult(String orderId, String fileName, String orderId2) throws Exception {
         HashMap<String, Object> map = new HashMap<>(16);
+        // 此处的orderid 是 实际请求音频的订单，需要通过该订单获取新上传音频的翻译
         map.put("orderId", orderId);
+
         LfasrSignature lfasrSignature = new LfasrSignature(appid, keySecret);
         map.put("signa", lfasrSignature.getSigna());
         map.put("ts", lfasrSignature.getTs());
@@ -106,6 +108,7 @@ public class XfyunService {
         // 将语音转换信息存入db
 
         KdxfSpeech ks = new KdxfSpeech();
+        Integer maxNo = 0;
         if (orderId2 == null) {
             ks.setOrder_id(orderId);
             ks.setNo(0);
@@ -115,9 +118,9 @@ public class XfyunService {
             SQLReady sqlReady = new SQLReady("select max(no) from kdxf_speech where order_id = ?", new Object[]{orderId2});
             List<Integer> maxNoList = kdxfSpeechDao.getSQLManager().execute(sqlReady, Integer.class);
             if (maxNoList.size() != 1) {
-                throw new Exception("数据不正确::orderId::" + orderId + "::orderId2" + orderId2);
+                throw new Exception("数据不正确::orderId::" + orderId + "::orderId2::" + orderId2);
             }
-            Integer maxNo = maxNoList.get(0) + 1;
+            maxNo = maxNoList.get(0) + 1;
             ks.setNo(maxNo);
             ks.setOrder_id(orderId2);
         }
@@ -135,16 +138,24 @@ public class XfyunService {
 
                 // 将语音转换信息存入db
                 KdxfSpeech ksForUpdate;
+                Object[] sqlParam;
                 if (orderId2 == null) {
-                    ksForUpdate = kdxfSpeechDao.unique(orderId);
+                    sqlParam = new Object[]{orderId, 0};
                 } else {
-                    ksForUpdate = kdxfSpeechDao.unique(orderId2);
+                    sqlParam = new Object[]{orderId2, maxNo};
                 }
+                SQLReady sqlReady = new SQLReady("select * from kdxf_speech where order_id = ? and no = ?", sqlParam);
+                List<KdxfSpeech> listForSpeech = kdxfSpeechDao.getSQLManager().execute(sqlReady, KdxfSpeech.class);
+                if (listForSpeech.size() != 1) {
+                    throw new Exception("listForSpeech数据不正确::orderId::" + orderId + "::orderId2::" + orderId2);
+                }
+                ksForUpdate = listForSpeech.get(0);
 
                 ksForUpdate.setState(1); // 完成
                 ksForUpdate.setContent(getContentForNormal(jsonParse.content.orderResult));
                 ksForUpdate.setReal_duration(jsonParse.content.orderInfo.realDuration);
-                kdxfSpeechDao.updateById(ksForUpdate);
+                // 复合主键更新 cao
+                kdxfSpeechDao.updateTemplateById(ksForUpdate);
 //                System.out.println(getContentForNormal(jsonParse.content.orderResult));
 //                log.info("response:" + response);
 //                response:{"code":"000000","descInfo":"success","content":{"orderInfo":{"orderId":"DKHJQ20240328145032273GTx6Tc2agamHqLso","failType":11,"status":-1,"originalDuration":200,"realDuration":98026,"expireTime":1711867724584},"orderResult":""
@@ -153,6 +164,7 @@ public class XfyunService {
                 log.info("orderId::" + orderId + "::进行中...，状态为:" + jsonParse.content.orderInfo.status);
                 //建议使用回调的方式查询结果，查询接口有请求频率限制
                 Thread.sleep(7000);
+//                todo 在没有回调之前，此处需要有错误处理机制，在多少次请求后，如果还请求不到需要报错
             }
         }
     }

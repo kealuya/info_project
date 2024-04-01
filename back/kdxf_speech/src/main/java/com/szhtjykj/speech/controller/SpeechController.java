@@ -92,28 +92,32 @@ public class SpeechController {
     public String test(Context ctx) throws IOException {
 
 
-        System.out.println(ctx.param("param1"));
-        System.out.println(ctx.param("param2"));
-
-        SQLReady sqlReady = new SQLReady("select max(no) from kdxf_speech where order_id = ?", new Object[]{"66666"});
-        List<Integer> kl33 = kdxfSpeechDao.getSQLManager().execute(sqlReady, Integer.class);
-        System.out.println(kl33.get(0));
-
-
-//        KdxfSpeech ks = new KdxfSpeech();
-//        ks.setOrder_id("66666");
-//        ks.setDatetime(new Date());
-//        ks.setFile_name("sdfsdf");
-//        ks.setReal_duration(new Long(343434));
-//        ks.setState(1);
+//        kdxfSpeechDao.unique("DKHJQ20240329133151293huiOKZj2CY3pnEV5");
 //
-//        kdxfSpeechDao.insert(ks);
+//
+//        System.out.println(ctx.param("param1"));
+//        System.out.println(ctx.param("param2"));
+//
+//        SQLReady sqlReady = new SQLReady("select max(no) from kdxf_speech where order_id = ?", new Object[]{"66666"});
+//        List<Integer> kl33 = kdxfSpeechDao.getSQLManager().execute(sqlReady, Integer.class);
+//        System.out.println(kl33.get(0));
 
-        List<KdxfSpeech> kl = kdxfSpeechDao.execute("select * from kdxf_speech");
 
-        for (KdxfSpeech kk : kl) {
-            System.out.println(kk.getOrder_id());
-        }
+        KdxfSpeech ks = new KdxfSpeech();
+        ks.setOrder_id("66666");
+        ks.setDatetime(new Date());
+        ks.setFile_name("sdfsdf");
+//        ks.setNo(Long.valueOf(0));
+        ks.setReal_duration(new Long(343434));
+        ks.setState(1);
+
+        kdxfSpeechDao.insert(ks);
+
+//        List<KdxfSpeech> kl = kdxfSpeechDao.execute("select * from kdxf_speech");
+//
+//        for (KdxfSpeech kk : kl) {
+//            System.out.println(kk.getOrder_id());
+//        }
 
 
         return "ok";
