@@ -11,6 +11,8 @@ import java.util.Date;
 public class KdxfSpeech {
     @AssignID
     private String order_id;
+    @AssignID
+    private int no;
     private String file_name;
     private Integer state;
     private Date datetime;
