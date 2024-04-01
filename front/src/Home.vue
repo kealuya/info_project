@@ -7,7 +7,7 @@
 <!--        <van-tabbar-item icon="chat-o" name="message" :badge="store.unReadMessageNum==0?'':store.unReadMessageNum"-->
 <!--                         :to="{name:'message'}"  :replace="false">消息-->
 <!--        </van-tabbar-item>-->
-        <van-tabbar-item icon="records" name="book" :to="{name:'sparkV35'}" replace>智能问诊</van-tabbar-item>
+        <van-tabbar-item icon="records" name="book" :to="{name:'sparkV35'}" replace>申请办公</van-tabbar-item>
         <van-tabbar-item icon="apps-o" name="system" :to="{name:'speech'}" replace>会议记录</van-tabbar-item>
         <van-tabbar-item icon="friends-o" name="user" :to="{name:'user'}" replace>我的</van-tabbar-item>
     </van-tabbar>

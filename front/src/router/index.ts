@@ -41,11 +41,23 @@ const router = createRouter({
           name: 'sparkV35',
           component: () => import('../pages/sparkV35/index.vue'),
         },
-          //语音识别
+        //语音识别
         {
           path: '/speech',
           name: 'speech',
           component: () => import('../pages/speech/index.vue'),
+        },
+        //会议列表页面（新加）
+        {
+          path: '/metting',
+          name: 'metting',
+          component: () => import('../pages/metting/index.vue'),
+        },
+        //会议详情页面
+        {
+          path: '/mettingDetail',
+          name: 'mettingDetail',
+          component: () => import('../pages/mettingDetail/index.vue'),
         },
 
 
@@ -123,7 +135,7 @@ const router = createRouter({
       name: 'changePhone',
       component: () => import('../pages/changePhone/index.vue'),
     },
-      // 申请单详情
+    // 申请单详情
     {
       path:'/applicationDetail',
       name: 'applicationDetail',
@@ -150,19 +162,19 @@ const router = createRouter({
       name: 'dailyReimbursement',
       component: () => import('../pages/accountBook/dailyReimbursement.vue'),
     },
-      //账本----费用列表
+    //账本----费用列表
     {
       path: '/costInformationSelectionPage/:bill',
       name: 'costInformationSelectionPage',
       component: () => import('../pages/accountBook/costInformationSelectionPage.vue'),
     },
-      //账本-----发票列表
+    //账本-----发票列表
     {
       path: '/invoiceInformationList/:invoice',
       name: 'invoiceInformationList',
       component: () => import('../pages/accountBook/InvoiceInformationList.vue'),
     },
-      //记账单
+    //记账单
     {
       path: '/book',
       name: 'book',
@@ -179,13 +191,13 @@ const router = createRouter({
       name: 'IframePage',
       component: () => import('../pages/iframe/businessIframePage.vue'),
     },
-      //账户管理-----列表页
+    //账户管理-----列表页
     {
       path: '/manageAccounts/:bankType',
       name: 'manageAccounts',
       component: () => import('../pages/manageAccounts/index.vue'),
     },
-      //账户管理----绑定银行卡
+    //账户管理----绑定银行卡
     {
       path: '/bindBankCard/:accountObj/:isComponents',
       name: 'bindBankCard',
@@ -206,7 +218,7 @@ const router = createRouter({
       name: 'helpFeedback',
       component: () => import('../pages/helpFeedback/index.vue'),
     },
-      // 报销单
+    // 报销单
     {
       path: '/reimburse',
       name: 'reimburse',
@@ -265,7 +277,7 @@ const router = createRouter({
       name: 'leaveApply',
       component: () => import('../pages/application/form/leave/index.vue'),
     },
-      // 加班申请单
+    // 加班申请单
     {
       path:'/overWork',
       name: 'overWork',
@@ -283,7 +295,7 @@ const router = createRouter({
       name: 'openCard',
       component: () => import('../pages/application/form/openCard/index.vue'),
     },
-      // 物品领用
+    // 物品领用
     {
       path:'/requisition',
       name: 'requisition',
@@ -301,14 +313,14 @@ const router = createRouter({
       name: 'director',
       component: () => import('../pages/application/form/director/index.vue'),
     },
-      // 客户宴请
+    // 客户宴请
     {
       path:'/entertain',
       name: 'entertain',
       //@ts-ignore
       component: () => import('../pages/application/form/entertain/index.vue'),
     },
-      // 会议记录
+    // 会议记录
     {
       path:'/meeting',
       name: 'meeting',
@@ -343,14 +355,14 @@ const router = createRouter({
       //@ts-ignore
       component: () => import('../pages/enterpriseStatistics/index.vue'),
     },
-      // 费用申请
+    // 费用申请
     {
       path:'/cost',
       name: 'cost',
       //@ts-ignore
       component: () => import('../pages/application/form/cost/index.vue'),
     },
-      // 差旅补助报销
+    // 差旅补助报销
     {
       path:'/travel',
       name: 'travel',
@@ -363,7 +375,7 @@ const router = createRouter({
       name: 'reimburse',
       component: () => import('../pages/reimburse/index.vue'),
     },
-      // 用户协议
+    // 用户协议
     {
       path:'/userAgreement',
       name: 'userAgreement',
@@ -380,7 +392,7 @@ const router = createRouter({
       name: 'invoiceBilling',
       component: () => import('../pages/invoiceFolder/invoiceBillng/index.vue'),
     },
-      // 发票抬头信息
+    // 发票抬头信息
     {
       path: '/billingInfo',
       name: 'billingInfo',

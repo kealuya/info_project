@@ -1,23 +1,23 @@
 <template>
   <van-tabs v-model:active="active" sticky>
-    <van-tab title="智能问诊">
+    <van-tab title="申请办公">
       <div class="container">
 
         <!--第一部分 推荐 -->
         <div>
         <van-grid direction="horizontal" :column-num="3" class="cardTable">
           <van-grid-item  >
-            <div>问病情</div>
+            <div>外出办公</div>
           </van-grid-item>
           <van-grid-item  >
-            <div>问用药</div>
+            <div>在线办公</div>
           </van-grid-item>
           <van-grid-item  >
-            <div>问用药</div>
-          </van-grid-item>
+            <div>申请工单</div>
+          </van-grid-item><!--
           <van-grid-item  >
             <div>问用药</div>
-          </van-grid-item>
+          </van-grid-item>-->
         </van-grid>
         </div>
 
@@ -100,7 +100,7 @@ const alertMsg = () => {
   alert("提交问题")
 };
 
-const requestDataStr =ref("大是大非四大皆空发动机沙发上电极法受打击但是代付款适得府君书打卡机手打")
+const requestDataStr =ref("办公需要的设备有哪些？")
 const responseDataStr =ref("我不回答你不回答，大家都不回答")
 
 
