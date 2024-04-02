@@ -41,8 +41,6 @@
   <!-- <van-tab title="会议记录"> -->
   <!-- //class="container" -->
   <div>
-    <!-- 波形绘制区域 -->
-    <div v-if="isShow">
       <div style="padding-top: 5px">
         <div style="vertical-align: bottom">
           <div
@@ -71,7 +69,6 @@
           ></div>
         </div>
       </div>
-    </div>
 
     <div v-if="list.length > 0" class="scrollable-div">
       <div class="list" v-for="item in list">
@@ -260,7 +257,7 @@
   import stop from "../../assets/img/stop.png";
   import limits from "../../assets/img/limits.png";
 
-  import { ref, inject } from "vue";
+  import {ref, inject, onMounted} from "vue";
   import Recorder from "recorder-core"; //已包含recorder-core和mp3格式支持
   //可选的插件支持项 波形绘制的插件支持
   import "recorder-core/src/extensions/waveview";
@@ -320,6 +317,15 @@
       name: "metting",
     });
   }
+
+
+  onMounted(() => {
+    //打开页面，获取权限
+    win.recOpen()
+  })
+
+
+
   /**调用open打开录音请求好录音权限**/
   win.recOpen = function () {
     //一般在显示出录音按钮或相关的录音界面时进行此方法调用，后面用户点击开始录音时就能畅通无阻了
@@ -438,11 +444,14 @@
                       "字节，可以点击播放、上传了",
                       2
               );
+              win.recUpload()
+              console.log("自动上传文件啦=======");
             },
             function (msg: any) {
               console.log("录音失败:" + msg, 1);
             }
     );
+
   };
 
   /**播放**/
@@ -475,7 +484,7 @@
 
     //本例子假设使用原始XMLHttpRequest请求方式，实际使用中自行调整为自己的请求方式
     //录音结束时拿到了blob文件对象，可以用FileReader读取出内容，或者用FormData上传
-    var api = " ";
+    var api = "http://localhost:7001/v4/meeting/uploadMeetingAudioFile";
     var onreadystatechange = function (title: any) {
       return function () {
         if (xhr.readyState == 4) {
@@ -495,34 +504,35 @@
     };
     console.log("开始上传到" + api + "，请求稍后...");
 
-    /***方式一：将blob文件转成base64纯文本编码，使用普通application/x-www-form-urlencoded表单上传***/
-    var reader = new win.FileReader();
-    reader.onloadend = function () {
-      var postData = "";
-      postData += "mime=" + encodeURIComponent(blob.type); //告诉后端，这个录音是什么格式的，可能前后端都固定的mp3可以不用写
-      postData +=
-              "&upfile_b64=" +
-              encodeURIComponent(
-                      (/.+;\s*base64\s*,\s*(.+)$/i.exec(reader.result) || [])[1]
-              ); //录音文件内容，后端进行base64解码成二进制
-      //...其他表单参数
-
-      var xhr = new XMLHttpRequest();
-      xhr.open("POST", api);
-      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-      xhr.onreadystatechange = onreadystatechange("上传方式一【Base64】");
-      xhr.send(postData);
-    };
-    reader.readAsDataURL(blob);
+    // /***方式一：将blob文件转成base64纯文本编码，使用普通application/x-www-form-urlencoded表单上传***/
+    // var reader = new win.FileReader();
+    // reader.onloadend = function () {
+    //   var postData = "";
+    //   postData += "mime=" + encodeURIComponent(blob.type); //告诉后端，这个录音是什么格式的，可能前后端都固定的mp3可以不用写
+    //   postData +=
+    //           "&upfile_b64=" +
+    //           encodeURIComponent(
+    //                   (/.+;\s*base64\s*,\s*(.+)$/i.exec(reader.result) || [])[1]
+    //           ); //录音文件内容，后端进行base64解码成二进制
+    //   //...其他表单参数
+    //
+    //   var xhr = new XMLHttpRequest();
+    //   xhr.open("POST", api);
+    //   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    //   xhr.onreadystatechange = onreadystatechange("上传方式一【Base64】");
+    //   xhr.send(postData);
+    // };
+    // reader.readAsDataURL(blob);
 
     /***方式二：使用FormData用multipart/form-data表单上传文件***/
-    var form = new FormData();
-    form.append("upfile", blob, "recorder.mp3"); //和普通form表单并无二致，后端接收到upfile参数的文件，文件名为recorder.mp3
+    let form=new FormData();
+    let filename = "会议ID_"+new Date().getTime()+".mp3"
+    form.append("file",blob,filename); //和普通form表单并无二致，后端接收到file参数的文件，文件名为 "会议ID_"+new Date()+".mp3"
     //...其他表单参数
 
-    var xhr = new XMLHttpRequest();
+    let xhr=new XMLHttpRequest();
     xhr.open("POST", api);
-    xhr.onreadystatechange = onreadystatechange("上传方式二【FormData】");
+    xhr.onreadystatechange=onreadystatechange("上传方式二【FormData】");
     xhr.send(form);
   };
 

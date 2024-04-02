@@ -102,6 +102,13 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingAudioFile() {
 		flag = false
 	}
 
+	//拼接路径
+	audioFullPath := "/Users/zhanbaohua/webStorm_work/github.com/info_project/back/szyx_back/" + fpath
+	//调用的路径
+	logs.Info("调用路径" + audioFullPath)
+	//调用语音识别
+	common.DoHttpPost_Audio(audioFullPath)
+
 	if flag {
 		resJson.Success = true
 		resJson.Msg = "上传成功"

@@ -5,7 +5,6 @@ import (
 	_ "github.com/astaxie/beego/toolbox"
 	_ "szyx_back/configs"
 	_ "szyx_back/db/handler"
-	_ "szyx_back/db/redis"
 	_ "szyx_back/models"
 	_ "szyx_back/routers"
 )

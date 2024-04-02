@@ -1,8 +1,6 @@
 package redis
 
 import (
-	"fmt"
-	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/cache"
 	_ "github.com/astaxie/beego/cache/redis"
 	"github.com/astaxie/beego/logs"
@@ -11,22 +9,22 @@ import (
 
 var RedisCache cache.Cache
 
-func init() {
-	logs.Info("========redis连接初始化========")
-	redisHost := beego.AppConfig.String("RedisHost")
-	dataBase := beego.AppConfig.String("RedisDbNum")
-	/*password := beego.AppConfig.String("RedisPass")
-	redisKey := beego.AppConfig.String("RedisKey")
-	config := fmt.Sprintf(`{"key":"%s","conn":"%s","dbNum":"%s","password":"%s"}`, redisKey, redisHost, dataBase, password)
-	*/
-	var err error
-	config := fmt.Sprintf(`{"conn":"%s","dbNum":"%s"}`, redisHost, dataBase)
-	RedisCache, err = cache.NewCache("redis", config)
-	if err != nil || RedisCache == nil {
-		errMsg := "redis初始化失败"
-		logs.Error(errMsg)
-	}
-}
+//func init() {
+//	logs.Info("========redis连接初始化========")
+//	redisHost := beego.AppConfig.String("RedisHost")
+//	dataBase := beego.AppConfig.String("RedisDbNum")
+//	/*password := beego.AppConfig.String("RedisPass")
+//	redisKey := beego.AppConfig.String("RedisKey")
+//	config := fmt.Sprintf(`{"key":"%s","conn":"%s","dbNum":"%s","password":"%s"}`, redisKey, redisHost, dataBase, password)
+//	*/
+//	var err error
+//	config := fmt.Sprintf(`{"conn":"%s","dbNum":"%s"}`, redisHost, dataBase)
+//	RedisCache, err = cache.NewCache("redis", config)
+//	if err != nil || RedisCache == nil {
+//		errMsg := "redis初始化失败"
+//		logs.Error(errMsg)
+//	}
+//}
 
 /**
 缓存一个值
