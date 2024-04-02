@@ -7,7 +7,7 @@ import {userInfoData} from "../store";
 const router = createRouter({
   history: createWebHashHistory(),
   routes: [
-    { path: '/', redirect: '/home' },
+    { path: '/', redirect: '/sparkV35' },
     {
       path: '/home',
       name: '首页',
