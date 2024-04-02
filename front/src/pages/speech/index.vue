@@ -44,7 +44,7 @@
     <div style="padding-top: 5px">
       <div style="vertical-align: bottom">
         <div
-                style="height: 70px; width: 92%; margin: 0 20px"
+                style="height: 50px; width: 92%; margin: 0 20px"
                 class="recwave"
         ></div>
       </div>
@@ -53,7 +53,7 @@
               style="
             margin: 5px 20px;
             height: 20px;
-            width: 92%;
+            width: 88%;
             display: inline-block;
             vertical-align: bottom;
             position: relative;
@@ -93,9 +93,12 @@
         </div>
       </div>
     </div>
+    <!--    <van-empty description="描述文字">-->
+    <!--      <van-button round type="primary" class="bottom-button">按钮</van-button>-->
+    <!--    </van-empty>-->
     <div style="text-align: center" v-if="list.length == 0 && isHide">
-      <van-image :src="zanwupiaoju" width="300px" height="300px"></van-image>
-      <div>暂无录音</div>
+      <van-image :src="zanwupiaoju" width="200px" height="auto"></van-image>
+      <!--      <div class="empty">暂无录音</div>-->
     </div>
     <!-- <van-card
       num="2"
@@ -144,6 +147,7 @@
       >会议结束</van-button
       >
     </div>
+    <!--    <div style="height:60px"></div>-->
     <!-- <div>
       <van-row>
         <van-col span="8">
@@ -231,7 +235,7 @@
             :show-cancel-button="false"
             :showConfirmButton="false"
     >
-      <van-form @submit="onSubmit" style="padding: 20px" ref="formRef">
+      <van-form @submit="onSubmit" style="padding: 10px" ref="formRef">
         <van-cell-group inset>
           <van-field
                   v-model="username"
@@ -241,7 +245,10 @@
                   :rules="[{ required: true, message: '请填写会议标题' }]"
           />
         </van-cell-group>
-        <div style="margin: 16px">
+        <div style="margin: 16px;display:flex">
+          <van-button round block style="margin-right: 10px" @click="cancel">
+            取消
+          </van-button>
           <van-button round block type="primary" native-type="submit">
             提交
           </van-button>
@@ -256,7 +263,7 @@
 <script setup lang="ts">
   // import logoIcon from "../../assets/img/avatar.jpeg";
   import logoIcon from "../../assets/icon/szht_logo.png";
-  import zanwupiaoju from "../../assets/img/zanwupiaoju.png";
+  import zanwupiaoju from "../../assets/img/empty.png";
   import mettingList from "../../assets/img/mettingList.png";
   import start from "../../assets/img/start.png";
   import deletePng from '../../assets/img/delete.png'
@@ -310,7 +317,9 @@
       });
     }
   };
-
+  const cancel = ()=>{
+    show.value = false
+  }
 
   // const over = () => {
   //   list.value.push({
@@ -648,7 +657,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
+    padding: 10px;
     .left {
       display: flex;
       .information {
@@ -668,7 +677,7 @@
   .metting {
     display: flex;
     justify-content: space-around;
-    margin: 30px 0;
+    margin: 10px 0;
     text-align: center;
     font-size: 12px;
     // justify-content: center;
@@ -676,7 +685,7 @@
   .round-button {
     display: flex;
     justify-content: space-around;
-    margin: 20px;
+    margin: 10px;
     text-align: center;
     font-size: 12px;
     position: fixed;
@@ -709,7 +718,11 @@
     }
   }
   .scrollable-div {
-    max-height: 360px; /* 设置最大高度为300px */
+    max-height: 28vh; /* 设置最大高度为300px */
     overflow-y: auto; /* 当内容超出高度时显示垂直滚动条 */
+  }
+  .empty{
+    font-size: 12px;
+    color: #999a9e;
   }
 </style>

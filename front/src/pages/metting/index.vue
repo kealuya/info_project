@@ -9,13 +9,13 @@
     <van-search v-model="value" placeholder="会议名称、会议号、发起人" />
     <div @click="toDetail">
         <div class="data">
-            <div>3月29日 周五</div>
+            <div class="year">3月29日 周五</div>
             <div class="year">2024年</div>
         </div>
         <div class="list">
             <div class="list_left">
-                <div>251 963 045</div>
-                <div class="f-w-14">特邀会议</div>
+                <div class="div-bottom">{{number}}</div>
+                <div class="f-w-14 div-bottom">特邀会议</div>
                 <div><span>时间：16：55</span><span style="margin-left: 20px;">发起人：L。</span></div>
             </div>
             <div class="list_right">
@@ -25,13 +25,13 @@
     </div>
     <div @click="toDetail">
         <div class="data">
-            <div>3月30日 周六</div>
+            <div class="year">3月30日 周六</div>
             <div class="year">2024年</div>
         </div>
         <div class="list">
             <div class="list_left">
-                <div>251 963 046</div>
-                <div class="f-w-14">网络研讨会</div>
+                <div class="div-bottom">{{number}}</div>
+                <div class="f-w-14 div-bottom">网络研讨会</div>
                 <div><span>时间：16：55</span><span style="margin-left: 20px;">发起人：L。</span></div>
             </div>
             <div class="list_right">
@@ -41,13 +41,13 @@
     </div>
     <div @click="toDetail">
         <div class="data">
-            <div>3月31日 周日</div>
+            <div class="year">3月31日 周日</div>
             <div class="year">2024年</div>
         </div>
         <div class="list">
             <div class="list_left">
-                <div>251 963 047</div>
-                <div class="f-w-14">L.的快速会议</div>
+                <div class="div-bottom">{{number}}</div>
+                <div class="f-w-14 div-bottom">L.的快速会议</div>
                 <div><span>时间：16：55</span><span style="margin-left: 20px;">发起人：L。</span></div>
             </div>
             <div class="list_right">
@@ -62,6 +62,7 @@
     import { useRouter } from 'vue-router';
     const router = useRouter()
     const value = ref('')
+    const number = ref<number>()
     // const list = ref([])
     const onClickLeft = () => history.back();
     const toDetail = ()=>{
@@ -69,12 +70,25 @@
             name:'mettingDetail'
         })
     }
+    const date = new Date();
+    const year = date.getFullYear(); // 年
+    const month = date.getMonth() + 1; // 月份从0开始，所以要加1
+    const day = date.getDate(); // 日
+    const hours = date.getHours(); // 小时
+    const minutes = date.getMinutes(); // 分钟
+    const seconds = date.getSeconds(); // 秒
+
+    // 将年月日时分秒组合成一个数字
+    const combinedNumber = parseInt(`${year}${month}${day}${hours}${minutes}${seconds}`);
+
+    console.log(combinedNumber); // 输出合并后的数字时间]
+    number.value = combinedNumber
 </script>
 <style lang="less">
     .data{
         display: flex;
         justify-content: space-between;
-        padding: 20px;
+        padding: 10px;
         .year{
             color: #999a9e;
         }
@@ -88,8 +102,8 @@
         .list_left{
             font-size: 14px;
             color: #999a9e;
-            div{
-                margin-bottom: 10px;
+            .div-bottom{
+                margin-bottom: 8px;
             }
             .f-w-14{
                 font-size: 16px;
