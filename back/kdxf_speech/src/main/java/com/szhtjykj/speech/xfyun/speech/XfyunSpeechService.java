@@ -1,11 +1,11 @@
-package com.szhtjykj.speech.xfyun;
+package com.szhtjykj.speech.xfyun.speech;
 
 import cn.hutool.json.JSONUtil;
 import com.google.gson.Gson;
 import com.szhtjykj.speech.dao.KdxfSpeechDao;
 import com.szhtjykj.speech.model.KdxfSpeech;
-import com.szhtjykj.speech.xfyun.sign.LfasrSignature;
-import com.szhtjykj.speech.xfyun.utils.HttpUtil;
+import com.szhtjykj.speech.xfyun.speech.sign.LfasrSignature;
+import com.szhtjykj.speech.xfyun.speech.utils.HttpUtil;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.beetl.sql.core.SQLReady;
 import org.beetl.sql.solon.annotation.Db;
@@ -23,14 +23,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Component
-public class XfyunService {
+public class XfyunSpeechService {
 
     private static final String HOST = "https://raasr.xfyun.cn";
     private static final String appid = "60f7d982";
     private static final String keySecret = "06af4e9a1a3cf5c55d85295d9b0476bd";
 
     private static final Gson gson = new Gson();
-    static Logger log = LoggerFactory.getLogger(XfyunService.class);
+    static Logger log = LoggerFactory.getLogger(XfyunSpeechService.class);
 
 
     private static ExecutorService executor = Executors.newFixedThreadPool(10); // 创建一个固定大小为10的线程池

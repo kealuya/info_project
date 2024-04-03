@@ -1,4 +1,4 @@
-package com.szhtjykj.speech.xfyun.utils;
+package com.szhtjykj.speech.xfyun.speech.utils;
 
 
 import javax.crypto.Mac;

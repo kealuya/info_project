@@ -3,8 +3,7 @@ package com.szhtjykj.speech.controller;
 import com.google.gson.Gson;
 import com.szhtjykj.speech.dao.KdxfSpeechDao;
 import com.szhtjykj.speech.model.KdxfSpeech;
-import com.szhtjykj.speech.xfyun.XfyunService;
-import org.beetl.sql.core.SQLReady;
+import com.szhtjykj.speech.xfyun.speech.XfyunSpeechService;
 import org.beetl.sql.solon.annotation.Db;
 import org.noear.solon.Solon;
 import org.noear.solon.annotation.Controller;
@@ -22,7 +21,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -38,13 +36,13 @@ public class SpeechController {
     }
 
     @Inject
-    XfyunService xfyunService;
+    XfyunSpeechService xfyunService;
 
 
     //文件上传
     @Post
     @Mapping("/uploadAudio")
-    public Map uploadAudio(Context ctx, UploadedFile file) throws IOException { //表单变量名要跟参数名对上
+    public Map uploadAudio(Context ctx, UploadedFile file) { //表单变量名要跟参数名对上
 
         // 在传orderId的场合，视为多语音属于共同会议
         String orderId2 = ctx.param("orderId");
@@ -72,7 +70,11 @@ public class SpeechController {
             return returnMap;
         } finally {
             //用完之后，删除"可能的"临时文件 //v2.7.2 后支持
-            file.delete();
+            try {
+                file.delete();
+            } catch (IOException e) {
+                ;//无需处理
+            }
         }
         returnMap.put("success", "true");
         returnMap.put("msg", "");
