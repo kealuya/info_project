@@ -6,6 +6,8 @@ import (
 	"github.com/astaxie/beego/logs"
 	"path"
 	"szyx_back/common"
+	"szyx_back/configs"
+	"szyx_back/entity/kdxf"
 	"szyx_back/entity/meeting"
 	"szyx_back/models"
 )
@@ -61,6 +63,7 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingAudioFile() {
 
 	defer func() {
 		MeetingCtrl.Data["json"] = resJson
+		logs.Warn(resJson)
 		MeetingCtrl.ServeJSON()
 	}()
 
@@ -103,13 +106,22 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingAudioFile() {
 	}
 
 	//拼接路径
-	audioFullPath := "/Users/zhanbaohua/webStorm_work/github.com/info_project/back/szyx_back/" + fpath
+	//audioFullPath := "/Users/zhanbaohua/webStorm_work/github.com/info_project/back/szyx_back/" + fpath
+	//audioFullPath := "/Users/zhanbaohua//github.com/info_project/back/kdxf_speech/src/main/audio/合成音频.wav"
+	//audioFullPath := "/Users/zhanbaohua/Downloads/demo/audio/3344555.m4a"
+	audioFullPath := configs.FILE_UPLOAD_URL + h.Filename
 	//调用的路径
 	logs.Info("调用路径" + audioFullPath)
-	//调用语音识别
-	common.DoHttpPost_Audio(audioFullPath)
+	////调用语音识别
+	responseStr := common.DoHttpPost_Audio(audioFullPath, h.Filename)
 
-	if flag {
+	kdxf_audio_result := new(kdxf.Kdxf_audio_result)
+	common.Unmarshal([]byte(responseStr), &kdxf_audio_result)
+
+	if flag && kdxf_audio_result.Success == "true" {
+		resJson.Success = true
+		resJson.Msg = "上传成功,会议纪要已生成"
+	} else if flag {
 		resJson.Success = true
 		resJson.Msg = "上传成功"
 	} else {

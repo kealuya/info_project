@@ -22,7 +22,7 @@ var InvoiceImgUrl = "http://XXXXXXXXX/invocr/loadImage"
 var InvoiceByIDUrl = "http://XXXXXXXXX/invManage/invDetails"
 
 //PDF文件地址转OBS中间件地址
-var PDFTojpgObsUrl = "http://124.70.111.57:10009/v1/openApi/pdfTojpgObs"
+var PDFTojpgObsUrl = "http://XXXXXXXXX/v1/openApi/pdfTojpgObs"
 
 //网报上传图片base64
 var UploadBase64 = "http://XXXXXXXXX/file/uploadBase64"
