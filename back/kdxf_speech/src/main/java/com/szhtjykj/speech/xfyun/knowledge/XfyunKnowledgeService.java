@@ -38,25 +38,21 @@ public class XfyunKnowledgeService {
     KdxfSpeechDao kdxfSpeechDao;
     @Db
     KdxfKnowledgeDao kdxfKnowledgeDao;
-    private static String AUDIO_FILE_PATH;
     static Logger log = LoggerFactory.getLogger(XfyunKnowledgeService.class);
 
     static {
-        AUDIO_FILE_PATH = Solon.cfg().get("server.audio.save.path");
+        String AUDIO_FILE_PATH = Solon.cfg().get("server.audio.save.path");
     }
 
-    private static ExecutorService executor = Executors.newFixedThreadPool(10); // 创建一个固定大小为10的线程池
+    private static final ExecutorService executor = Executors.newFixedThreadPool(10); // 创建一个固定大小为10的线程池
 
     public void makeSummaryAndMeeting(String orderId, String fileId) throws Exception {
-
 
         // 提交任务给线程池执行
         executor.submit(() -> {
             // 处理文件的逻辑
             try {
-
                 while (true) {
-
                     UploadResp ur = chatDocUtil.summary(startSummaryUrl, fileId, appId, secret);
                     if (!ur.isFlag() && ur.getCode() == -1) {
                         log.info("orderId::" + orderId + "  fileId::" + fileId + "::进行中...，状态为:向量化中...");
@@ -65,49 +61,59 @@ public class XfyunKnowledgeService {
                         continue;
                     }
 
-                    if (ur.isFlag() && ur.getData().getSummaryStatus() == "summarying") {
+                    if (ur.isFlag() && ur.getCode() == 0) {
+                        log.info("orderId::" + orderId + "  fileId::" + fileId + "::进行中...，状态为:提交文档总结成功...");
+                        break;
+                    }
+                }
+
+                while (true) {
+
+                    UploadResp ur = chatDocUtil.summary(fileSummaryUrl, fileId, appId, secret);
+
+                    if (ur.isFlag() && "unsummary".equals(ur.getData().getSummaryStatus())) {
+                        log.info("orderId::" + orderId + "  fileId::" + fileId + "::进行中...，状态为:文档没有被申请总结...");
+                        //建议使用回调的方式查询结果，查询接口有请求频率限制
+                        Thread.sleep(5000);
+                        continue;
+                    }
+                    if (ur.isFlag() && "summarying".equals(ur.getData().getSummaryStatus())) {
                         log.info("orderId::" + orderId + "  fileId::" + fileId + "::进行中...，状态为:文档总结中...");
                         //建议使用回调的方式查询结果，查询接口有请求频率限制
                         Thread.sleep(5000);
                         continue;
                     }
 
-                    if (ur.isFlag() && ur.getData().getSummaryStatus() == "done") {
+                    if (ur.isFlag() && "done".equals(ur.getData().getSummaryStatus())) {
                         log.info("orderId::" + orderId + "  fileId::" + fileId + "::处理完成，状态为:文档总结完成...");
 
                         KdxfKnowledge knowledge = new KdxfKnowledge();
                         knowledge.setOrder_id(orderId);
+                        knowledge.setFile_id(fileId);
                         knowledge.setState(1);
                         knowledge.setSummary(ur.getData().getSummary());
                         kdxfKnowledgeDao.updateTemplateById(knowledge);
-
                         return;
                     }
-
-
                 }
-
-
             } catch (Exception e) {
-                log.error("获取音频翻译发生错误::", e);
+                log.error("获取文档总结发生错误::", e);
 
-                // 将语音转换信息存入db
-                KdxfSpeech ksForUpdate = new KdxfSpeech();
-                ksForUpdate.setOrder_id(orderId);
-                ksForUpdate.setState(2); // 错误
-                ksForUpdate.setComment(e.getMessage());
-                kdxfSpeechDao.updateById(ksForUpdate);
+                KdxfKnowledge knowledge = new KdxfKnowledge();
+                knowledge.setOrder_id(orderId);
+                knowledge.setFile_id(fileId);
+                knowledge.setState(2);
+                knowledge.setComment(e.toString());
+                kdxfKnowledgeDao.updateTemplateById(knowledge);
             }
         });
-
-
     }
 
 
     public String uploadFile(String orderId) throws Exception {
 
         List<KdxfSpeech> ksList = kdxfSpeechDao.getSpeechByOrderId(orderId);
-        if (ksList.size() == 0) {
+        if (ksList.isEmpty()) {
             throw new Exception("orderId检索不到数据::" + orderId);
         }
         StringBuffer sb = new StringBuffer();

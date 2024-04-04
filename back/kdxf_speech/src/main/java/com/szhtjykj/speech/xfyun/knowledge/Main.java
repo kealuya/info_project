@@ -1,6 +1,9 @@
 package com.szhtjykj.speech.xfyun.knowledge;
 
+import com.szhtjykj.speech.xfyun.knowledge.dto.UploadResp;
 import com.szhtjykj.speech.xfyun.knowledge.util.ChatDocUtil;
+
+import java.io.IOException;
 
 /**
  * Test
@@ -18,21 +21,30 @@ public class Main {
     private static final String appId = "60f7d982";
     private static final String secret = "NGM3ZDYwMzdiNWRhMTIyMTg0OWZkNzUw";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         ChatDocUtil chatDocUtil = new ChatDocUtil();
 //         1、上传
-//        UploadResp uploadResp = chatDocUtil.upload(Main.class.getResource("/").getPath() + "meeting.txt", uploadUrl, appId, secret);
+//        UploadResp uploadResp = chatDocUtil.upload("C:\\Users\\kealuya\\myCoding\\info_project\\back\\kdxf_speech\\src\\main\\output\\knowledge.txt", uploadUrl, appId, secret);
 //        System.out.println("请求sid=" + uploadResp.getSid());
 //        System.out.println("文件id=" + uploadResp.getData().getFileId());
 
         // 2、问答，上传文件状态为vectored时才可以问答，文件状态可以调用【文档状态查询】接口查询
 
-        String fileId = "dc20dceba1794998b00af3e4d896a077";
-            String question = "请按照会议纪要的形式进行返回，并且尽可能详细";
-        chatDocUtil.chat(chatUrl, fileId, question, appId, secret);
+//        String fileId = "dc20dceba1794998b00af3e4d896a077";
+//            String question = "请按照会议纪要的形式进行返回，并且尽可能详细";
+//        chatDocUtil.chat(chatUrl, fileId, question, appId, secret);
 
-//        chatDocUtil.fileSummary(startSummaryUrl, "dc20dceba1794998b00af3e4d896a077", appId, secret);
-//        chatDocUtil.fileSummary(fileSummaryUrl, "dc20dceba1794998b00af3e4d896a077", appId, secret);
+//        String file = uploadResp.getData().getFileId();
+        String file = "8738c347720640fbb32d201ef76e1e16";
+
+//        UploadResp ur1 = chatDocUtil.summary(startSummaryUrl, file, appId, secret);
+//        System.out.print("startSummaryUrl::");
+//        System.out.println(ur1);
+
+
+        UploadResp ur2 = chatDocUtil.summary(fileSummaryUrl, file, appId, secret);
+        System.out.print("fileSummaryUrl::");
+        System.out.println(ur2.getData());
 /*
 {"flag":true,"code":0,"desc":null,"data":{"summaryStatus":"summarying"},"sid":"56c93cac012d48a68fb2307fa726fb48"}
  */

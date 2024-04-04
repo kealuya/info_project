@@ -24,25 +24,29 @@ public class KnowledgeController {
     XfyunKnowledgeService xfyunKnowledgeService;
 
 
-//    //文件上传
-//    @Post
-//    @Mapping("/uploadAudio")
-//    public Map uploadAudio(Context ctx) {
-//        String orderId = ctx.param("orderId");
-//        Map<String, Object> returnMap = new HashMap<>();
-//        try {
-//            String fileId = xfyunKnowledgeService.uploadFile(orderId);
-//
-//
-//        } catch (Exception e) {
-//            log.error("发生错误::", e);
-//
-//            returnMap.put("success", "false");
-//            returnMap.put("msg", e.toString());
-//
-//            return returnMap;
-//        }
-//    }
+    //通过获取已经翻译成文字的会议内容，生成概要
+    @Post
+    @Mapping("/convertAudioToSummary")
+    public Map convertAudioToSummary(Context ctx) {
+        String orderId = ctx.param("orderId");
+        Map<String, Object> returnMap = new HashMap<>();
+        try {
+            String fileId = xfyunKnowledgeService.uploadFile(orderId);
+            xfyunKnowledgeService.makeSummaryAndMeeting(orderId,fileId);
+
+            returnMap.put("success", true);
+            returnMap.put("msg", "申请成功");
+
+            return returnMap;
+        } catch (Exception e) {
+            log.error("发生错误::", e);
+
+            returnMap.put("success", false);
+            returnMap.put("msg", e.toString());
+
+            return returnMap;
+        }
+    }
 
 
 }

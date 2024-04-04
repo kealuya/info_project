@@ -42,7 +42,8 @@ public class SpeechController {
     //文件上传
     @Post
     @Mapping("/uploadAudio")
-    public Map uploadAudio(Context ctx, UploadedFile file) { //表单变量名要跟参数名对上
+    public Map uploadAudio(Context ctx, UploadedFile file) {
+        //表单变量名要跟参数名对上
 
         // 在传orderId的场合，视为多语音属于共同会议
         String orderId2 = ctx.param("orderId");
@@ -64,7 +65,7 @@ public class SpeechController {
         } catch (Exception e) {
             log.error("音频上传发生错误::", e);
 
-            returnMap.put("success", "false");
+            returnMap.put("success", false);
             returnMap.put("msg", e.toString());
 
             return returnMap;
@@ -76,7 +77,7 @@ public class SpeechController {
                 ;//无需处理
             }
         }
-        returnMap.put("success", "true");
+        returnMap.put("success", true);
         returnMap.put("msg", "");
         returnMap.put("orderId", orderId);
         returnMap.put("fileName", tempFileName);

@@ -131,6 +131,7 @@ public class ChatDocUtil {
         Response response = okHttpClient.newCall(request).execute();
         if (Objects.equals(response.code(), 200)) {
             String respBody = response.body().string();
+            // System.out.println(respBody);
             return JSONUtil.toBean(respBody, UploadResp.class);
         } else {
             return null;
