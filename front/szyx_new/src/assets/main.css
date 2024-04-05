@@ -1,0 +1,223 @@
+html, body{
+    /*background-color: #f9f9f9;*/
+    background: #F2F2F6;
+    height: 100%;
+}
+.pl5{
+    padding-left: 5px;
+}
+.pl10{
+    padding-left: 10px;
+}
+.pl15{
+    padding-left: 15px;
+}
+.pl20{
+    padding-left: 20px;
+}
+.p5{
+    padding: 5px;
+}
+.p10{
+    padding: 10px;
+}
+.p15{
+    padding: 15px;
+}
+.p20{
+    padding: 20px;
+}
+.red{
+    color:red;
+}
+.f_white {
+    color: white;
+}
+.font_gray {
+    color: rgba(153, 153, 153, 1);
+}
+.font_blue{
+    color:#0088ff;
+}
+.tc {
+    text-align: center;
+}
+.tr {
+    text-align: right;
+}
+.tl{
+    text-align: left;
+}
+.f10{
+    font-size: 10px;
+}
+.f12 {
+    font-size: 12px;
+}
+.f14 {
+    font-size: 14px;
+}
+.f16 {
+    font-size: 16px;
+}
+.f18 {
+    font-size: 18px;
+}
+.f20 {
+    font-size: 20px;
+}
+.f22 {
+    font-size: 22px;
+}
+.f26{
+    font-size: 26px;
+}
+.flex-row {
+    display: flex;
+    flex-direction: row;
+}
+.flex-wrap {
+    flex-wrap: wrap;
+}
+.flex-row-space {
+    align-items: center;
+    justify-content: space-between;
+}
+.flex-row-c {
+    align-items: center;
+    justify-content: center;
+}
+.ml10 {
+    margin-left: 10px;
+}
+.ml20 {
+    margin-left: 20px;
+}
+.ml15 {
+    margin-left: 15px;
+}
+.ml5 {
+    margin-left: 5px;
+}
+.mr5 {
+    margin-right: 5px;
+}
+.mr10 {
+    margin-right: 10px;
+}
+.mr20 {
+    margin-right: 20px;
+}
+.mr25 {
+    margin-right: 25px;
+}
+.mr15 {
+    margin-right: 15px;
+}
+.mt10 {
+    margin-top: 10px;
+}
+.mb10 {
+    margin-bottom: 10px;
+}
+.mt20 {
+    margin-top: 20px;
+}
+.mt15 {
+    margin-top: 15px;
+}
+.mt5 {
+    margin-top: 5px;
+}
+.mb5 {
+    margin-bottom: 5px;
+}
+.p10 {
+    padding: 10px;
+}
+.p8 {
+    padding: 8px;
+}
+.pb10 {
+    padding-bottom: 10px;
+}
+.pb20 {
+    padding-bottom: 20px;
+}
+.pr5 {
+    padding-right: 5px;
+}
+.pl25{
+    padding-left: 25px;
+}
+.pl15{
+    padding-left: 15px;
+}
+.pt10{
+    padding-top: 10px;
+}
+.m10 {
+    margin: 10px;
+}
+.mt15{
+    margin-top: 15px;
+}
+.bold{
+    font-weight: bold;
+}
+.graytxt{
+    font-weight: normal;
+    color:rgba(23,26,29,0.40);
+}
+.card{
+    margin: 8px 15px;
+    padding: 10px 10px;
+    background: #FFFFFF;
+    /*box-shadow: 0px 8px 16px 0px rgba(153,153,153,0.2);*/
+    border-radius: 12px 12px 12px 12px;
+}
+.money{
+    color: #FF9200;
+    font-size: 14px;
+}
+.title{
+    color: #171A1D;
+    font-size: 14px;
+    font-weight: bolder;
+    /* 强制不换行 */
+    white-space: nowrap;
+    /* 匀速溢出内容，隐藏 */
+    overflow: hidden;
+    /* 文字用省略号代替超出的部分 */
+    text-overflow: ellipsis;
+}
+.van-nav-bar__text{
+    color: #171A1D;
+}
+.van-nav-bar .van-icon{
+    color: #171A1D;
+}
+:root{
+    --van-calendar-confirm-button-height:44px!important;
+}
+.line{
+    padding: 0 5px;
+    margin: 10px 5px;
+    border-bottom: 2px dashed rgba(126,134,142,0.16);
+}
+.line2{
+    padding: 0 20px; margin: 10px 15px;border-bottom: 2px dashed #EFE9DF
+}
+.orange{
+    color: #FA6131;
+}
+p {
+    margin: 0;
+    padding: 0;
+}
+.content_center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}

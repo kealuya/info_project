@@ -1,0 +1,145 @@
+<template>
+    <div style="background: #FFFFFF">
+        <van-row>
+            <NavBar :title="'账本'" :leftText="'返回'" :leftArrow="true" :rightText="'确定'" @leftEvent="back()"
+                    @rightEvent="submit()"/>
+        </van-row>
+        <van-row style="margin-top: 8px;margin-bottom: 8px;">
+            <van-checkbox-group v-model="checked" style="margin-left: 10px">
+                <div v-for="(item,index) in cardList">
+                    <van-checkbox :name="item.billId">
+                        <van-col span="21">
+                            <div class="cardList" :style="{width:cardWidth-20+'px'}">
+                                <div :style="{width:cardWidth-20+'px',minHeight:'30px',marginTop:'10px',marginLeft:'10px'}">
+                                    <van-row>
+                                        <van-col span="15" class="fw800 f14 pt5">
+                                            {{item.expenseTypeName}}
+                                        </van-col>
+                                        <van-col span="9" class="money fw800">
+                                            ￥{{item.money}}
+                                        </van-col>
+                                    </van-row>
+                                    <van-row justify="left" class="pt10 pb10">
+                                        <van-icon name="balance-list" color="#1989fa" class="mt3"/>
+                                        <div class="f14 pl5">{{item.expenseTypeName}}</div>
+                                        <van-icon name="clock" color="#FB5632" class="pl5 mt3"/>
+                                        <div class="f14 pl5 mt3">{{item.occurrenceTime}}</div>
+                                    </van-row>
+                                </div>
+                            </div>
+                        </van-col>
+                    </van-checkbox>
+                </div>
+            </van-checkbox-group>
+        </van-row>
+    </div>
+</template>
+
+<script setup lang="ts">
+    import {ref, onMounted, onBeforeMount, inject} from 'vue'
+    import {getAccountBookList} from "../../services/accountBook"
+    import route from "../../router";
+
+    let realWidth = window.document.documentElement.offsetWidth
+    let cardWidth = window.document.documentElement.offsetWidth - 30
+    const page = ref(1)
+    const pageSize = ref(8)
+    const total = ref(0)
+    let userInfoData: any = inject("userInfo");
+    const cardList = ref([])
+    const checked = ref([])
+    // const router = useRouter()
+    const bookMessage = ref({})
+
+    onBeforeMount(() => {
+        getAccountBookListMth()
+
+    })
+    onMounted(() => {
+        if (route.currentRoute.value.params.bill) {
+            let billList = JSON.parse(route.currentRoute.value.params.bill as never)
+
+            let idList: any[] = []
+            billList.map((item: any) => {
+                idList.push(item.billId)
+            })
+            checked.value = idList as never
+        }
+    })
+
+
+    function back() {
+
+        route.go(-1)
+    }
+
+    function submit() {
+        let costList: any[] = []
+        cardList.value.map((item: any) => {
+            if (checked.value.indexOf(item.billId as never) != -1) {
+                costList.push(item)
+            }
+        })
+        let bookAccountMessage = {
+            identifying: 'costInformation',
+            bill: costList
+        }
+
+        route.push({
+            name: 'dailyReimbursement',
+            params: {
+                bill: JSON.stringify(bookAccountMessage)
+            },
+        })
+    }
+
+    function clickRadio(item: any) {
+        bookMessage.value = item
+    }
+
+    async function getAccountBookListMth() {
+        let param = {
+            page: page.value,
+            pageSize: pageSize.value,
+            keyWord: "",
+            empCode: userInfoData.empCode,
+            expenseTypeName: "",
+            occurrenceTime: "",
+            state: "0",
+            corpCode: userInfoData.corpCode
+        }
+        let res: any = await getAccountBookList(param)
+        if (res.success) {
+            cardList.value = res.data.list
+            total.value = res.data.total
+        }
+    }
+</script>
+
+<style lang="less" scoped>
+
+    .mlp4 {
+        margin-left: 4%;
+    }
+
+    .fw800 {
+        font-weight: 800;
+    }
+
+    .cardList {
+        /*margin-left: 2%;*/
+        /*margin-right: 2%;*/
+        /*width: 200px;*/
+        border: 1px solid #1989fa;
+        min-height: 30px;
+        border-radius: 3px;
+        margin-top: 10px;
+        /*background: #FFFFFF*/
+    }
+
+    .mt3 {
+        margin-top: 3px;
+
+    }
+
+</style>
