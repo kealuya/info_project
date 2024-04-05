@@ -8,17 +8,21 @@ import com.szhtjykj.speech.model.KdxfSpeech;
 import com.szhtjykj.speech.xfyun.knowledge.dto.UploadResp;
 import com.szhtjykj.speech.xfyun.knowledge.util.ChatDocUtil;
 import com.szhtjykj.speech.xfyun.speech.XfyunSpeechService;
+import org.beetl.sql.core.SQLReady;
 import org.beetl.sql.solon.annotation.Db;
 import org.noear.solon.Solon;
 import org.noear.solon.annotation.Component;
+import org.noear.solon.data.annotation.Tran;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.datatype.Duration;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -34,6 +38,8 @@ public class XfyunKnowledgeService {
     private static final String appId = "60f7d982";
     private static final String secret = "NGM3ZDYwMzdiNWRhMTIyMTg0OWZkNzUw";
     private static final ChatDocUtil chatDocUtil = new ChatDocUtil();
+
+    public static final String QUESTION_MEETING_MUNIT = "请按照会议纪要的格式返回详细的会议内容，并且不需要其他描述语言，只需要会议纪要";
     @Db
     KdxfSpeechDao kdxfSpeechDao;
     @Db
@@ -156,5 +162,20 @@ public class XfyunKnowledgeService {
             }
         }
     }
+
+    @Tran
+    public String chatByOrderId(String orderId, String question)  {
+
+        KdxfKnowledge kk = kdxfKnowledgeDao.unique(orderId);
+        CompletableFuture<String> cf = chatDocUtil.chat(chatUrl, kk.getFile_id(), question, appId, secret);
+        String mm = cf.join();
+        kk.setMeeting_minutes(mm);
+        System.out.println(mm);
+
+        kdxfKnowledgeDao.updateTemplateById(kk);
+
+        return mm;
+    }
+
 
 }

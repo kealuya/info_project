@@ -15,8 +15,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.szhtjykj.speech.xfyun.knowledge.XfyunKnowledgeService.QUESTION_MEETING_MUNIT;
+
 @Controller
 public class KnowledgeController {
+
     static Logger log = LoggerFactory.getLogger(KnowledgeController.class);
 
 
@@ -47,6 +50,17 @@ public class KnowledgeController {
             return returnMap;
         }
     }
+    @Post
+    @Mapping("/convertAudioToMeetingMinute")
+    public Map convertAudioToMeetingMinute(Context ctx) {
+        String orderId = ctx.param("orderId");
+        Map<String, Object> returnMap = new HashMap<>();
+        String meetingMinute =  xfyunKnowledgeService.chatByOrderId(orderId,QUESTION_MEETING_MUNIT);
 
+        returnMap.put("success", true);
+        returnMap.put("msg","" );
+        returnMap.put("meetingMinute",meetingMinute);
 
+        return returnMap;
+    }
 }
