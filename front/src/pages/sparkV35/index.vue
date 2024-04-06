@@ -88,10 +88,42 @@
       </div>
     </van-tab>
   </van-tabs>
+  <svg  ref="svgRef" style="background-color: #868CFF" ></svg>
 </template>
 
 <script setup lang="ts" >
-import {ref, inject} from "vue";
+import {ref, inject, onMounted, onUpdated} from "vue";
+import { Transformer } from 'markmap-lib';
+import { Markmap } from 'markmap-view/dist/index.js';
+
+const transformer = new Transformer();
+const initValue = `# markmap
+
+- beautiful
+- useful
+- easy
+- interactive
+`;
+
+const svgRef = ref (null);
+const text = ref(initValue);
+let mm;
+
+const update = () => {
+  const { root } = transformer.transform(text.value);
+  mm.setData(root);
+  mm.fit();
+};
+
+onMounted(() => {
+
+  mm = Markmap.create( svgRef.value);
+  update();
+});
+onUpdated(update);
+
+
+
 
 const active = ref(0);
 let userInfoData: any = inject("userInfo");
