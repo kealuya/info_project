@@ -8,6 +8,7 @@ import com.szhtjykj.speech.model.KdxfSpeech;
 import com.szhtjykj.speech.xfyun.knowledge.dto.UploadResp;
 import com.szhtjykj.speech.xfyun.knowledge.util.ChatDocUtil;
 import com.szhtjykj.speech.xfyun.speech.XfyunSpeechService;
+
 import org.beetl.sql.core.SQLReady;
 import org.beetl.sql.solon.annotation.Db;
 import org.noear.solon.Solon;
@@ -20,11 +21,15 @@ import javax.xml.datatype.Duration;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 @Component
 public class XfyunKnowledgeService {
@@ -40,6 +45,11 @@ public class XfyunKnowledgeService {
     private static final ChatDocUtil chatDocUtil = new ChatDocUtil();
 
     public static final String QUESTION_MEETING_MUNIT = "请按照会议纪要的格式返回详细的会议内容，并且不需要其他描述语言，只需要会议纪要";
+    //    public static final String QUESTION_MEETING_MUNIT = "请按照会议纪要的格式返回详细的会议内容，并且不需要其他描述语言，只需要会议纪要，" +
+//        "纪要按照 '1. XXX\n" +
+//        "- XXXXXXX\n" +
+//        "- XXXXXXX\n"+ " 2. XXX\n" +
+//            "- XXXXXXX\n'" +" 的形式返回。生成之后，再生成一份一样内容的markdown格式文本，两段文字中间用========分隔开";
     @Db
     KdxfSpeechDao kdxfSpeechDao;
     @Db
@@ -163,8 +173,8 @@ public class XfyunKnowledgeService {
         }
     }
 
-    @Tran
-    public String chatByOrderId(String orderId, String question)  {
+
+    public String makeMeetingMinuteByOrderId(String orderId, String question) {
 
         KdxfKnowledge kk = kdxfKnowledgeDao.unique(orderId);
         CompletableFuture<String> cf = chatDocUtil.chat(chatUrl, kk.getFile_id(), question, appId, secret);
@@ -175,6 +185,40 @@ public class XfyunKnowledgeService {
         kdxfKnowledgeDao.updateTemplateById(kk);
 
         return mm;
+    }
+
+
+    public String makeBrainMapByOrderId(String orderId) {
+
+        KdxfKnowledge kk = kdxfKnowledgeDao.unique(orderId);
+        String mm = kk.getMeeting_minutes();
+        String[] mms = mm.split("\n");
+        for (int i = 0; i < mms.length; i++) {
+            if (i == 0) {
+                mms[0] = ("# " + mms[0].trim()).replace(":", "");
+                continue;
+            }
+            mms[i] = mms[i].trim();
+            if (mms[i].matches("^\\d\\..*")) {
+                // 定义正则表达式
+                String regex = "(^\\d\\. ?)";
+                // 编译正则表达式
+                Pattern pattern = Pattern.compile(regex);
+                // 创建 Matcher 对象
+                Matcher matcher = pattern.matcher(mms[i]);
+                // 进行替换
+                String replacedString = matcher.replaceAll("## ");
+                mms[i] = replacedString;
+            }
+        }
+        String mdString = String.join("\n", mms);
+
+        kk.setBrain(mdString);
+        System.out.println(mdString);
+
+        kdxfKnowledgeDao.updateTemplateById(kk);
+
+        return mdString;
     }
 
 

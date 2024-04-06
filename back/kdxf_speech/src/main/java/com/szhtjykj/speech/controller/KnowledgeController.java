@@ -55,11 +55,25 @@ public class KnowledgeController {
     public Map convertAudioToMeetingMinute(Context ctx) {
         String orderId = ctx.param("orderId");
         Map<String, Object> returnMap = new HashMap<>();
-        String meetingMinute =  xfyunKnowledgeService.chatByOrderId(orderId,QUESTION_MEETING_MUNIT);
+        String meetingMinute =  xfyunKnowledgeService.makeMeetingMinuteByOrderId(orderId,QUESTION_MEETING_MUNIT);
 
         returnMap.put("success", true);
         returnMap.put("msg","" );
         returnMap.put("meetingMinute",meetingMinute);
+
+        return returnMap;
+    }
+
+    @Post
+    @Mapping("/convertAudioToBrainMap")
+    public Map convertAudioToBrainMap(Context ctx) {
+        String orderId = ctx.param("orderId");
+        Map<String, Object> returnMap = new HashMap<>();
+        String brainMap = xfyunKnowledgeService.makeBrainMapByOrderId(orderId);
+
+        returnMap.put("success", true);
+        returnMap.put("msg","" );
+        returnMap.put("brainMap",brainMap);
 
         return returnMap;
     }
