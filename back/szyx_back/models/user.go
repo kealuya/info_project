@@ -1,18 +1,20 @@
 package models
 
 import (
-	"fmt"
+	"szyx_back/db"
 	. "szyx_back/entity"
 )
 
-//用户登录
-func UserLogin(user *LoginRequestPar) (UserInfo, error) {
-	fmt.Println(user)
-	return UserInfo{Corp: "szht", EmpCode: "18892206664", Username: "测试1", Tel: "13612332123", IdCard: "120103199010102345", Dept: "信息学院"}, nil
-}
+//短信验证码登录
+func MessageLogin(phone string) (loginResp LoginResponseData, err error) {
+	userInfo, err := db.MessageLogin(phone)
+	if len(userInfo) > 0 {
+		loginResp.UserInfo = userInfo[0]
+		loginResp.Result = true
+	} else {
+		loginResp.Msg = "未找到该用户，请重新登陆!"
+		loginResp.Result = false
 
-//修改用户密码
-func SetUserInfo(user *UserInfo) (UserInfo, error) {
-	fmt.Println(user)
-	return UserInfo{Corp: "szht", EmpCode: "18892206664", Username: "测试1", Tel: "13612332123", IdCard: "120103199010102345", Dept: "信息学院"}, nil
+	}
+	return loginResp, err
 }

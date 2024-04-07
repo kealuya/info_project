@@ -256,6 +256,19 @@ func Createcode() string {
 	return fmt.Sprintf("%04v", rand.New(rand.NewSource(time.Now().UnixNano())).Int31n(10000)) //这里面前面的04v是和后面的1000相对应的
 }
 
+//短信生成验证码
+func GenValidateCode(width int) string {
+	numeric := [9]byte{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	r := len(numeric)
+	rand.Seed(time.Now().UnixNano())
+
+	var sb strings.Builder
+	for i := 0; i < width; i++ {
+		fmt.Fprintf(&sb, "%d", numeric[rand.Intn(r)])
+	}
+	return sb.String()
+}
+
 func TurnPinyin(str string) string {
 	convert := pinyin.LazyConvert(str, nil)
 	var pinyin string

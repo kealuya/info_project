@@ -1,5 +1,6 @@
 package handler
 
 const (
-	Query_user_test = `select * from test`
+	//TODO 设计表，写sql
+	Select_LoginUser = `SELECT * from `
 )
