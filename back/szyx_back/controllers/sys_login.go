@@ -43,19 +43,20 @@ func (sysLoginCrtl *SysLoginController) GetMessageCaptcha() {
 	validateCode := common.GenValidateCode(6)
 	logs.Info("验证码", validateCode)
 	fmt.Println("得到的验证码:" + validateCode)
-	//18888889999这个 为了IOS上架审核进入系统需要
-	if getMessageCaptcha.Phone == "18888889999" {
-		key := origin + "-" + getMessageCaptcha.Phone
+
+	loginResp, err := models.MessageLogin(getMessageCaptcha.Mobile)
+	//测试账号，不需要发短信
+	if getMessageCaptcha.Mobile == "18888889999" {
+		key := origin + "-" + getMessageCaptcha.Mobile
 		err2 := redis.SetStr(key, validateCode, 5*time.Minute)
 		common.ErrorHandler(err2, "验证码缓存失败")
-	} else {
+		resJson.Success = true
+		resJson.Msg = "此账号无需发送验证码" + validateCode
+	} else if loginResp.Result == true && err == nil {
 		//短信推送
-		messageReturn := msg_send_service.Send_AlibabaMessage(getMessageCaptcha.Phone, validateCode)
-		key := origin + "-" + getMessageCaptcha.Phone
-		//key := getMessageCaptcha.Phone
+		messageReturn := msg_send_service.Send_AlibabaMessage(getMessageCaptcha.Mobile, validateCode)
+		key := origin + "-" + getMessageCaptcha.Mobile
 		err1 := redis.SetStr(key, validateCode, 5*time.Minute)
-		//value := redis.GetStr(getMessageCaptcha.Phone)
-		//fmt.Println("value", value)
 		common.ErrorHandler(err1, "验证码缓存失败")
 		if messageReturn.Success {
 			resJson.Success = true
@@ -64,6 +65,9 @@ func (sysLoginCrtl *SysLoginController) GetMessageCaptcha() {
 			resJson.Success = false
 			resJson.Msg = "短信获取验证码失败"
 		}
+	} else {
+		resJson.Success = false
+		resJson.Msg = "用户不存在，请联系管理员"
 	}
 }
 
@@ -90,24 +94,22 @@ func (sysLoginCrtl *SysLoginController) MessageLogin() {
 	messageLogin := new(system.MessageLogin)
 	var jsonByte = sysLoginCrtl.Ctx.Input.RequestBody
 	common.Unmarshal(jsonByte, &messageLogin)
-	key := origin + "-" + messageLogin.Phone
-	//key := messageLogin.Phone
+	key := origin + "-" + messageLogin.Mobile
 	value := redis.GetStrs(key)
 	dataJson := new(system.ResultInfo)
 	if value == "" {
 		resJson.Data = "验证码过期"
 	} else {
-		if messageLogin.ValidateCode == value || messageLogin.Phone == "18888889999" {
-			loginResp, err := models.MessageLogin(messageLogin.Phone)
+		if messageLogin.ValidateCode == value || messageLogin.Mobile == "18888889999" {
+			loginResp, err := models.MessageLogin(messageLogin.Mobile)
 			if loginResp.Result == true && err == nil {
-
 				//登录成功，签发JWT
-				jwtStr, err1 := common.GenerateToken(loginResp.UserInfo.EmpCode, "", loginResp.UserInfo.CorpCode)
+				jwtStr, err1 := common.GenerateToken(loginResp.UserInfo.UserMobile, "", loginResp.UserInfo.CorpCode)
 				//签发refreshToken
-				refreshToken, err2 := common.GenerateRefreshToken(loginResp.UserInfo.EmpCode, "", loginResp.UserInfo.CorpCode)
+				refreshToken, err2 := common.GenerateRefreshToken(loginResp.UserInfo.UserMobile, "", loginResp.UserInfo.CorpCode)
 				common.ErrorHandler(err2, "签发refreshToken失败")
-				//将refreshToken，放到redis中，empcode_corpcode_equipmentType作为key值,如果存在，需要先将存储删除，否则就添加
-				login_key := loginResp.UserInfo.EmpCode + "_" + loginResp.UserInfo.CorpCode + "_" + messageLogin.EquipmentType
+				//将refreshToken，放到redis中，userMobile_corpcode作为key值,如果存在，需要先将存储删除，否则就添加
+				login_key := loginResp.UserInfo.UserMobile + "_" + loginResp.UserInfo.CorpCode
 				cacheLoginInfo := redis.GetStrs(login_key)
 				if cacheLoginInfo != "" {
 					//很关键，会导致之前登录的设备，最长在10分钟后下线，如果想立即下线，access_token过期时间设置更短的时间，但是系统资源占用更多

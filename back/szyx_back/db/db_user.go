@@ -6,17 +6,16 @@ import (
 	"szyx_back/entity"
 )
 
-func MessageLogin(phone string) (userInfo []entity.LoginUserInfo, msg error) {
+func MessageLogin(phone string) (userInfo []entity.UserInfo, msg error) {
 	defer common.RecoverHandler(func(rcErr error) {
-		userInfo = []entity.LoginUserInfo{}
+		userInfo = []entity.UserInfo{}
 		msg = rcErr
 	})
-	userInfos := []entity.LoginUserInfo{}
+	userInfos := []entity.UserInfo{}
 	dbHandler := db_handler.NewDbHandler()
 	var param []interface{}
 	param = append(param, phone)
-	param = append(param, "1")
-	var str = "where USER.MOBILE = ? AND b.serviceId = ? "
+	var str = " where userMobile = ? "
 	dbAuthResult, err := dbHandler.SelectList(db_handler.Select_LoginUser+str, param...)
 	if len(dbAuthResult) > 0 {
 		decoder := ObtainDecoderConfig(&userInfos)

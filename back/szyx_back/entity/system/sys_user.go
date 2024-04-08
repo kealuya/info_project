@@ -2,6 +2,13 @@ package system
 
 import "szyx_back/entity"
 
+//kdxf-获取短信验证码入参
+type GetMessageCaptcha struct {
+	Mobile string `json:"mobile" description:"手机号" `
+}
+
+//=================================================================================
+
 type SysUser struct {
 	UUID        string `description:"用户Id" json:"uuid"`          // 用户Code
 	Username    string `description:"用户登录名称" json:"userName"`    //
@@ -68,10 +75,6 @@ type LoginRequestPar struct {
 	EquipmentType string `description:"设备类型" json:"equipmentType"` //登录设备类型 PC,APP
 }
 
-type GetMessageCaptcha struct {
-	Phone string `json:"phone"`
-}
-
 type MessageAlibaba struct {
 	Phone string `json:"phone"`
 	Code  string `json:"code"`
@@ -81,11 +84,11 @@ type MessageAlibabaReturn struct {
 	Msg     string `json:"msg"`
 }
 
+//kdxf 登录入参
 type MessageLogin struct {
-	Phone         string `json:"phone"`
-	Password      string `json:"password"`
-	ValidateCode  string `json:"validateCode"`
-	EquipmentType string `description:"设备类型" json:"equipmentType"` //登录设备类型 PC,APP
+	Mobile       string `json:"mobile"`
+	ValidateCode string `json:"validateCode"`
+	//EquipmentType string `description:"设备类型" json:"equipmentType"` //登录设备类型 PC,APP
 }
 
 type ModifyPhoneNum struct {
@@ -129,9 +132,9 @@ type JwtDecrypt struct {
 }
 
 type ResultInfo struct {
-	JWT          string               `description:"jwt" json:"jwt"`                   // access_token
-	RefreshToken string               `description:"refreshToken" json:"refreshToken"` //refreshToken
-	User         entity.LoginUserInfo `description:"用户信息" json:"user"`
+	JWT          string          `description:"jwt" json:"jwt"`                   // access_token
+	RefreshToken string          `description:"refreshToken" json:"refreshToken"` //refreshToken
+	User         entity.UserInfo `description:"用户信息" json:"user"`
 }
 type FunctionConfig struct {
 	Id               string `description:"自增id" json:"id"`

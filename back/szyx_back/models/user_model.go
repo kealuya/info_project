@@ -6,8 +6,8 @@ import (
 )
 
 //短信验证码登录
-func MessageLogin(phone string) (loginResp LoginResponseData, err error) {
-	userInfo, err := db.MessageLogin(phone)
+func MessageLogin(mobile string) (loginResp LoginResponseData, err error) {
+	userInfo, err := db.MessageLogin(mobile)
 	if len(userInfo) > 0 {
 		loginResp.UserInfo = userInfo[0]
 		loginResp.Result = true
