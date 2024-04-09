@@ -15,7 +15,7 @@ func CreateTask(task *task.Task) (err error) {
 /**
 获取任务池列表
 */
-func GetTaskList(task *task.Task) (res task.Task, err error) {
+func GetTaskList(taskList_Param *task.TaskList_Param) (res task.Task, err error) {
 
 	return res, err
 }

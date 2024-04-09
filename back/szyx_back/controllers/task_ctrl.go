@@ -9,6 +9,9 @@ import (
 	"szyx_back/models"
 )
 
+/**
+任务模块
+*/
 type TaskCtrl struct {
 	beego.Controller
 }
@@ -27,12 +30,12 @@ func (TaskCtrl *TaskCtrl) CreateTask() {
 		TaskCtrl.Data["json"] = resJson
 		TaskCtrl.ServeJSON()
 	}()
-	task := new(task.Task)
+	task_param := new(task.Task)
 	var jsonByte = TaskCtrl.Ctx.Input.RequestBody
-	common.Unmarshal(jsonByte, &task)
+	common.Unmarshal(jsonByte, &task_param)
 	logs.Info("任务发布入参：" + string(jsonByte))
 	//业务处理
-	err := models.CreateTask(task)
+	err := models.CreateTask(task_param)
 	if err == nil {
 		resJson.Success = true
 		resJson.Msg = "任务发布成功"
@@ -57,12 +60,12 @@ func (TaskCtrl *TaskCtrl) GetTaskList() {
 		TaskCtrl.Data["json"] = resJson
 		TaskCtrl.ServeJSON()
 	}()
-	task_param := new(task.Task)
+	taskList_Param := new(task.TaskList_Param)
 	var jsonByte = TaskCtrl.Ctx.Input.RequestBody
-	common.Unmarshal(jsonByte, &task_param)
+	common.Unmarshal(jsonByte, &taskList_Param)
 	logs.Info("查询任务列表入参：" + string(jsonByte))
 	//业务处理
-	res, err := models.GetTaskList(task_param)
+	res, err := models.GetTaskList(taskList_Param)
 	if err == nil {
 		resJson.Success = true
 		resJson.Data = res
