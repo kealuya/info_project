@@ -40,6 +40,7 @@
     <div class="mt10 tc">
       <span class="f12">
         点击登录，即表示同意
+        点击登录，即表示同意
         <span @click.stop="onPolicy" style="color:#0088FF;">《隐私政策》</span>和
         <span @click.stop="onUserAgreement"  style="color:#0088FF;">《用户协议》</span>
       </span>

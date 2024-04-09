@@ -7,16 +7,106 @@ import {userInfoData} from "../store";
 const router = createRouter({
   history: createWebHashHistory(),
   routes: [
-    { path: '/', redirect: '/home' },
+    { path: '/', redirect: '/login' },
     {
       path: '/home',
       name: '首页',
-      component: () => import('../Home.vue'),
+      component: () => import('../HomeSetting.vue'),
       children: [
+        // {
+        //   path:'/home',
+        //   name: 'home',
+        //   component: () => import('../pages/home/index.vue'),
+        // },
         {
-          path:'/home',
-          name: 'home',
-          component: () => import('../pages/home/index.vue'),
+          path:'/homeNew',
+          name: 'homeNew',
+          component: () => import('../pages/homeMetting/home.vue'),
+        },
+          // 业务页面
+        {
+          path: '/business',
+          name: 'business',
+          component: () => import('../pages/business/index.vue'),
+        },
+          //任务详情页面
+        {
+          path: '/taskDetail',
+          name: 'taskDetail',
+          component: () => import('../pages/taskDetail/index.vue'),
+        },
+        {
+          path: '/taskDetail_two',
+          name: 'taskDetail_two',
+          component: () => import('../pages/taskDetail_two/index.vue'),
+        },
+        {
+          path: '/taskDetail_three',
+          name: 'taskDetail_three',
+          component: () => import('../pages/taskDetail_three/index.vue'),
+        },
+        {
+          path: '/taskDetail_four',
+          name: 'taskDetail_four',
+          component: () => import('../pages/taskDetail_four/index.vue'),
+        },
+        //完成任务
+        {
+          path: '/addTasks',
+          name: 'addTasks',
+          component: () => import('../pages/taskDetail/addTasks.vue'),
+        },  {
+          path: '/valueDetails',
+          name: 'valueDetails',
+          component: () => import('../pages/valueDetails/index.vue'),
+        },
+          //业务详情
+        {
+          path: '/businessDetail',
+          name: 'businessDetail',
+          component: () => import('../pages/businessDetail/index.vue'),
+        },
+          //task processing
+        {
+          path: '/taskList',
+          name: 'taskList',
+          component: () => import('../pages/taskList/index.vue'),
+        },
+         //任务处理
+        {
+          path: '/taskProcessing',
+          name: 'taskProcessing',
+          component: () => import('../pages/taskProcessing/index.vue'),
+        },
+
+        {
+          path: '/task',
+          name: 'taskDeatilD',
+          component: () => import('../pages/taskDeatilD/index.vue'),
+        },
+          //价值申请
+        // application
+        {
+          path: '/applicationValue',
+          name: 'applicationValue',
+          component: () => import('../pages/applicationValue/index.vue'),
+        },
+          //有录音的页面
+        {
+          path: '/speech',
+          name: 'speech',
+          component: () => import('../pages/speech/index.vue'),
+        },
+          //文档上传页面
+        {
+          path: '/documentUpload',
+          name: 'documentUpload',
+          component: () => import('../pages/documentUpload/index.vue'),
+        },
+        {
+          path: '/personal',
+          name: 'personal',
+          component: () => import('../pages/personal/index.vue'),
         },
         {
           path: '/message',
@@ -86,10 +176,19 @@ const router = createRouter({
       name: 'personalUsageStatistics',
       component: () => import('../pages/personalUsagesStatistics/index.vue'),
     },
+    // {
+    //   path:'/login',
+    //   name: 'login',
+    //   component: () => import('../Login.vue'),
+    //   meta: {
+    //     keepAlive: true  // 需要缓存的页面配置
+    //   }
+    // },
+      //登录（新）
     {
       path:'/login',
       name: 'login',
-      component: () => import('../Login.vue'),
+      component: () => import('../pages/loginMetting/login.vue'),
       meta: {
         keepAlive: true  // 需要缓存的页面配置
       }
@@ -411,25 +510,25 @@ const router = createRouter({
   ]
 })
 
-router.beforeEach((to,from,next)=>{
-  // 模拟url登陆地址导航栏截取
-  // const url='http://122.9.41.215/fk_move/MapprList?userid=1815&school=szht6666'
-  // let urlOne = url.split('?');
-  // let userInfo=urlOne[1].split('&');
-  // let userId =userInfo[0].replaceAll('userid=','');
-  // let qyId=userInfo[1].replaceAll('school=','');
-  const userInfoState: any = userInfoData();
-  const store = userInfoData()
-  if (to.path === '/login' || to.path === '/404'||to.path ==="/privacyPolicy"||to.path==='/userAgreement') {
-    next();
-  } else {
-    if (Object.keys(userInfoState.userInfo).length === 0) {
-      next('/login');
-    } else {
-      next();
-    }
-  }
-
-})
+// router.beforeEach((to,from,next)=>{
+//   // 模拟url登陆地址导航栏截取
+//   // const url='http://122.9.41.215/fk_move/MapprList?userid=1815&school=szht6666'
+//   // let urlOne = url.split('?');
+//   // let userInfo=urlOne[1].split('&');
+//   // let userId =userInfo[0].replaceAll('userid=','');
+//   // let qyId=userInfo[1].replaceAll('school=','');
+//   const userInfoState: any = userInfoData();
+//   const store = userInfoData()
+//   if (to.path === '/login' || to.path === '/404'||to.path ==="/privacyPolicy"||to.path==='/userAgreement') {
+//     next();
+//   } else {
+//     if (Object.keys(userInfoState.userInfo).length === 0) {
+//       next('/login');
+//     } else {
+//       next();
+//     }
+//   }
+//
+// })
 
 export default router
