@@ -41,6 +41,11 @@ const router = createRouter({
           name: 'sparkV35',
           component: () => import('../pages/sparkV35/index.vue'),
         },
+        {
+          path: '/sparkV35New',
+          name: 'sparkV35New',
+          component: () => import('../pages/sparkV35/indexTestMarkMap.vue'),
+        },
         //语音识别
         {
           path: '/speech',
