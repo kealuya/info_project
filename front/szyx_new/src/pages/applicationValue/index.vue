@@ -29,9 +29,9 @@
             <div class="flex-space f-z-12 m-b-10">
               <div>预计可申请金额：{{item.sqje}}</div>
             </div>
-            <div class="flex-space f-z-12">
+            <div class="flex-space f-z-12 m-b-10">
 <!--              <div></div>-->
-              <div>{{item.time}}</div>
+              <div>创建时间：{{item.time}}</div>
 <!--              <div>已完成</div>-->
 
             </div>
@@ -96,7 +96,7 @@
           <div class="f-z-12 m-b-10">预计可申请金额:{{item.sqje}}</div>
           <div class="flex-space f-z-12">
 <!--            <div>已关联任务100002</div>-->
-            <div>2024.01.23</div>
+            <div>已完成时间：2024-04-12 15:20:15</div>
           </div>
           <div class="list_icon" v-if="item.isShow"><van-image :src="waitshenpi" width="60" height="60"></van-image></div>
           <div class="list_icon" v-else><van-image :src="yitongyi" width="60" height="60"></van-image></div>

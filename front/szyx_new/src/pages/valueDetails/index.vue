@@ -76,7 +76,7 @@ import {showSuccessToast} from "vant";
 const router = useRouter()
 const onClickLeft = () => {
   // history.go(-2)
-  router.replace('/homeNew')
+  router.replace('/applicationValue')
 }
 const taskProcessingHandle = ()=>{
   showSuccessToast('参与成功');

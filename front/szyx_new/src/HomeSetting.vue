@@ -1,6 +1,6 @@
 <template>
   <router-view />
-  <van-tabbar v-model="active"  route>
+  <van-tabbar v-model="active"  route safe-area-inset-bottom v-if="isShowTabBar">
     <!--    <van-tabbar-item replace icon="home-o" :to="{name:'home'}"  >首页</van-tabbar-item>-->
     <!--    <van-tabbar-item icon="records" name="book" :to="{name:'book'}" replace>记账本<
     /van-tabbar-item>-->
@@ -11,20 +11,19 @@
 </template>
 
 <script setup lang="ts">
-import {ref, onBeforeMount, inject} from "vue";
-import {getMessagePull} from "./services/message";
-import {userInfoData} from './store'
-import router from "./router/index";
+import {ref, onBeforeMount, inject,watch} from "vue";
+import { useRoute, useRouter } from 'vue-router';
 const active = ref('homeMetting');
-const onChange = (index:string) => {
-  console.log('index',index)
-
-}
-
-
-
-
-
+const route = useRoute();
+const router = useRouter();
+const isShowTabBar=ref<boolean>(false)
+const noSHowTabBarPathList=['/speech','/task','/taskDetail']
+watch(() => route.path, (value) => {
+  isShowTabBar.value=!noSHowTabBarPathList.includes(value)
+},{
+  immediate:true,
+  deep:true
+});
 
 </script>
 

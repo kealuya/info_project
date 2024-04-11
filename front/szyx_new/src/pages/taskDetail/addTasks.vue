@@ -53,18 +53,19 @@
                   <div class="yw_content" @click="taskList">
                     业务内容<van-icon name="arrow" />
                   </div>
-                  <div  style="display: flex;align-items: center;font-size: 0.875em;font-weight: 550;margin-left: 2vw">
-                    <van-image :src="word" width="30" height="30"></van-image>
-                    <div>20240408-聚醚酮酮数字化临床效果会议.word</div>
-                  </div>
-                  <div  style="display: flex;align-items: center;font-size: 0.875em;font-weight: 550;margin-left: 2vw">
-                    <van-image :src="xmind" width="30" height="30"></van-image>
-                    <div>20240408-聚醚酮酮数字化临床效果会议.xmind</div>
-                  </div>
-                  <div  style="display: flex;align-items: center;font-size: 0.875em;font-weight: 550;margin-left: 2vw">
-                    <van-image :src="mp3" width="30" height="30"></van-image>
-                    <div>青霉素的抗生素治疗肺炎探讨会议.mp3</div>
-                  </div>
+               <businessCard :isCollapse="isCollapse"></businessCard>
+<!--                  <div  style="display: flex;align-items: center;font-size: 0.875em;font-weight: 550;margin-left: 2vw">-->
+<!--                    <van-image :src="word" width="30" height="30"></van-image>-->
+<!--                    <div>20240408-聚醚酮酮数字化临床效果会议.word</div>-->
+<!--                  </div>-->
+<!--                  <div  style="display: flex;align-items: center;font-size: 0.875em;font-weight: 550;margin-left: 2vw">-->
+<!--                    <van-image :src="xmind" width="30" height="30"></van-image>-->
+<!--                    <div>20240408-聚醚酮酮数字化临床效果会议.xmind</div>-->
+<!--                  </div>-->
+<!--                  <div  style="display: flex;align-items: center;font-size: 0.875em;font-weight: 550;margin-left: 2vw">-->
+<!--                    <van-image :src="mp3" width="30" height="30"></van-image>-->
+<!--                    <div>青霉素的抗生素治疗肺炎探讨会议.mp3</div>-->
+<!--                  </div>-->
 
 <!--                    <van-field-->
 <!--                            name="paymentInformation"-->
@@ -113,6 +114,7 @@
   <div class="box"></div>
 </template>
 <script lang="ts" setup>
+import businessCard from '../../components/businessCard/index.vue'
     import {ref} from 'vue'
 import {useRouter} from "vue-router";
 // import { showSuccessToast, showFailToast } from 'vant';
@@ -124,6 +126,7 @@ import {showSuccessToast} from "vant";
 
     import mp3 from "../../assets/img/mp3.png";
 const router = useRouter()
+const isCollapse = ref<boolean>(true)
     const columns = [
       { text: '临床推广', value: '临床推广' },
       { text: '科研成果', value: '科研成果' } ,
@@ -230,7 +233,7 @@ const taskList = ()=>{
   }
 }
 .footer_btn{
-  width:92vw;
+  width:95vw;
   padding:2vw;
 }
 ::v-deep(.van-nav-bar__content) {

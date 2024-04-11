@@ -6,30 +6,31 @@
       @click-left="onClickLeft"
   />
   <div class="content">
-    <div class="title_one m-b-10 f-z-14" >聚醚酮酮数字化乳牙早失间隙保持器的临床效果</div>
+    <div class="title_one m-b-10 f-z-14" >支原体抗生素大环内酯类的研究会议</div>
     <div class="title_two f-z-14 f-w-550  m-b-10">
-      <span>会议摘要</span>
+      <span>文档摘要</span>
     </div>
     <div class="f-z-12 m-b-10">
-      &nbsp;&nbsp;医患诊断采集是指医生或医疗机构在诊疗过程中收集患者的相关信息，包括病史、症状、体征、检查结果等，以便进行正确的诊断和治疗。这个过程通常包括以下几个方面：
+      &nbsp;&nbsp;抗菌药物（antibacterial drugs）来源于细菌、霉菌，或者通过化学的从头合成（de novo synthesis）制备。从技术上讲，“抗生素（antibiotics）”仅指那些源自细菌或霉菌的抗菌剂，但通常与“抗菌药物（antibacterial drugs，或antibacterials）”同义使用。
+      抗生素有许多作用机制，包括：抑制细胞壁合成、增加细胞膜通透性、干扰蛋白质合成、核酸代谢和其他代谢过程（如叶酸合成）
     </div>
-    <div class="f-z-12 m-b-10">
+<!--    <div class="f-z-12 m-b-10">
       &nbsp;&nbsp;病史采集：医生会询问患者有关疾病发生的时间、症状的持续时间、疼痛的性质、病史（包括既往病史、家族史等）等信息。患者提供详细的病史对于正确诊断疾病非常重要。
-    </div>
-    <div class="f-z-12 m-b-10">
+    </div>-->
+<!--    <div class="f-z-12 m-b-10">
       &nbsp;&nbsp;症状采集：医生会询问患者当前的症状，比如疼痛、咳嗽、发热等。患者描述症状的特点和变化有助于医生判断疾病的可能性。
-    </div>
-<!--    <div class="f-z-12 m-b-10">-->
-<!--      &nbsp;&nbsp;体征检查：医生会进行体格检查，包括测量体温、血压、心率、听诊心肺等。体征检查可以提供重要的诊断线索。-->
-<!--    </div>-->
-<!--    <div class="f-z-12 m-b-10">-->
-<!--      &nbsp;&nbsp; 实验室检查：医生可能会要求患者进行实验室检查，包括血液检查、尿液检查、影像学检查（如X光、CT、MRI等），以获取更多的诊断信息。-->
-<!--    </div>-->
-<!--    <div class="f-z-12 m-b-10">-->
-<!--      &nbsp;&nbsp;诊断过程：医生根据患者提供的信息、体征和检查结果，进行综合分析和判断，最终做出诊断并制定治疗方案。-->
-<!--    </div>-->
+    </div>-->
+    <!--    <div class="f-z-12 m-b-10">-->
+    <!--      &nbsp;&nbsp;体征检查：医生会进行体格检查，包括测量体温、血压、心率、听诊心肺等。体征检查可以提供重要的诊断线索。-->
+    <!--    </div>-->
+    <!--    <div class="f-z-12 m-b-10">-->
+    <!--      &nbsp;&nbsp; 实验室检查：医生可能会要求患者进行实验室检查，包括血液检查、尿液检查、影像学检查（如X光、CT、MRI等），以获取更多的诊断信息。-->
+    <!--    </div>-->
+    <!--    <div class="f-z-12 m-b-10">-->
+    <!--      &nbsp;&nbsp;诊断过程：医生根据患者提供的信息、体征和检查结果，进行综合分析和判断，最终做出诊断并制定治疗方案。-->
+    <!--    </div>-->
     <div class="f-z-14  m-b-10 space">
-      <span class="f-w-550">会议记录</span>
+      <span class="f-w-550">文档记录</span>
       <div class="right">
         <van-image :src="Ai"  width="20" height="20">
         </van-image>
@@ -37,7 +38,7 @@
       </div>
     </div>
     <div class="f-z-12  m-b-10 space">
-      <span>会议纪要</span>
+      <span>文档纪要</span>
     </div>
     <van-text-ellipsis
         rows="5"
@@ -48,10 +49,10 @@
     <div class="metting">
       <van-image :src="Word"  width="23" height="23">
       </van-image>
-      <div class="c-blue f-z-14">20240408-聚醚酮酮数字化临床效果会议.word <span>&nbsp;下载附件</span></div>
+      <div class="c-blue f-z-14">20240408- 支原体抗生素大环内酯类文档.word <span>&nbsp;下载附件</span></div>
     </div>
     <div class="f-z-14  m-b-10 space">
-      <span class="f-w-550">会议脑图</span>
+      <span class="f-w-550">文档脑图</span>
       <div class="right">
         <van-image :src="Ai"  width="23" height="23">
         </van-image>
@@ -62,13 +63,9 @@
     <div class="metting">
       <van-image :src="Xmind"  width="23" height="23">
       </van-image>
-      <div class="c-blue f-z-14"> &nbsp;&nbsp;20240408-聚醚酮酮数字化临床效果会议.xmind<span>&nbsp;下载附件</span></div>
+      <div class="c-blue f-z-14"> &nbsp;&nbsp;20240408-支原体抗生素大环内酯类脑图.xmind<span>&nbsp;下载附件</span></div>
     </div>
-    <div class="title_two f-z-14 f-w-550  m-b-10">
-      <span>会议信息</span>
-    </div>
-    <div class="f-z-12">会议地址：天津市南开区红旗南路一中心总医院B座</div>
-    <div class="f-z-12">会议时长：1小时53分钟</div>
+
   </div>
   <div class="box"></div>
 </template>
@@ -100,14 +97,7 @@ const initValue = `# 会议纪要：
 ## 学生团队出行报销处理：
 - 存在院系层面的报销。
 - 需要按每个学生的明细检索并发起二次报销。
-- 二次报销选择院系所负担的项目，提交审批。
-- 记录第一次与第二次报销信息，进行第三次报销。
-- 所有报销层级需附上发票信息。
-
-## 报销流程复杂性讨论：
-- 当前流程复杂，考虑创建单独模块处理团委报销。
-- 对于团队出行的多个报销处理方式未确定。
-- 讨论是否应将团委报销单独处理。`;
+ `;
 const text =
     ' 1. 报销流程讨论：\n' +
     '      - 报销员指定报销项目提交审批。\n' +

@@ -64,3 +64,26 @@ export const userInfoData = defineStore("userInfo", {
 
     },
 })
+export const heightData = defineStore("heightData", {
+    persist: {
+        enabled: true,//开启数据持久化
+        strategies: [
+            {
+                key: 'heightData',//给一个要保存的名称
+                storage: sessionStorage,//sessionStorage / localStorage 存储方式
+            }
+        ]
+    },
+    state: () => ({
+        height:665
+
+    }),
+    getters: {
+
+    },
+    actions: {
+        setFunctionConfig(data: any) {
+            this.height = data;
+        }
+    },
+})

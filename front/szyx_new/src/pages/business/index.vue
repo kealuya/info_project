@@ -18,11 +18,11 @@
   <div class="box"></div>
 <!--  !&#45;&#45;   //列表部分&ndash;&gt;-->
   <div class="list">
-    <div class="list_card" v-for="item in ywList" @click="businessDetailHandle">
+    <div class="list_card" v-for="item in ywList" @click="businessDetailHandle(item.id)">
       <div class="flex-space m-b-10">
         <div class="list_title">
             <van-tag type="primary" v-if="item.hyType">音频会议</van-tag>
-            <van-tag type="warning" v-else>文档记录</van-tag>
+            <van-tag type="success" v-else>文档记录</van-tag>
             {{item.name}}
         </div>
       </div>
@@ -136,8 +136,13 @@ const onConfirm = async(values: any) => {
   timer.value = `${beginTime}~${endTime}`;
 
 };
-const businessDetailHandle = ()=>{
-  router.replace('/businessDetail')
+const businessDetailHandle = (id:number)=>{
+  console.log('number',id)
+  if(id ==3){
+    router.replace('/documentationDetail')
+  }else{
+    router.replace('/businessDetail')
+  }
 }
 const speechHandle = ()=>{
   router.replace('/speech')

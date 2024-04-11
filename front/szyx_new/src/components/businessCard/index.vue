@@ -1,55 +1,45 @@
 <template>
-  <van-nav-bar
-      title="业务内容"
-      left-text="返回"
-      left-arrow
-      @click-left="onClickLeft"
-  />
-  <van-tabs v-model:active="active">
-    <van-tab title="会议文件">
-    <div class="list">
-    <businessCard></businessCard>
-        <div class="footer_btn">
-            <van-button block type="primary" @click="handleSubmit">
-                提交
-            </van-button>
-        </div>
-    </div>
-    </van-tab>
-    <van-tab title="已使用">
       <div class="list">
-        <div class="list_card" v-for="item in rwList2" :key="item.id">
+        <div class="list_card" v-for="item in rwList" :key="item.id">
           <div class="flex-space m-b-10">
             <div style="display: flex;align-items: center">
-              <van-tag type="success">文档记录</van-tag>
-<!--              <van-image :src="word" width="30" height="30" v-if="item.hyType=='word'"></van-image>
-              <van-image :src="xmind" width="30" height="30" v-if="item.hyType=='xmind'"></van-image>
-              <van-image :src="mp3" width="30" height="30" v-if="item.hyType=='mp3'"></van-image>-->
-              <div class="list_title">{{item.name}}</div>
+               <van-tag type="primary" v-if="item.hyType == 'mp3'">音频会议</van-tag>
+                <van-tag type="success" v-else>文档记录</van-tag>
+<!--              <van-image :src="word" width="30" height="30" v-if="item.hyType=='word'"></van-image>-->
+<!--              <van-image :src="xmind" width="22" height="22" v-if="item.hyType=='xmind'"></van-image>-->
+<!--              <van-image :src="mp3" width="25" height="25" v-if="item.hyType=='mp3'"></van-image>-->
+              <div class="list_title">{{item.hyname}}</div>
             </div>
+            <van-checkbox v-model="item.isCheck" v-if="!isCollapse"></van-checkbox>
+            <!--            <van-image-->
+            <!--                width="20"-->
+            <!--                height="20"-->
+            <!--                :src="businessIcon"-->
+            <!--            />-->
           </div>
           <van-divider />
-          <div style="display:flex;align-items: center">
-            <van-image :src="word" width="23" height="23"></van-image>
-            <div class="f-z-12" >{{item.sshy}}</div>
-          </div>
-          <div class="f-z-12 m-b-10">创建时间:{{item.hyTime}}</div>
+         <div style="display:flex;align-items: center;margin-bottom: 10px; margin-left: 10px;" v-for="i in item.nameList">
+           <van-image :src="word" width="23" height="23" v-if="i.type=='word'"></van-image>
+           <van-image :src="xmind" width="23" height="23" v-if="i.type=='xmind'"></van-image>
+           <van-image :src="mp3" width="23" height="23" v-if="i.type=='mp3'"></van-image>
+           <div class="list_title1">{{i.name}}</div>
+         </div>
+          <div>
+<!--            <div class="f-z-12 m-b-10" >所属会议：{{item.sshy}}</div>-->
+            <!--<div class="f-z-12 m-b-10" v-if="item.hyType!=='word'">会议地点：{{item.address}}</div>-->
+            <div class="f-z-12 m-b-10" style="margin-left: 10px;">创建时间：{{item.hyTime}}</div>
 
+          </div>
         </div>
 <!--        <div class="footer_btn">-->
 <!--          <van-button block type="primary" @click="handleSubmit">-->
-<!--            提交-->
+<!--            选择-->
 <!--          </van-button>-->
 <!--        </div>-->
       </div>
-    </van-tab>
-  </van-tabs>
-
-  <!--  <div class="mb10"></div>-->
 </template>
 <script setup lang="ts">
 import hyTitle from '../../assets/img/hy_title.png'
-import businessCard from '../../components/businessCard/index.vue'
 import word from '../../assets/img/word.png'
 import xmind from '../../assets/img/xmind.png'
 import mp3 from '../../assets/img/mp3.png'
@@ -64,31 +54,48 @@ const router = useRouter()
 const value2 = ref('a');
 const timer = ref<string>()
 const showDate = ref<boolean>(false)
+const props = defineProps({
+  isCollapse: {
+    type: Boolean,
+    default: false
+  },
+})
 const rwList = ref(
     [{
       id: '1',
-      name: '20240408-聚醚酮酮数字化临床效果会议.word',
+      hyname:' 数字化聚醚酮临床效果会议',
+      nameList:[
+        {
+          name: '20240408-聚醚数字化临床效果会议文档.word',
+          type:'word'
+        },
+        {
+          name: '20240408-聚醚数字化临床效果思维导图.xmind',
+          type:'xmind'
+        },
+        {
+          name: '20240408-聚醚数字化临床效果会议录音.mp3',
+          type:'mp3'
+        }
+      ],
       sshy: ' 聚醚酮酮数字化临床效果会议',
       hyTime: '2024-04-07 15:15:35',
-      hyType: 'word',
-      isCheck: false
-    }, {
-      id: '2',
-      name: '20240408-聚醚酮酮数字化临床效果会议.xmind',
-      sshy: ' 聚醚酮酮数字化临床效果会议',
-      hyTime: '2024-04-07 15:15:35',
-      hyType: 'xmind',
-      isCheck: false
-    }, {
-      id: '3',
-      name: '青霉素的抗生素治疗肺炎探讨会议.mp3',
-      sshy: ' 青霉素的抗生素治疗肺炎探讨会议',
-      hyTime: '2024-03-31 18:14:35',
       hyType: 'mp3',
       isCheck: false
     },
       {
         id: '4',
+          nameList:[
+              {
+                  name: '20240408-内镜黏膜术和内镜切除术的效果.word',
+                  type:'word'
+              },
+              {
+                  name: '20240408-内镜黏膜术和内镜切除术的导图.xmind',
+                  type:'xmind'
+              }
+          ],
+        hyname:'内镜黏膜术和内镜切除术的效果比较',
         name: '内镜黏膜术和内镜切除术的效果比较.word',
         time: '4小时07分钟',
         hyType: 'word',
@@ -99,6 +106,13 @@ const rwList = ref(
       },
       {
         id: '5',
+          nameList:[
+              {
+                  name: '20240408-乳牙早失间隙保持器的临床效果会议.word',
+                  type:'word'
+              }
+          ],
+        hyname:'乳牙早失间隙保持器的临床效果会议',
         name: '聚醚酮酮数字化乳牙早失间隙保持器的临床效果.xmind',
         time: '1小时53分钟',
         address: '天津市南开区红旗南路一中心总医院B座',
@@ -112,8 +126,8 @@ const rwList = ref(
 const rwList2 = ref(
     [ {
       id: '3',
-      name: '内镜黏膜术和内镜切除术的效果比较会议',
-      sshy: ' 青霉素的抗生素治疗肺炎探讨会议.word',
+      name: '青霉素的抗生素治疗肺炎探讨会议.mp3',
+      sshy: ' 青霉素的抗生素治疗肺炎探讨会议',
       hyTime: '2024-03-31 18:14:35',
       hyType: 'mp3',
       isCheck: false
@@ -239,6 +253,11 @@ const handleSubmit = ()=>{
     .list_title{
       font-size: 0.875em;
       font-weight: 550;
+      margin-left: 2vw;
+    }
+    .list_title1{
+      font-size: 0.75em;
+      //font-weight: 550;
       margin-left: 2vw;
     }
     .f-z-12{

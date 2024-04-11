@@ -47,7 +47,13 @@
           </div>
           <van-divider />
           <div class="m-b-10 f-z-12"><span style="color: #4BA3FB" >任务目标：</span>{{item.rwmb}}</div>
-          <div class="m-b-10 f-z-12"><span style="font-size: 12px;">{{item.time}}</span></div>
+          <div class="m-b-10 f-z-12" style="display: flex;justify-content: space-between">
+            <div>
+              <span style="color: #4BA3FB" >发布时间：</span>{{item.time}}
+            </div>
+            <van-tag type="primary">待处理</van-tag></div>
+
+<!--          <div class="m-b-10 f-z-12"><span style="font-size: 12px;color: #4BA3FB">发布时间：<span>{{item.time}}</span></span></div>-->
         </div>
       </div>
       <div class="box"></div>
@@ -69,6 +75,8 @@
           </div>
           <van-divider />
           <div class="m-b-10 f-z-12">任务目标：{{item.rwmb}}</div>
+          <div class="m-b-10 f-z-12"><span class="f-w">创建时间：</span>{{item.createtime}}</div>
+
           <div class="m-b-10 f-z-12"><span class="f-w">完成时间：</span>{{item.time}}</div>
 <!--          <van-image  width="70"-->
 <!--                      v-if="item.isShow"-->
@@ -99,22 +107,28 @@ const rwList = ref(
       id: '1',
       name: ' 生物标志物作为高血压患者风险评估的有效指标',
       rwmb:'纳入1000名已诊断高血压的患者，收集其血清样本，并运用生物化学方法进行分析。随访3年，观察心血管事件发生情况。',
-      time: '2024-04-07 15:15:35',
+      time: '2024-04-08 15:15:35',
+      createtime:'2024-04-08 15:15:35',
       isShow:false
     }, {
       id: '2',
+      createtime:'2024-04-08 15:15:35',
       name: '肠道微生物群在抑郁症发病机制中的作用研究',
       rwmb:'抑郁症是一种常见精神障碍，其发病机制尚不完全清楚。越来越多的研究表明肠道微生物与情绪和认知功能之间存在联系，但肠道微生物在抑郁症发病机制中的确切作用仍需深入探讨。',
-      time: '2024-03-25 09:15:35',
+      time: '2024-04-07 09:15:35',
       isShow:false
     } , {
       id: '3',
+      createtime:'2024-04-08 15:15:35',
+
       name: '机器学习算法改进手术风险评估模型的研究',
       rwmb:'手术风险评估在临床实践中至关重要，但传统的评估方法存在主观性和不足之处。机器学习技术的发展为利用大数据和多因素分析提供了新的可能性。',
       time: '2024-03-24 15:18:35',
       isShow:true
     }, {
       id: '4',
+      createtime:'2024-04-08 15:15:35',
+
       name: '基因编辑技术开发针对特定肿瘤的靶向药物研究',
       rwmb:'目前，传统化疗对一些复杂肿瘤存在治疗效果不佳或耐药性问题。基因编辑技术的发展为开发针对特定肿瘤的靶向药物提供了新的机会和挑战。',
       time: '2024-03-15 08:15:45',
@@ -124,14 +138,18 @@ const rwList = ref(
 const rwList1 = ref(
     [ {
       id: '2',
+      createtime:'2024-04-08 15:15:35',
+
       name: '肠道微生物群在抑郁症发病机制中的作用研究',
       rwmb:'抑郁症是一种常见精神障碍，其发病机制尚不完全清楚。越来越多的研究表明肠道微生物与情绪和认知功能之间存在联系，但肠道微生物在抑郁症发病机制中的确切作用仍需深入探讨。',
-      time: '2024-03-25 09:15:35'
+      time: '2024-04-11 09:15:35'
     } , {
       id: '3',
       name: '机器学习算法改进手术风险评估模型的研究',
       rwmb:'手术风险评估在临床实践中至关重要，但传统的评估方法存在主观性和不足之处。机器学习技术的发展为利用大数据和多因素分析提供了新的可能性。',
-      time: '2024-03-24 15:18:35'
+      time: '2024-04-12 15:18:35',
+      createtime:'2024-04-08 15:15:35',
+
     } ]
 );
 // const toDetail=()=>{

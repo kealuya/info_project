@@ -66,6 +66,12 @@ const router = createRouter({
           name: 'businessDetail',
           component: () => import('../pages/businessDetail/index.vue'),
         },
+          //文档详情
+        {
+          path: '/documentationDetail',
+          name: 'documentationDetail',
+          component: () => import('../pages/documentationDetail/index.vue'),
+        },
           //task processing
         {
           path: '/taskList',
@@ -90,6 +96,11 @@ const router = createRouter({
           path: '/applicationValue',
           name: 'applicationValue',
           component: () => import('../pages/applicationValue/index.vue'),
+        },
+        {
+          path: '/testNT',
+          name: 'testNT',
+          component: () => import('../pages/applicationValue/indexTest.vue'),
         },
           //有录音的页面
         {

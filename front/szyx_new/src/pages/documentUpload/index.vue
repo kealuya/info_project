@@ -9,11 +9,11 @@
 
     <div class="f-z-14-c">会议ID</div>
     <div class="f-z-16">WD2024040812552563</div>
-    <div style="display:flex;justify-content: space-between;align-items: center">
+<!--    <div style="display:flex;justify-content: space-between;align-items: center">-->
      <div>
        <div class="f-z-14-c m-t-10">会议标题</div>
-       <div class="f-z-16"> <van-field v-model="reasonForBorrowing" name="reasonForBorrowing"  placeholder="20240408会议1" /></div>
-     </div>
+      <van-field v-model="reasonForBorrowing" name="reasonForBorrowing"  placeholder="20240408会议1" />
+<!--     </div>-->
 
     </div>
   </div>
@@ -44,7 +44,7 @@
 
   <div class="cardTable" @click="handelMetting">
     <van-button type="primary" block style="width: 92%; margin: 20px"
-    >会议结束</van-button
+    >文档记录</van-button
     >
   </div>
   <van-dialog
