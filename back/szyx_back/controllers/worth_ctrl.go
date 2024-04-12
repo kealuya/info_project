@@ -16,6 +16,38 @@ type WorthCtrl struct {
 	beego.Controller
 }
 
+// @Title 导出申请的价值Excel提供数据js生成excel
+// @Tags ExportWorthExcel
+// @Summary 导出Excel
+// @accept application/json
+// @Produce application/json
+// @Param data body worth.Worth true "申请的价值"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"创建成功"}"
+// @router /exportWorthExcel [post]
+func (WorthCtrl *WorthCtrl) ExportExcel() {
+	resJson := NewJsonStruct(nil)
+	defer func() {
+		WorthCtrl.Data["json"] = resJson
+		WorthCtrl.ServeJSON()
+	}()
+
+	worth_param := new(worth.Worth)
+	var jsonByte = WorthCtrl.Ctx.Input.RequestBody
+	common.Unmarshal(jsonByte, &worth_param)
+	logs.Info("导出申请的价值入参：" + string(jsonByte))
+	//业务处理
+	list, err := models.ExportWorthExcel(worth_param)
+
+	if err == nil {
+		resJson.Success = true
+		resJson.Data = list
+		resJson.Msg = "导出成功"
+	} else {
+		resJson.Success = false
+		resJson.Msg = fmt.Sprintf("导出excel表失败:%v", err)
+	}
+}
+
 // @Title 申请价值
 // @Tags ApplyWorth
 // @Summary 申请价值
@@ -42,7 +74,7 @@ func (WorthCtrl *WorthCtrl) ApplyWorth() {
 		//resJson.Data = meetingRes
 	} else {
 		resJson.Success = false
-		resJson.Msg = fmt.Sprintf("申请价值失败::%s", err)
+		resJson.Msg = fmt.Sprintf("申请价值失败::%v", err)
 	}
 }
 

@@ -6,7 +6,6 @@ import (
 	"github.com/astaxie/beego/logs"
 	"path"
 	"szyx_back/common"
-	"szyx_back/configs"
 	"szyx_back/entity/kdxf"
 	"szyx_back/entity/meeting"
 	"szyx_back/models"
@@ -67,8 +66,12 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingAudioFile() {
 		MeetingCtrl.ServeJSON()
 	}()
 
-	file, h, _ := MeetingCtrl.GetFile("file") //获取上传的文件
-	//var userCorpCode = MeetingCtrl.GetString("meetingId") //获取会议ID
+	file, h, _ := MeetingCtrl.GetFile("file")       //获取上传的文件
+	meetingId := MeetingCtrl.GetString("meetingId") //获取会议ID
+	userId := MeetingCtrl.GetString("userId")       //用户ID
+
+	fmt.Println("------------" + meetingId)
+	fmt.Println("------------" + userId)
 
 	ext := path.Ext(h.Filename)
 	//fmt.Println("------------" + ext)
@@ -83,6 +86,7 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingAudioFile() {
 		flag = false
 		resJson.Success = false
 		resJson.Msg = "文件类型不正确"
+		return
 	}
 
 	uploadDir := "static/upload/"
@@ -105,23 +109,7 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingAudioFile() {
 		flag = false
 	}
 
-	//拼接路径
-	//audioFullPath := "/Users/zhanbaohua/webStorm_work/github.com/info_project/back/szyx_back/" + fpath
-	//audioFullPath := "/Users/zhanbaohua//github.com/info_project/back/kdxf_speech/src/main/audio/合成音频.wav"
-	//audioFullPath := "/Users/zhanbaohua/Downloads/demo/audio/3344555.m4a"
-	audioFullPath := configs.FILE_UPLOAD_URL + h.Filename
-	//调用的路径
-	logs.Info("调用路径" + audioFullPath)
-	////调用语音识别
-	responseStr := common.DoHttpPost_Audio(audioFullPath, h.Filename)
-
-	kdxf_audio_result := new(kdxf.Kdxf_audio_result)
-	common.Unmarshal([]byte(responseStr), &kdxf_audio_result)
-
-	if flag && kdxf_audio_result.Success == "true" {
-		resJson.Success = true
-		resJson.Msg = "上传成功,会议纪要已生成"
-	} else if flag {
+	if flag {
 		resJson.Success = true
 		resJson.Msg = "上传成功"
 	} else {
@@ -153,6 +141,7 @@ func (MeetingCtrl *MeetingCtrl) GetMeetingList() {
 	res, err := models.GetMeetingList(metting_param)
 	if err == nil {
 		resJson.Success = true
+		resJson.Msg = "操作成功"
 		resJson.Data = res
 	} else {
 		resJson.Success = false
@@ -182,6 +171,7 @@ func (MeetingCtrl *MeetingCtrl) ModifyMeeting() {
 	res, err := models.ModifyMeeting(metting)
 	if err == nil {
 		resJson.Success = true
+		resJson.Msg = "操作成功"
 		resJson.Data = res
 	} else {
 		resJson.Success = false
@@ -194,7 +184,7 @@ func (MeetingCtrl *MeetingCtrl) ModifyMeeting() {
 // @Summary 会议纪要
 // @accept application/json
 // @Produce application/json
-// @Param data body meeting.Meeting true "Meeting struct"
+// @Param data body kdxf.Kdxf_speech true "Kdxf_speech struct"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"会议纪要生成成功"}"
 // @router /createMeetingMminutes [post]
 func (MeetingCtrl *MeetingCtrl) CreateMeetingMminutes() {
@@ -203,14 +193,16 @@ func (MeetingCtrl *MeetingCtrl) CreateMeetingMminutes() {
 		MeetingCtrl.Data["json"] = resJson
 		MeetingCtrl.ServeJSON()
 	}()
-	metting := new(meeting.Meeting)
+	speech := new(kdxf.Kdxf_speech)
 	var jsonByte = MeetingCtrl.Ctx.Input.RequestBody
-	common.Unmarshal(jsonByte, &metting)
+	common.Unmarshal(jsonByte, &speech)
 	logs.Info("生成会议纪要入参：" + string(jsonByte))
 	//业务处理
-	res, err := models.CreateMeetingMminutes(metting)
+	res, err := models.CreateMeetingMminutes(speech)
+
 	if err == nil {
 		resJson.Success = true
+		resJson.Msg = "操作成功"
 		resJson.Data = res
 	} else {
 		resJson.Success = false
@@ -240,6 +232,7 @@ func (MeetingCtrl *MeetingCtrl) CreateMeetingBrainMap() {
 	res, err := models.CreateMeetingBrainMap(metting)
 	if err == nil {
 		resJson.Success = true
+		resJson.Msg = "操作成功"
 		resJson.Data = res
 	} else {
 		resJson.Success = false

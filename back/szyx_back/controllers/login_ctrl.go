@@ -28,7 +28,7 @@ type SysLoginController struct {
 func (sysLoginCrtl *SysLoginController) GetMessageCaptcha() {
 	resJson := NewJsonStruct(nil)
 	defer func() {
-		sysLoginCrtl.Data["json"] = string(common.Marshal(resJson))
+		sysLoginCrtl.Data["json"] = resJson
 		sysLoginCrtl.ServeJSON()
 	}()
 
@@ -60,6 +60,7 @@ func (sysLoginCrtl *SysLoginController) GetMessageCaptcha() {
 		common.ErrorHandler(err1, "验证码缓存失败")
 		if messageReturn.Success {
 			resJson.Success = true
+			resJson.Msg = "验证码发送成功"
 			resJson.Msg = messageReturn.Msg
 		} else {
 			resJson.Success = false
@@ -83,7 +84,7 @@ func (sysLoginCrtl *SysLoginController) GetMessageCaptcha() {
 func (sysLoginCrtl *SysLoginController) MessageLogin() {
 	resJson := NewJsonStruct(nil)
 	defer func() {
-		sysLoginCrtl.Data["json"] = string(common.Marshal(resJson))
+		sysLoginCrtl.Data["json"] = resJson
 		sysLoginCrtl.ServeJSON()
 	}()
 
@@ -131,6 +132,7 @@ func (sysLoginCrtl *SysLoginController) MessageLogin() {
 				resJson.Msg = loginResp.Msg
 			}
 		} else {
+			resJson.Msg = "验证码输入不正确"
 			resJson.Data = "验证码输入不正确"
 		}
 	}

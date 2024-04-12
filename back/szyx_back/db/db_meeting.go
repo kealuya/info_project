@@ -68,7 +68,7 @@ func GetMeetingList(info *meeting.MeetingList_Param) (res meeting.MeetingList_Re
 	}
 
 	res.MeetingList = meetingList
-	res.TotalCount = int64(len(selCountRes))
+	res.TotalCount = int64(len(meetingListCount))
 
 	return res, err
 }

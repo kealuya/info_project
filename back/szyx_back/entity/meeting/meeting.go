@@ -11,9 +11,9 @@ type Meeting struct {
 	MeetingCity            string `json:"meetingCity" description:"会议城市" `
 	MeetingAddress         string `json:"meetingAddress" description:"会议地址" `
 	MeetingPeople          string `json:"meetingPeople" description:"参会人" `
-	MeetingAudioFileUrl    string `json:"meetingAudioFileUrl" description:"音频文件地址'；'分隔" `
-	MeetingMminutesFileUrl string `json:"meetingMminutesFileUrl" description:"会议纪要地址" `
-	MeetingBrainMapFileUrl string `json:"meetingBrainMapFileUrl" description:"会议脑图地址" `
+	MeetingAudioFileUrl    string `json:"meetingAudioFileUrl" description:"音频文件地址'；'分隔" ` //完成任务是选择文件，不是选择会议，分表处理，存到speech中
+	MeetingMminutesFileUrl string `json:"meetingMminutesFileUrl" description:"会议纪要地址" `   //完成任务是选择文件，不是选择会议，分表处理，存到speech中
+	MeetingBrainMapFileUrl string `json:"meetingBrainMapFileUrl" description:"会议脑图地址" `   //完成任务是选择文件，不是选择会议，分表处理，存到file中
 }
 
 //获取会议列表-入参
