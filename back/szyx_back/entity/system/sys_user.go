@@ -76,8 +76,10 @@ type LoginRequestPar struct {
 }
 
 type MessageAlibaba struct {
-	Phone string `json:"phone"`
-	Code  string `json:"code"`
+	Phone        string `json:"phone"`
+	Code         string `json:"code"`
+	Sign         string `json:"sign"`
+	TemplateName string `json:"templateName"`
 }
 type MessageAlibabaReturn struct {
 	Success bool   `json:"success"`
