@@ -59,10 +59,12 @@ import bgc from "../../assets/img/home_05.png";
 const router = useRouter()
 const isComplete = ref<Boolean>(false)
 const title = ref<string>('任务详情')
-const taskTitle = ref<string>('竞品使用情况调查')
+const taskTitle = ref<string>('企业收集客户资料，了解客户需求')
 const picSrc = ref<string>(bgc)
-const target = ref<string>('了解竞品在临床和市场的使用状况。')
-const content = ref<string>('&nbsp;通过走访医院、药房等渠道,调查竞品产品的医生开具率、患者使用反馈、市场占有率等情况,并收集相关资料。')
+const target = ref<string>('在网站上设置注册表单，让用户填写基本信息如姓名、电子邮件地址等。设计问卷并在网站、社交媒体或邮件中分享，收集客户反馈和信息。\n' +
+    '\n')
+const content = ref<string>('这些渠道可以帮助企业收集客户资料，了解客户需求、兴趣和行为，从而更好地定制营销策略和提供个性化的服务。\n' +
+    '在收集客户信息时，务必遵守相关的隐私政策和法律法规，保护客户数据安全和隐私。进行定向市场调研，直接询问客户关于其需求和偏好的信息。')
 const onClickLeft = () => {
   // history.go(-2)
   router.replace('/homeNew')

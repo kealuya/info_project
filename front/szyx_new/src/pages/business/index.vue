@@ -76,16 +76,16 @@ const showDate = ref<boolean>(false)
 //业务数据列表
     const ywList = ref([{
       id: '1',
-      name: '聚醚酮酮数字化临床效果会议',
+      name: '针对当前互联网营销策略会议',
       time: '1小时53分钟',
-      address: '天津市南开区红旗南路一中心总医院B座',
+      address: '天津市南开区红旗南路大厦B座',
       hyTime: '2024-04-07 15:15:35',
       isGlrw: true,
       hyType: true,
       isCheck: 'fasle'
     }, {
       id: '2',
-      name: '青霉素的抗生素治疗肺炎探讨会议',
+      name: '分析驱动销售带来的影响',
       time: '2小时24分钟',
       address: '浙江省杭州市西湖区文三路138号东方通信大厦',
       hyTime: '2024-04-06 13:14:05',
@@ -94,9 +94,9 @@ const showDate = ref<boolean>(false)
       isCheck: 'fasle'
     }, {
       id: '3',
-      name: '支原体抗生素大环内酯类的研究会议',
+      name: '在线消费趋势，探索互联网销售的未来\n',
       time: '34分钟',
-      address: '北京市海淀区北京第三人民医院文三路138号',
+      address: '北京市海淀区北京东方文三路138号',
       hyTime: '2024-04-06 09:17:15',
       isGlrw: false,
         hyType: false,

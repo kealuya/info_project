@@ -44,7 +44,7 @@
   </van-row>
   <div class="mt5">
     <van-row class="mt10 card_padding" align="center">
-      <span class="title">任务发布</span> <span style="color: #bbc2cc; font-size: 12px;margin: 5px 10px 0">更多海量任务、科研成果共享完成</span>
+      <span class="title">任务发布</span> <span style="color: #bbc2cc; font-size: 12px;margin: 5px 10px 0">更多海量任务、为营销提供清晰的方向</span>
     </van-row>
     <div>
     </div>
@@ -55,10 +55,11 @@
     <div class="task2  f_white">
       <div class="task_card">
         <div class="task_title">
-          了解特定药品在治疗某些疾病时的疗效和患者反馈。
+          互联网销售的目标设定、客户分析
         </div>
         <div class="content-font">
-          与医生、患者或相关人员进行访谈,收集某种药品在临床使用中的疗效数据、不良反应情况、用药体验等。可以录音或记录文字资料。
+          增加销售额等利用搜索引擎广告（如谷歌广告）提高网站曝光度，
+          吸引潜在客户。分析目标客户群体的特征、偏好和行为，以便制定针对性的推广策略。
         </div>
       </div>
       <div class="btn"  @click="toDetail">
@@ -86,10 +87,10 @@
     <div class="task3  f_white">
       <div class="task_card">
         <div class="task_title">
-          掌握某些常见疾病的诊疗方案和用药指南。
+          通过社交媒体提升品牌知名度
         </div>
         <div class="content-font">
-          与医院专家访谈,或查阅相关文献资料,了解针对某类疾病的诊断流程、治疗方案、推荐用药等,形成诊疗方案概要。
+          确定目标受众特征，了解其兴趣、需求和行为习惯。 创作有吸引力、有价值的内容，包括文章、视频、图片等，以满足受众需求。
         </div>
       </div>
       <div class="btn" @click="toDetail2">
@@ -101,10 +102,10 @@
     <div class="task4  f_white" >
       <div class="task_card">
         <div class="task_title">
-          及时获取同行业新上市药品的信息。
+          内容营销长期策略
         </div>
         <div class="content-font">
-          关注行业内新药上市动态,及时采集新药的适应症、功能主治、使用说明、销售情况等资料。
+          持续发布新内容可以吸引用户回访，保持用户对品牌的关注度。不断推出有价值的内容可以加强品牌在目标受众中的认知和印象。
         </div>
       </div>
       <div class="btn" @click="toDetail3">
@@ -116,10 +117,10 @@
     <div class="task5  f_white">
       <div class="task_card">
         <div class="task_title">
-          了解竞品在临床和市场的使用状况。
+          企业收集客户资料，了解客户需求
         </div>
         <div class="content-font">
-          通过走访医院、药房等渠道,调查竞品产品的医生开具率、患者使用反馈、市场占有率等情况,并收集相关资料
+          在网站上设置注册表单，让用户填写基本信息如姓名、电子邮件地址等。设计问卷并在网站、社交媒体或邮件中分享，收集客户反馈和信息。
         </div>
       </div>
       <div class="btn" @click="toDetail4">

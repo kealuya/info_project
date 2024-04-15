@@ -17,7 +17,7 @@ const active = ref('homeMetting');
 const route = useRoute();
 const router = useRouter();
 const isShowTabBar=ref<boolean>(false)
-const noSHowTabBarPathList=['/speech','/task','/taskDetail']
+const noSHowTabBarPathList=[]
 watch(() => route.path, (value) => {
   isShowTabBar.value=!noSHowTabBarPathList.includes(value)
 },{

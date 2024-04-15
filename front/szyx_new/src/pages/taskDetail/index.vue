@@ -55,10 +55,12 @@ const router = useRouter();
 const isLoading = ref(false)
 const isComplete = ref<Boolean>(false)
 const title = ref<string>('任务详情')
-const taskTitle = ref<string>('药品疗效采访')
+const taskTitle = ref<string>('互联网销售的目标设定、客户分析\n')
 const picSrc = ref<string>(bgc)
-const target = ref<string>('了解特定药品在治疗某些疾病时的疗效和患者反馈。')
-const content = ref<string>('与医生、患者或相关人员进行访谈,收集某种药品在临床使用中的疗效数据、不良反应情况、用药体验等。可以录音或记录文字资料。\n')
+const target = ref<string>('确定推广的具体目标，如增加网站流量、提高转化率。')
+const content = ref<string>('增加销售额等利用搜索引擎广告（如谷歌广告）提高网站曝光度，\n' +
+    '吸引潜在客户。分析目标客户群体的特征、偏好和行为，以便制定针对性的推广策略。关注留存率、重复购买率等指标，确保客户满意度并提高忠诚度。\n' +
+    '分析客户的购买历史、浏览习惯、交互行为，了解他们的偏好和需求。确定客户的重要性和价值，重点关注高价值客户，并提供相应服务和优惠。\n')
 const onClickLeft = () => {
   // history.go(-2)
   router.replace('/homeNew')

@@ -161,7 +161,7 @@ const handleJump = ()=>{
 }
 const jzList = ref([{
   id: '1',
-  name: '肠道微生物群在抑郁症发病机制中的作用研究',
+  name: '2024年数字化转型互联网营销驱动销售会议',
   number: '67分',
   sqje: '12,000',
   time: '2024-04-07 15:15:35',
@@ -169,7 +169,7 @@ const jzList = ref([{
   isCheck:false
 }, {
   id: '2',
-  name: '利用机器学习算法改进手术风险评估模型的研究',
+  name: '销售达人高峰会',
   number: '78.5分',
   sqje: '32,000',
   time: '2024-04-06 15:19:45',
@@ -178,7 +178,7 @@ const jzList = ref([{
 
 }, {
   id: '3',
-  name: '利用CRISPR等技术进行基因编辑',
+  name: '融合营销创新打造高效团队讨论会议',
   number: '58.5分',
   sqje: '10,500',
   time: '2024-04-05 14:15:35',
@@ -188,7 +188,7 @@ const jzList = ref([{
 } ])
 const jzList1 = ref([{
   id: '1',
-  name: '抑郁症发病机制中和药物是否产生病理反应',
+  name: '共创市场领先营销销售策略探讨会议',
   number: '87分',
   sqje: '32,000',
   time: '2024-04-05 15:15:35',
@@ -197,7 +197,7 @@ const jzList1 = ref([{
   isShow:false
 }, {
   id: '2',
-  name: '心脏手术风险评估模型与临床实验的结合',
+  name: '拓展市场空间销售策略优化与执行相关会议',
   number: '78.5分',
   sqje: '32,000',
   time: '2024-04-06 15:19:45',

@@ -69,10 +69,11 @@ import bgc from "../../assets/img/home_01.png";
 const router = useRouter()
 const isComplete = ref<Boolean>(false)
 const title = ref<string>('任务详情')
-const taskTitle = ref<string>('疾病诊疗方案调研')
+const taskTitle = ref<string>('通过社交媒体提升品牌知名度')
 const picSrc = ref<string>(bgc)
-const target = ref<string>('掌握某些常见疾病的诊疗方案和用药指南。')
-const content = ref<string>('与医院专家访谈,或查阅相关文献资料,了解针对某类疾病的诊断流程、治疗方案、推荐用药等,形成诊疗方案概要\n')
+const target = ref<string>('确定目标受众特征，了解其兴趣、需求和行为习惯。 创作有吸引力、有价值的内容，包括文章、视频、图片等，以满足受众需求')
+const content = ref<string>('据目标受众的偏好选择合适的社交媒体平台，如Facebook、Instagram、LinkedIn等。定期更新内容，保持与受众的互动，并回复评论和消息。\n' +
+    '在不同平台上保持品牌形象一致，包括语调、视觉风格等，以增强品牌辨识度。追踪社交媒体表现及内容营销效果，根据数据分析进行调整优化。\n')
 const onClickLeft = () => {
   // history.go(-2)
   router.replace('/homeNew')

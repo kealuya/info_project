@@ -69,10 +69,11 @@ import {ref} from "vue";
 const router = useRouter()
 const isComplete = ref<Boolean>(false)
 const title = ref<string>('任务详情')
-const taskTitle = ref<string>('新药上市情况跟踪')
+const taskTitle = ref<string>('内容营销长期策略')
 const picSrc = ref<string>(bgc)
-const target = ref<string>('及时获取同行业新上市药品的信息。')
-const content = ref<string>('关注行业内新药上市动态,及时采集新药的适应症、功能主治、使用说明、销售情况等资料。')
+const target = ref<string>('持续发布新内容可以吸引用户回访，保持用户对品牌的关注度。不断推出有价值的内容可以加强品牌在目标受众中的认知和印象。')
+const content = ref<string>('随着时间推移，行业知识和信息可能会发生变化，持续更新内容可确保信息的准确性和有效性。\n' +
+    '因此，持续更新和改进内容是内容营销成功的关键，有助于建立稳固的品牌声誉、吸引用户并保持用户忠诚度。\n')
 const onClickLeft = () => {
   // history.go(-2)
   router.replace('/homeNew')
