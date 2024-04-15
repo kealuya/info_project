@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
-	"szyx_back/common"
+	jsoniter "github.com/json-iterator/go"
 	"szyx_back/entity/worth"
 	"szyx_back/models"
 )
@@ -33,8 +33,13 @@ func (WorthCtrl *WorthCtrl) ExportExcel() {
 
 	worth_param := new(worth.Worth)
 	var jsonByte = WorthCtrl.Ctx.Input.RequestBody
-	common.Unmarshal(jsonByte, &worth_param)
 	logs.Info("导出申请的价值入参：" + string(jsonByte))
+	paramerr := jsoniter.Unmarshal(jsonByte, &worth_param)
+	if paramerr != nil {
+		resJson.Success = false
+		resJson.Msg = "入参有误"
+		return
+	}
 	//业务处理
 	list, err := models.ExportWorthExcel(worth_param)
 
@@ -64,14 +69,18 @@ func (WorthCtrl *WorthCtrl) ApplyWorth() {
 	}()
 	worth_param := new(worth.Worth)
 	var jsonByte = WorthCtrl.Ctx.Input.RequestBody
-	common.Unmarshal(jsonByte, &worth_param)
 	logs.Info("申请价值入参：" + string(jsonByte))
+	paramerr := jsoniter.Unmarshal(jsonByte, &worth_param)
+	if paramerr != nil {
+		resJson.Success = false
+		resJson.Msg = "入参有误"
+		return
+	}
 	//业务处理
 	err := models.ApplyWorth(worth_param)
 	if err == nil {
 		resJson.Success = true
 		resJson.Msg = "申请价值成功"
-		//resJson.Data = meetingRes
 	} else {
 		resJson.Success = false
 		resJson.Msg = fmt.Sprintf("申请价值失败::%v", err)
@@ -94,8 +103,13 @@ func (WorthCtrl *WorthCtrl) GetWorthList() {
 	}()
 	worthList_Param := new(worth.WorthList_Param)
 	var jsonByte = WorthCtrl.Ctx.Input.RequestBody
-	common.Unmarshal(jsonByte, &worthList_Param)
-	logs.Info("申请列表入参：" + string(jsonByte))
+	logs.Info("价值列表入参：" + string(jsonByte))
+	paramerr := jsoniter.Unmarshal(jsonByte, &worthList_Param)
+	if paramerr != nil {
+		resJson.Success = false
+		resJson.Msg = "入参有误"
+		return
+	}
 	//业务处理
 	worthList, err := models.GetWorthList(worthList_Param)
 	if err == nil {

@@ -13,20 +13,21 @@ func ModifyWorthApply(info *worth.Worth) (res worth.Worth, msg error) {
 	//修改价值
 	currentTime := time.Now().Format("2006-01-02 15:04:05")
 	var Param []interface{}
-	Param = append(Param, info.Status)
+	Param = append(Param, common.MY_WORTH_APPLY_FLAG_KEY_1)
 	Param = append(Param, currentTime)
 	Param = append(Param, info.UserId)
+	Param = append(Param, info.CorpCode)
 
-	num, err := dbHandler.Update(db_handler.ModifyMeetingAudioFileUrl_sql, Param...)
+	num, err := dbHandler.Update(db_handler.ModifyWorthByApplyWorth_sql, Param...)
 	if num <= 0 {
 		common.ErrorHandler(err, "价值申请数据库保存发生错误!")
 	} else {
 		//查询价值，返回前台展示
-		res1, err1 := dbHandler.SelectOne(db_handler.ModifyWorthByApplyWorth_sql, info.WorthId)
+		res1, err1 := dbHandler.SelectOne(db_handler.SelectWorthById_sql, info.WorthId)
 		if len(res1) > 0 && err1 == nil {
 			decoder := ObtainDecoderConfig(&res)
 			err := decoder.Decode(res1)
-			common.ErrorHandler(err, "价值申请数据库保存转换发生错误!")
+			common.ErrorHandler(err, "价值申请数据库查询转换发生错误!")
 		} else {
 			err = err1
 		}

@@ -27,6 +27,12 @@ func init() {
 			beego.NSNamespace("/meeting",
 				beego.NSInclude(&controllers.MeetingCtrl{}),
 			),
+			beego.NSNamespace("/task",
+				beego.NSInclude(&controllers.TaskCtrl{}),
+			),
+			beego.NSNamespace("/worth",
+				beego.NSInclude(&controllers.WorthCtrl{}),
+			),
 			//----------发票识别、验真相关- 开始 ----------------
 			beego.NSNamespace("/invoice",
 				beego.NSRouter("/getInvoiceWbList", &controllers.InvoiceToSzyxApi{}, "post:GetInvoiceWbList"),

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
+	jsoniter "github.com/json-iterator/go"
 	"path"
-	"szyx_back/common"
 	"szyx_back/entity/kdxf"
 	"szyx_back/entity/meeting"
 	"szyx_back/models"
@@ -31,8 +31,13 @@ func (MeetingCtrl *MeetingCtrl) CreateMeeting() {
 	}()
 	metting := new(meeting.Meeting)
 	var jsonByte = MeetingCtrl.Ctx.Input.RequestBody
-	common.Unmarshal(jsonByte, &metting)
 	logs.Info("创建会议入参：" + string(jsonByte))
+	paramerr := jsoniter.Unmarshal(jsonByte, &metting)
+	if paramerr != nil {
+		resJson.Success = false
+		resJson.Msg = "入参有误"
+		return
+	}
 	//业务处理
 	err := models.CreateMeeting(metting)
 	if err == nil {
@@ -135,8 +140,13 @@ func (MeetingCtrl *MeetingCtrl) GetMeetingList() {
 	}()
 	metting_param := new(meeting.MeetingList_Param)
 	var jsonByte = MeetingCtrl.Ctx.Input.RequestBody
-	common.Unmarshal(jsonByte, &metting_param)
 	logs.Info("查询会议列表入参：" + string(jsonByte))
+	paramerr := jsoniter.Unmarshal(jsonByte, &metting_param)
+	if paramerr != nil {
+		resJson.Success = false
+		resJson.Msg = "入参有误"
+		return
+	}
 	//业务处理
 	res, err := models.GetMeetingList(metting_param)
 	if err == nil {
@@ -165,8 +175,13 @@ func (MeetingCtrl *MeetingCtrl) ModifyMeeting() {
 	}()
 	metting := new(meeting.Meeting)
 	var jsonByte = MeetingCtrl.Ctx.Input.RequestBody
-	common.Unmarshal(jsonByte, &metting)
 	logs.Info("修改会议入参：" + string(jsonByte))
+	paramerr := jsoniter.Unmarshal(jsonByte, &metting)
+	if paramerr != nil {
+		resJson.Success = false
+		resJson.Msg = "入参有误"
+		return
+	}
 	//业务处理
 	res, err := models.ModifyMeeting(metting)
 	if err == nil {
@@ -195,8 +210,13 @@ func (MeetingCtrl *MeetingCtrl) CreateMeetingMminutes() {
 	}()
 	speech := new(kdxf.Kdxf_speech)
 	var jsonByte = MeetingCtrl.Ctx.Input.RequestBody
-	common.Unmarshal(jsonByte, &speech)
 	logs.Info("生成会议纪要入参：" + string(jsonByte))
+	paramerr := jsoniter.Unmarshal(jsonByte, &speech)
+	if paramerr != nil {
+		resJson.Success = false
+		resJson.Msg = "入参有误"
+		return
+	}
 	//业务处理
 	res, err := models.CreateMeetingMminutes(speech)
 
@@ -226,8 +246,13 @@ func (MeetingCtrl *MeetingCtrl) CreateMeetingBrainMap() {
 	}()
 	metting := new(meeting.Meeting)
 	var jsonByte = MeetingCtrl.Ctx.Input.RequestBody
-	common.Unmarshal(jsonByte, &metting)
 	logs.Info("生成会议脑图入参：" + string(jsonByte))
+	paramerr := jsoniter.Unmarshal(jsonByte, &metting)
+	if paramerr != nil {
+		resJson.Success = false
+		resJson.Msg = "入参有误"
+		return
+	}
 	//业务处理
 	res, err := models.CreateMeetingBrainMap(metting)
 	if err == nil {
