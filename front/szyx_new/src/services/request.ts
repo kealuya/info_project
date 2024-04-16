@@ -27,7 +27,9 @@ instance.interceptors.request.use(
             }
             const userInfoState: any = userInfoData();
             if (Object.keys(userInfoState.userInfo).length !== 0) {
-                config.data['corpCode'] = userInfoState.userInfo.corpCode || '';
+                // config.data['corpCode'] = 'MX';
+
+                // config.data['corpCode'] = userInfoState.userInfo.corpCode || '';
                 // config.data['empCode'] = userInfoState.userInfo.empCode || '';
             }
         }

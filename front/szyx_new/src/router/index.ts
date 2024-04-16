@@ -7,7 +7,7 @@ import {userInfoData} from "../store";
 const router = createRouter({
   history: createWebHashHistory(),
   routes: [
-    { path: '/', redirect: '/login' },
+    { path: '/', redirect: '/homeNew' },
     {
       path: '/home',
       name: '首页',
@@ -199,7 +199,7 @@ const router = createRouter({
     {
       path:'/login',
       name: 'login',
-      component: () => import('../pages/loginMetting/login.vue'),
+      component: () => import('../LoginXs.vue'),
       meta: {
         keepAlive: true  // 需要缓存的页面配置
       }
@@ -521,25 +521,28 @@ const router = createRouter({
   ]
 })
 
-// router.beforeEach((to,from,next)=>{
-//   // 模拟url登陆地址导航栏截取
-//   // const url='http://122.9.41.215/fk_move/MapprList?userid=1815&school=szht6666'
-//   // let urlOne = url.split('?');
-//   // let userInfo=urlOne[1].split('&');
-//   // let userId =userInfo[0].replaceAll('userid=','');
-//   // let qyId=userInfo[1].replaceAll('school=','');
-//   const userInfoState: any = userInfoData();
-//   const store = userInfoData()
-//   if (to.path === '/login' || to.path === '/404'||to.path ==="/privacyPolicy"||to.path==='/userAgreement') {
-//     next();
-//   } else {
-//     if (Object.keys(userInfoState.userInfo).length === 0) {
-//       next('/login');
-//     } else {
-//       next();
-//     }
-//   }
-//
-// })
+
+router.beforeEach((to,from,next)=>{
+  // 模拟url登陆地址导航栏截取
+  // const url='http://122.9.41.215/fk_move/MapprList?userid=1815&school=szht6666'
+  // let urlOne = url.split('?');
+  // let userInfo=urlOne[1].split('&');
+  // let userId =userInfo[0].replaceAll('userid=','');
+  // let qyId=userInfo[1].replaceAll('school=','');
+  const userInfoState: any = userInfoData();
+  console.log(userInfoState)
+  const store = userInfoData()
+  if (to.path === '/login' || to.path === '/404'||to.path ==="/privacyPolicy"||to.path==='/userAgreement') {
+    next();
+  } else {
+    if (userInfoState.userInfo==null) {
+      next('/login');
+    } else {
+      next();
+    }
+  }
+
+})
+
 
 export default router
