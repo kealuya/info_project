@@ -15,6 +15,7 @@ type MyTask struct {
 	Flag       string `json:"flag" description:"完成状态" `
 	FinishTime string `json:"finishTime" description:"完成时间" `
 	TaskData   string `json:"taskData" description:"资料id集合；分割" `
+	MeetingId   string `json:"meetingId" description:"关联的会议ID，用于完成任务关联会议下的会议文件" `
 	//FIXME base 字段，上面的写法，在查询db后，不能赋值
 	CorpName   string `json:"corpName" description:"企业名称" `
 	CorpCode   string `json:"corpCode" description:"企业code"`

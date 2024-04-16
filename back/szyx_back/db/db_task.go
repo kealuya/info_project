@@ -101,7 +101,7 @@ func ApplyJoinTask(info *task.MyTask) (msg error) {
 	Param = append(Param, info.UserId)
 	Param = append(Param, info.UserName)
 	Param = append(Param, info.UserMobile)
-	Param = append(Param, info.Flag)
+	Param = append(Param, common.MY_TASK_FLAG_KEY_0) // 任务状态 0.待完成 1.已完成。首次调用申请任务 固定为待完成
 	Param = append(Param, info.FinishTime)
 	Param = append(Param, info.TaskData)
 	num, err := dbHandler.Insert(db_handler.ApplyJoinTask_sql, Param...)
@@ -185,6 +185,7 @@ func FinishMyTask(info *task.MyTask) (msg error) {
 	//完成任务数据组装
 	var finishParam []interface{}
 	finishParam = append(finishParam, common.MY_TASK_FLAG_KEY_1)
+	finishParam = append(finishParam, info.MeetingId)//关联的会议ID，用于完成任务关联会议下的会议文件
 	finishParam = append(finishParam, currentTime)
 	finishParam = append(finishParam, info.TaskId)
 	finishParam = append(finishParam, info.UserId)

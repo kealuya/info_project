@@ -63,7 +63,7 @@ const (
 						createTime DESC`
 
 	ModifyMyTask_sql = `update kdxf_mytask set
-									flag = ?,finishTime = ?
+									flag = ?,finishTime = ?,meetingId = ?
 								where 
 									taskId = ? and userId = ? and corpCode = ?
 								`

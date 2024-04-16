@@ -51,7 +51,7 @@ func (TaskCtrl *TaskCtrl) CreateTask() {
 }
 
 // @Title 任务池列表
-// @Tags GetTaskList
+// @Tags GetTaskPoolList
 // @Summary 任务池列表
 // @accept application/json
 // @Produce application/json
