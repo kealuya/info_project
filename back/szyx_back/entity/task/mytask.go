@@ -12,7 +12,7 @@ type MyTask struct {
 	UserId     string `json:"userId" description:"用户ID" `
 	UserName   string `json:"userName" description:"用户姓名" `
 	UserMobile string `json:"userMobile" description:"用户手机号" `
-	Flag       string `json:"flag" description:"完成状态" `
+	Flag       string `json:"flag" description:"完成状态" `  // 任务状态    0.待完成    1.已完成
 	FinishTime string `json:"finishTime" description:"完成时间" `
 	TaskData   string `json:"taskData" description:"资料id集合；分割" `
 	MeetingId   string `json:"meetingId" description:"关联的会议ID，用于完成任务关联会议下的会议文件" `

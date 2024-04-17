@@ -86,7 +86,7 @@ func (TaskCtrl *TaskCtrl) GetTaskPoolList() {
 	}
 }
 
-// @Title 用户任务列表
+// @Title 用户个人任务列表
 // @Tags GetTaskList
 // @Summary 用户任务列表
 // @accept application/json

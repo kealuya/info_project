@@ -121,6 +121,7 @@ func GetTaskList(info *task.MyTaskList_Param) (res task.MyTaskList_Result, msg e
 	var Param []interface{}
 	Param = append(Param, info.CorpCode)
 	Param = append(Param, info.Flag)
+	Param = append(Param, info.UserId)
 
 	//计算limit起始值
 	startNum := (info.CurrentPage - 1) * info.PageSize
@@ -136,21 +137,20 @@ func GetTaskList(info *task.MyTaskList_Param) (res task.MyTaskList_Result, msg e
 		err1 := decoder.Decode(selRes)
 		common.ErrorHandler(err1, "我的任务列表信息转换发生错误!")
 	}
-
+	//查询列表总条数
 	myTaskListCount := []task.MyTask{}
 	var ParamCount []interface{}
 	ParamCount = append(ParamCount, info.CorpCode)
 	ParamCount = append(ParamCount, info.Flag)
+	ParamCount = append(ParamCount, info.UserId)
 	selCountRes, err2 := dbHandler.SelectList(db_handler.GetTaskListCount_sql, ParamCount...)
 	if err2 == nil {
 		decoder := ObtainDecoderConfig(&myTaskListCount)
 		err1 := decoder.Decode(selCountRes)
 		common.ErrorHandler(err1, "我的任务列表分页信息转换发生错误!")
 	}
-
 	res.MyTaskList = myTaskList
 	res.TotalCount = int64(len(myTaskListCount))
-
 	return res, err
 }
 

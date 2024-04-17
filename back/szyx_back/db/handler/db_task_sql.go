@@ -56,10 +56,10 @@ const (
 													TaskData
 												)values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 
-	GetTaskList_sql = `select * from  kdxf_mytask where corpCode = ? and flag = ? ORDER BY 
+	GetTaskList_sql = `select * from  kdxf_mytask where corpCode = ? and flag = ? and userId = ? ORDER BY 
 						createTime DESC  limit ?,? `
 
-	GetTaskListCount_sql = `select * from  kdxf_mytask where corpCode = ? and flag = ? ORDER BY 
+	GetTaskListCount_sql = `select * from  kdxf_mytask where corpCode = ? and flag = ? and userId = ? ORDER BY 
 						createTime DESC`
 
 	ModifyMyTask_sql = `update kdxf_mytask set
