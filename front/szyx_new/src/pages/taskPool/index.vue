@@ -1,70 +1,56 @@
 
 <template>
   <van-nav-bar
-      title="任务列表"
+      title="任务池列表"
       left-text="返回"
       left-arrow
       @click-left="onClickLeft"
   />
-  <van-tabs v-model:active="active" @change="changeList">
-    <van-tab title="我的任务">
-      <div class="list">
-        <div class="list_cardtask" v-for="item in rwList" @click="businessDetailHandle">
+  <van-pull-refresh   v-model="isLoading" success-text="刷新成功" @refresh="onRefresh" :disabled="isShowImg">
+    <van-list
+        :finished-text="finishText"
+        v-model:loading="loading"
+        :finished="finished"
+        finished-text="没有更多了"
+        @load = "getList()"
+
+    >
+      <div class="list"   v-if="!isShowImg">
+        <div class="list_cardtask" v-for="item in listData">
           <div class="m-b-10 icon">
             <van-image
                 width="20"
                 height="20"
                 :src="businessIcon"
             />
-            <div class="list_title">{{item.name}}</div>
-
+            <div class="list_title">{{item.taskTitle}}</div>
           </div>
           <van-divider />
-          <div class="m-b-10 f-z-12"><span style="color: #4BA3FB" >任务目标：</span>{{item.rwmb}}</div>
+          <div class="m-b-10 f-z-12"><span style="color: #4BA3FB" >任务目标：</span>{{item.taskTarget}}</div>
+          <div class="m-b-10 f-z-12"><span style="color: #4BA3FB" >任务类型：</span>{{item.taskType}}</div>
           <div class="m-b-10 f-z-12" style="display: flex;justify-content: space-between">
             <div>
-              <span style="color: #4BA3FB" >发布时间：</span>{{item.time}}
+              <span style="color: #4BA3FB" >创建时间：</span>{{item.createTime}}
             </div>
-            <van-tag type="primary">待处理</van-tag></div>
-
-<!--          <div class="m-b-10 f-z-12"><span style="font-size: 12px;color: #4BA3FB">发布时间：<span>{{item.time}}</span></span></div>-->
-        </div>
-      </div>
-      <div class="box"></div>
-    </van-tab>
-    <van-tab title="已完成">
-      <div class="list">
-        <div class="list_card" v-for="item in rwList1" @click="businessDetailHandle">
-          <div class="flex-space m-b-10">
-            <van-image
-                width="20"
-                height="20"
-                :src="businessIcon"
-            />
-            <div class="list_title">{{item.name}}</div>
-            <van-image  width="72"
-
-                        height="60"
-                        :src="yiwancheng" style="position:absolute;right:8vw;top:4vw"></van-image>
+            <van-tag type="success" v-if="item.taskStatus==1">已完成</van-tag>
+            <van-tag type="danger" v-else-if="item.taskStatus==0">未完成</van-tag>
           </div>
-          <van-divider />
-          <div class="m-b-10 f-z-12">任务目标：{{item.rwmb}}</div>
-          <div class="m-b-10 f-z-12"><span class="f-w">创建时间：</span>{{item.createtime}}</div>
-
-          <div class="m-b-10 f-z-12"><span class="f-w">完成时间：</span>{{item.time}}</div>
-<!--          <van-image  width="70"-->
-<!--                      v-if="item.isShow"-->
-<!--                      height="70"-->
-<!--                      :src="daiwancheng" style="position:absolute;right:8vw;top:4vw"></van-image>-->
+          <!--          <div class="m-b-10 f-z-12"><span style="font-size: 12px;color: #4BA3FB">发布时间：<span>{{item.time}}</span></span></div>-->
         </div>
       </div>
-    </van-tab>
-  </van-tabs>
+      <div v-else>
+        <img :src="empty" alt="" class="img">
+      </div>
+    </van-list>
+  </van-pull-refresh>
+  <div style="height:60px"></div>
 </template>
 
 <script setup lang="ts">
-import {getTaskList} from '../../services/index'
-import {inject, onMounted, ref} from 'vue';
+import {onBeforeMount, onMounted, ref,nextTick } from 'vue';
+import { showFailToast } from 'vant';
+import {getTaskPoolList} from "../../services/index";
+import empty from '../../assets/img/zanwupiaoju.png'
 import  daiwancheng from '../../assets/img/daiwancheng.png'
 import  yiwancheng from '../../assets/img/yiwancheng.png'
 import shenqingdanIcon from  '../../assets/img/shenqingdan.png';
@@ -74,86 +60,36 @@ import {useRouter} from "vue-router";
 import businessIcon from "../../assets/img/business_icon.png";
 import screening_01 from "../../assets/icon/screening_01.png";
 import screening_02 from "../../assets/icon/screening_02.png";
+interface  LISTTYPE{
+  bz1: String,
+  bz2: String,
+  bz3: String,
+  corpCode:String,
+  corpName:String,
+  createTime:String,
+  creater:String,
+  taskContent:String,
+  taskId:String,
+  taskImg:String,
+  taskStatus:Number,
+  taskTarget:String,
+  taskTitle:String,
+  taskType:String
+}
 const active = ref(0);
 const router = useRouter()
-interface paramsTye{
-  currentPage:number,
-  pageSize:number,
-  corpCode:string | null | undefined,
-  flag:string,
-  userId:string
-}
-let params = ref<paramsTye>(
-    {
-      currentPage:1,
-      pageSize:10,
-      corpCode:'',
-      flag:'0',
-      userId:''
-    }
-)
-const changeList=(name,title)=>{
-
-}
-//任务数据列表
-const rwList = ref(
-    [{
-      id: '1',
-      name: ' 互联网销售的目标设定、客户分析\n',
-      rwmb:'确定推广的具体目标，如增加网站流量、提高转化率。\n',
-      time: '2024-04-08 15:15:35',
-      createtime:'2024-04-08 15:15:35',
-      isShow:false
-    }, {
-      id: '2',
-      createtime:'2024-04-08 15:15:35',
-      name: '通过社交媒体提升品牌知名度',
-      rwmb:'确定目标受众特征，了解其兴趣、需求和行为习惯。 创作有吸引力、有价值的内容，包括文章、视频、图片等，以满足受众需求。\n',
-      time: '2024-04-07 09:15:35',
-      isShow:false
-    } , {
-      id: '3',
-      createtime:'2024-04-08 15:15:35',
-
-      name: '内容营销长期策略\n',
-      rwmb:'持续发布新内容可以吸引用户回访，保持用户对品牌的关注度。不断推出有价值的内容可以加强品牌在目标受众中的认知和印象。\n' +
-          '\n',
-      time: '2024-03-24 15:18:35',
-      isShow:true
-    }, {
-      id: '4',
-      createtime:'2024-04-08 15:15:35',
-
-      name: '企业收集客户资料，了解客户需求',
-      rwmb:'在网站上设置注册表单，让用户填写基本信息如姓名、电子邮件地址等。设计问卷并在网站、社交媒体或邮件中分享，收集客户反馈和信息。',
-      time: '2024-03-15 08:15:45',
-      isShow:false
-    } ]
-);
-const rwList1 = ref(
-    [
-      {
-        id: '2',
-        createtime:'2024-04-08 15:15:35',
-        name: '通过社交媒体提升品牌知名度',
-        rwmb:'确定目标受众特征，了解其兴趣、需求和行为习惯。 创作有吸引力、有价值的内容，包括文章、视频、图片等，以满足受众需求。\n',
-        time: '2024-04-07 09:15:35',
-        isShow:false
-      } , {
-      id: '3',
-      createtime:'2024-04-08 15:15:35',
-
-      name: '内容营销长期策略\n',
-      rwmb:'持续发布新内容可以吸引用户回访，保持用户对品牌的关注度。不断推出有价值的内容可以加强品牌在目标受众中的认知和印象。\n' +
-          '\n',
-      time: '2024-03-24 15:18:35',
-      isShow:true
-    },
-    ]
-);
-// const toDetail=()=>{
-//   router.replace('/taskDetail')
-// }
+const listData = ref<LISTTYPE[]>([]); //列表的数据
+const loading = ref(false); //van-list 的loading
+const finished = ref(false);
+const finishText = ref<string>('没有更多了')
+const isLoading = ref<boolean>(false)  //控制 下拉刷新
+const isShowImg = ref<boolean>(false)  //数据为空的时候 控制图片的显示隐藏
+let params = ref<any>({
+  currentPage:1,
+  pageSize:10,
+  status:'0',
+  corpCode: "",
+})
 const businessDetailHandle = ()=>{
   router.replace('/task')
 
@@ -162,17 +98,54 @@ const onClickLeft = () => {
   // history.go(-2)
   router.replace('/homeNew')
 }
-const getList =()=>{
-  getTaskList(params.value).then((res:any)=>{
-    console.log('res',res)
+//获取列表数据
+const getList = ()=>{
+  getTaskPoolList(params.value).then((res:any) => {
+    if(res.success==false){
+      showFailToast(res.msg)
+    }else{
+      listData.value = listData.value.concat(res.data.taskList)
+      isLoading.value =false   //关闭下拉刷新的加载
+      let page=  params.value.currentPage+1
+      params.value.currentPage = page
+      // if(res.data.totalCount==list.value.length){
+      //   finished.value = true
+      // }
+
+      loading.value = false
+      if(res.data.totalCount==0){
+        isShowImg.value = true
+        finishText.value = ''
+      }else{
+        isShowImg.value = false
+        finishText.value = '没有更多数据了'
+      }
+      console.log(listData.value.length,res.data.totalCount)
+      if(listData.value.length == res.data.totalCount){
+        console.log('相等')
+        finished.value = true
+        loading.value = true
+        console.log('停止')
+      }else{
+        finished.value = false
+        loading.value = false
+      }
+      // list.value.length == res.data.totalCount?finished.value = true:finished.value = false
+    }
+
   })
 }
-onMounted(async()=>{
-  let userInfoData: any = inject("userInfo"); // 取出用户信息用于调用接口
+//下拉刷新的方法
+const onRefresh = async()=>{
+  isLoading.value = true   //打开下拉刷新的 loading
+  params.value.currentPage = 1 //重置页码
+  await getList() //重新加载数据
+}
+onBeforeMount(async () => {
   params.value.corpCode = await localStorage.getItem('corpCode') //从本地获取corpCode
-  params.value.userId = userInfoData.userInfo.userId
-  await getList()
 })
+
+
 </script>
 
 <style lang="less" scoped>

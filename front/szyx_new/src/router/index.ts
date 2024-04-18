@@ -35,6 +35,12 @@ const router = createRouter({
           name: 'taskDetail',
           component: () => import('../pages/taskDetail/index.vue'),
         },
+          //任务池列表
+        {
+          path: '/taskPool',
+          name: 'taskPool',
+          component: () => import('../pages/taskPool/index.vue'),
+        },
         {
           path: '/taskDetail_two',
           name: 'taskDetail_two',
@@ -521,7 +527,6 @@ const router = createRouter({
   ]
 })
 
-
 router.beforeEach((to,from,next)=>{
   // 模拟url登陆地址导航栏截取
   // const url='http://122.9.41.215/fk_move/MapprList?userid=1815&school=szht6666'
@@ -530,9 +535,9 @@ router.beforeEach((to,from,next)=>{
   // let userId =userInfo[0].replaceAll('userid=','');
   // let qyId=userInfo[1].replaceAll('school=','');
   const userInfoState: any = userInfoData();
-  console.log(userInfoState)
+  // console.log(userInfoState)
   const store = userInfoData()
-  if (to.path === '/login' || to.path === '/404'||to.path ==="/privacyPolicy"||to.path==='/userAgreement') {
+  if (to.path === '/login' || to.path === '/404') {
     next();
   } else {
     if (userInfoState.userInfo==null) {

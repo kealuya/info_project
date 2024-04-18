@@ -44,113 +44,127 @@
   </van-row>
   <div class="mt5">
     <van-row class="mt10 card_padding" align="center">
-      <span class="title">任务发布</span> <span style="color: #bbc2cc; font-size: 12px;margin: 5px 10px 0">更多海量任务、为营销提供清晰的方向</span>
+      <span class="title">任务发布</span> <span class="banner">更多海量任务、为营销提供清晰的方向</span>
     </van-row>
     <div>
     </div>
   </div>
-
-  <!--      任务二-->
-  <van-row>
-    <div class="task2  f_white">
-      <div class="task_card">
-        <div class="task_title">
-          互联网销售的目标设定、客户分析
+    <van-list
+        v-model="loading"
+        :finished="finished"
+        :immediate-check="false"
+        loading-text="正在加载中请稍后"
+        finished-text="没有更多了"
+    >
+      <van-row v-if="list.length>0">
+        <div class="task2  f_white" v-for="item in list" :key="item.taskId">
+          <van-image :src="test" class="task_bgc">
+          </van-image>
+          <div class="task_card">
+            <div class="task_title">
+              {{item.taskTitle}}
+            </div>
+            <div class="content-font">
+              {{item.taskContent}}
+            </div>
+          </div>
+          <div class="btn"  @click="toDetail(item)">
+            <van-icon name="play-circle-o" /> 任务详情
+          </div>
         </div>
-        <div class="content-font">
-          增加销售额等利用搜索引擎广告（如谷歌广告）提高网站曝光度，
-          吸引潜在客户。分析目标客户群体的特征、偏好和行为，以便制定针对性的推广策略。
+      </van-row>
+      <van-row justify="center" align="center" class="tc" v-else-if="isShowImg">
+        <div>
+          <img style="height:50vw;width:80vw;object-fit: contain" src="../../assets/img/zanwupiaoju.png" v-cloak/>
+          <div class="banner">暂无数据</div>
         </div>
-      </div>
-      <div class="btn"  @click="toDetail">
-        <van-icon name="play-circle-o" /> 任务详情
-      </div>
-    </div>
-  </van-row>
-<!--  <van-row>-->
-<!--    <div class="task f_white">-->
-<!--      <div class="task_card">-->
-<!--        <div class="task_title">-->
-<!--          高血压患者心血管事件风险评估-->
-<!--        </div>-->
-<!--        <div class="content-font">-->
-<!--          纳入1000名已诊断高血压的患者，收集其血清样本，并运用生物化学方法进行分析。随访3年，观察心血管事件发生情况-->
-<!--        </div>-->
-<!--      </div>-->
-<!--&lt;!&ndash;      <van-button icon="play-circle-o" type="primary" size="small">立即参与</van-button>&ndash;&gt;-->
-<!--      <div class="btn"  @click="toDetail">-->
-<!--        <van-icon name="play-circle-o" /> 立即参与-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </van-row>-->
-  <van-row>
-    <div class="task3  f_white">
-      <div class="task_card">
-        <div class="task_title">
-          通过社交媒体提升品牌知名度
-        </div>
-        <div class="content-font">
-          确定目标受众特征，了解其兴趣、需求和行为习惯。 创作有吸引力、有价值的内容，包括文章、视频、图片等，以满足受众需求。
-        </div>
-      </div>
-      <div class="btn" @click="toDetail2">
-        <van-icon name="play-circle-o" /> 任务详情
-      </div>
-    </div>
-  </van-row>
-  <van-row>
-    <div class="task4  f_white" >
-      <div class="task_card">
-        <div class="task_title">
-          内容营销长期策略
-        </div>
-        <div class="content-font">
-          持续发布新内容可以吸引用户回访，保持用户对品牌的关注度。不断推出有价值的内容可以加强品牌在目标受众中的认知和印象。
-        </div>
-      </div>
-      <div class="btn" @click="toDetail3">
-        <van-icon name="play-circle-o" /> 任务详情
-      </div>
-    </div>
-  </van-row>
-  <van-row>
-    <div class="task5  f_white">
-      <div class="task_card">
-        <div class="task_title">
-          企业收集客户资料，了解客户需求
-        </div>
-        <div class="content-font">
-          在网站上设置注册表单，让用户填写基本信息如姓名、电子邮件地址等。设计问卷并在网站、社交媒体或邮件中分享，收集客户反馈和信息。
-        </div>
-      </div>
-      <div class="btn" @click="toDetail4">
-        <van-icon name="play-circle-o" /> 任务详情
-      </div>
-    </div>
-  </van-row>
+      </van-row>
+     <van-row justify="center" align="center">
+       <van-button type="default" class="more_btn" @click="moreTasks" v-if="list.length>0">查看更多</van-button>
+     </van-row>
+    </van-list>
+  <div v-if="searchLoading" class="h-67">
+    <van-loading type="spinner" color="#1989fa" :vertical="true">加载中...</van-loading>
+  </div>
   <div class="box"></div>
 </template>
 
 <script setup lang="ts">
+import  test from '../../assets/img/task_bgc_01.png'
   import bgsy from '../../assets/img/bgsy.png';
 import { showSuccessToast, showFailToast, showToast } from 'vant';
 import shenqingdanIcon from  '../../assets/img/shenqingdan.png';
 import danjuIcon from  '../../assets/img/danju.png';
 import tabbar from '../../Tabbar.vue'
 import {useRouter} from "vue-router";
-const router = useRouter()
-const toDetail=()=>{
-  router.replace('/taskDetail')
+  import ApplicationCard from "../home/component/applicationCard.vue";
+  import {onMounted, ref} from "vue";
+  import {getDocStateList} from "../../services/home";
+  import {getTaskPoolList} from "../../services/index";
+  //定义列表数据类型
+  interface listType {
+    currentPage:Number, //当前页
+    pageSize:Number, //每页条数
+    searchKey:String,
+    corpCode:String,//企业code
+    status:String,	//是	状态，0未下架，1已下架；当前接口传0
+    taskList:[],
+    totalCount:0
+  }
+  //定义后端返给list数组的数据类型
+  interface  LISTTYPE{
+    bz1: String,
+    bz2: String,
+    bz3: String,
+    corpCode:String,
+    corpName:String,
+    createTime:String,
+    creater:String,
+    taskContent:String,
+    taskId:String,
+    taskImg:String,
+    taskStatus:String,
+    taskTarget:String,
+    taskTitle:String,
+    taskType:String
+  }
+//列表数据 数组
+const list = ref<LISTTYPE[]>([]);
+const router = useRouter();
+const loading = ref(true);
+const finished = ref(false);
+
+const searchLoading = ref<Boolean>(false)
+const isShowImg = ref<Boolean>(false)
+const params = ref<any>({
+  currentPage:1,
+  pageSize:10,
+  status:'0',
+  corpCode: "",
+})
+  const getDocList=async(payload:any,code:any)=>{
+  // console.log('payload',payload)
+    searchLoading.value = true
+  getTaskPoolList(payload).then((res:any)=>{
+    list.value.push(...res.data.taskList.splice(0,5));
+   list.value.length ==0?isShowImg.value=true:isShowImg.value=false
+    // console.log('list.value',res.data.taskList)
+    }).finally(()=>{
+    searchLoading.value = false
+  });
+  }
+const toDetail=(row:any)=>{
+  router.replace({name:'taskDetail',query:row})
 }
-const toDetail2=()=>{
-  router.replace('/taskDetail_two')
-}
-const toDetail3=()=>{
-  router.replace('/taskDetail_three')
-}
-const toDetail4=()=>{
-  router.replace('/taskDetail_four')
-}
+// const toDetail2=()=>{
+//   router.replace('/taskDetail_two')
+// }
+// const toDetail3=()=>{
+//   router.replace('/taskDetail_three')
+// }
+// const toDetail4=()=>{
+//   router.replace('/taskDetail_four')
+// }
 const taskProcessingHandle = ()=>{
   router.replace('/taskProcessing')
 
@@ -161,9 +175,21 @@ const hangyezhishiku = ()=>{
 const applicationHandle = ()=>{
   router.replace('/applicationValue')
 }
+//点击了查看更多按钮 跳转到 任务池列表
+const moreTasks = ()=>{
+  router.push('/taskPool')
+}
+onMounted(async () => {
+  params.value.corpCode = await localStorage.getItem('corpCode')
+  getDocList(params.value, '')
+})
 </script>
 
 <style lang="less" scoped>
+.h-67{
+  height:67vh;
+  z-index:999;
+}
 .title_banner{
   font-size: 0.875em;
 }
@@ -178,6 +204,10 @@ const applicationHandle = ()=>{
 .title{
   color:#000000;
   font-size: 16px;
+}
+.more_btn{
+  width:96vw;
+  padding:2vw;
 }
 .mainButton {
   border-radius: 10px;
@@ -207,6 +237,11 @@ const applicationHandle = ()=>{
   background: url('../../assets/img/zhishiku_bg.png') no-repeat center;
   background-size: 48vw 20vh;
 }
+.banner{
+  color: #bbc2cc;
+  font-size: 12px;
+  margin: 5px 10px 0
+}
 .box{
   height:80px;
 }
@@ -218,167 +253,36 @@ const applicationHandle = ()=>{
   font-size: 1.1em;
   font-weight: 380;
 }
-.task{
-  margin-top: 2vw;
-  border-radius: 10px;
-  //padding: 0 2vw;
-  width:96vw;
-  height: 160px;
-  background: url('../../assets/img/home_01.png') no-repeat center;
-  background-size: cover;
-  //box-sizing: border-box;
-  margin-left: 2vw;
-  .task_card{
-    width: 62vw;
-    background-color: #000000;
-    opacity: 0.5; /* 设置透明度为50% */
-    color:#ffffff;
-    margin: 2vw;
-    padding:2vw;
-    font-size: 1em;
-    border-radius: 10px;
-    .content-font{
-      font-size: 0.75em;
-      margin-top:1vw;
-    }
-  }
-  .btn{
-    border-radius: 10px;
-    background-color: #253334;
-    width:42vw;
-    margin-left: 2vw;
-    padding:1vw;
-    text-align: center;
-    font-size: 0.875em;
-  }
-}
 .task2{
-  margin-top: 4vw;
+  padding:2vw;
+  position: relative;
   border-radius: 10px;
-  //padding: 0 2vw;
   width:96vw;
-  height: 160px;
-  background: url('../../assets/img/task_bgc_01.png') no-repeat center;
-  background-size: cover;
-  //box-sizing: border-box;
-  margin-left: 2vw;
+  //height: 160px;
   .task_card{
+    position: absolute;
+    top:5vw;
+    left:4vw;
     width: 58vw;
     background-color: #000000;
     opacity: 0.5; /* 设置透明度为50% */
     color:#ffffff;
-    margin:2vw;
     padding:2vw;
     font-size: 0.875em;
     border-radius: 10px;
     .content-font{
       font-size: 0.75em;
       margin-top:1vw;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
   .btn{
-    border-radius: 10px;
-    background-color: #1768ed;
-    width:42vw;
-    margin-left: 2vw;
-    padding:1vw;
-    text-align: center;
-    font-size: 0.875em;
-  }
-}
-.task3{
-  margin-top: 4vw;
-  border-radius: 10px;
-  //padding: 0 2vw;
-  width:96vw;
-  height: 160px;
-  background: url('../../assets/img/home_01.png') no-repeat center;
-  background-size: cover;
-  //box-sizing: border-box;
-  margin-left: 2vw;
-  .task_card{
-    width: 62vw;
-    background-color: #000000;
-    opacity: 0.5; /* 设置透明度为50% */
-    color:#ffffff;
-    margin: 2vw;
-    padding:2vw;
-    font-size: 0.875em;
-    border-radius: 10px;
-    .content-font{
-      font-size: 0.75em;
-      margin-top:1vw;
-    }
-  }
-  .btn{
-    border-radius: 10px;
-    background-color: #1768ed;
-    width:42vw;
-    margin-left: 2vw;
-    padding:1vw;
-    text-align: center;
-    font-size: 0.875em;
-  }
-}
-.task4{
-  margin-top: 4vw;
-  border-radius: 10px;
-  //padding: 0 2vw;
-  width:96vw;
-  height: 160px;
-  background: url('../../assets/img/home_04.png') no-repeat center;
-  background-size: cover;
-  //box-sizing: border-box;
-  margin-left: 2vw;
-  .task_card{
-    width: 62vw;
-    background-color: #000000;
-    opacity: 0.5; /* 设置透明度为50% */
-    color:#ffffff;
-    margin: 2vw;
-    padding:2vw;
-    font-size: 0.875em;
-    border-radius: 10px;
-    .content-font{
-      font-size: 0.75em;
-      margin-top:1vw;
-    }
-  }
-  .btn{
-    border-radius: 10px;
-    background-color: #1768ed;
-    width:42vw;
-    margin-left: 2vw;
-    padding:1vw;
-    text-align: center;
-    font-size: 0.875em;
-  }
-}
-.task5{
-  margin-top: 4vw;
-  border-radius: 10px;
-  //padding: 0 2vw;
-  width:96vw;
-  height: 160px;
-  background: url('../../assets/img/home_05.png') no-repeat center;
-  background-size: cover;
-  //box-sizing: border-box;
-  margin-left: 2vw;
-  .task_card{
-    width: 62vw;
-    background-color: #000000;
-    opacity: 0.5; /* 设置透明度为50% */
-    color:#ffffff;
-    margin: 2vw;
-    padding:2vw;
-    font-size: 0.875em;
-    border-radius: 10px;
-    .content-font{
-      font-size: 0.75em;
-      margin-top:1vw;
-    }
-  }
-  .btn{
+    position: absolute;
+    top: 30vw;
     border-radius: 10px;
     background-color: #1768ed;
     width:42vw;

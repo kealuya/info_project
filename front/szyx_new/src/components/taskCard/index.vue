@@ -43,19 +43,15 @@
       立即参与
     </van-button>
   </div>
-
-  <!--  <div class="box"></div>-->
-
-  <!--  <div class="footer_btn">-->
-  <!--    <van-button block type="primary" @click="taskProcessingHandle">-->
-  <!--      去完成-->
-  <!--    </van-button>-->
-  <!--  </div>-->
-
+  <div v-if="searchLoading" class="h-67">
+    <van-loading type="spinner" color="#1989fa" :vertical="true">加载中...</van-loading>
+  </div>
 </template>
 <script lang="ts" setup>
-import {onMounted} from "vue";
-
+import { onMounted,ref } from "vue";
+import { useRouter } from "vue-router";
+import {applyJoinTask} from "../../services/index"
+import { showSuccessToast, showFailToast } from 'vant';
 const props = defineProps({
   title: {
     type: String,
@@ -81,11 +77,13 @@ const props = defineProps({
     type:Boolean,
     default:false
   },
+  params:{
+    type:Object,
+    default:{}
+  }
 })
-import taskCard from '../../components/taskCard/index.vue'
-import { useRouter } from "vue-router";
-// import { showSuccessToast, showFailToast } from 'vant';
-import {showSuccessToast} from "vant";
+const searchLoading = ref<Boolean>(false)
+const paramsData = ref<any>()
 const router = useRouter()
 const onClickLeft = () => {
   // history.go(-2)
@@ -97,14 +95,29 @@ const taskProcessingHandle = ()=>{
   router.replace('/addTasks')
 }
 const taskProcessingHandle1 = ()=>{
-  // isLoading.value = true
-  showSuccessToast('参与成功');
-  setTimeout(() => {
-    router.replace('/homeNew')
-  }, 500);
+  searchLoading.value =true
+  applyJoinTask(paramsData.value).then((res:any)=>{
+    console.log('res',res)
+    if(res.success){
+      searchLoading.value =false
+      //给提示，跳转到首页
+      showSuccessToast(res.msg);
+      router.replace('/homeNew')
+    }else{
+      showFailToast(res.msg)
+      searchLoading.value =false
+
+    }
+  })
+  // applyJoinTask()
+  // // isLoading.value = true
+  // showSuccessToast('参与成功');
+  // setTimeout(() => {
+  //   router.replace('/homeNew')
+  // }, 500);
 }
 onMounted(()=>{
-
+  paramsData.value = props.params
 })
 </script>
 <style lang="less" scoped>
