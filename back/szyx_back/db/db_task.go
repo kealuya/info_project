@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"szyx_back/common"
 	db_handler "szyx_back/db/handler"
+	"szyx_back/entity/meeting"
 	"szyx_back/entity/task"
 	"time"
 )
@@ -185,7 +186,7 @@ func FinishMyTask(info *task.MyTask) (msg error) {
 	//完成任务数据组装
 	var finishParam []interface{}
 	finishParam = append(finishParam, common.MY_TASK_FLAG_KEY_1)
-	finishParam = append(finishParam, info.MeetingId)//关联的会议ID，用于完成任务关联会议下的会议文件
+	finishParam = append(finishParam, info.MeetingId) //关联的会议ID，用于完成任务关联会议下的会议文件
 	finishParam = append(finishParam, currentTime)
 	finishParam = append(finishParam, info.TaskId)
 	finishParam = append(finishParam, info.UserId)
@@ -193,13 +194,13 @@ func FinishMyTask(info *task.MyTask) (msg error) {
 
 	num, err := tx.Exec(db_handler.ModifyMyTask_sql, finishParam...)
 	rows, _ := num.RowsAffected()
-	if (rows <= 0 || err != nil) {
+	if rows <= 0 || err != nil {
 		errors.New("修改我的任务状态发生错误!")
 		return
 	}
 	insertNum, err := tx.Exec(db_handler.CreateWorth_sql, Param...)
 	rows2, _ := insertNum.RowsAffected()
-	if (rows2 <= 0 || err != nil) {
+	if rows2 <= 0 || err != nil {
 		errors.New("添加价值数据发生错误!")
 		return
 	}
@@ -207,4 +208,34 @@ func FinishMyTask(info *task.MyTask) (msg error) {
 	common.ErrorHandler(comRrr)
 
 	return msg
+}
+
+//查看我的任务详情
+func MyTaskDetails(info *task.MyTask) (res task.MyTask, msg error) {
+	dbHandler := db_handler.NewDbHandler()
+	//我的任务信息
+	var Param []interface{}
+	Param = append(Param, info.CorpCode)
+	Param = append(Param, info.TaskId)
+	selRes, err := dbHandler.SelectList(db_handler.MyTaskDetails_sql, Param...)
+	myTaskList := []task.MyTask{}
+
+	if len(selRes) > 0 && err == nil {
+		decoder := ObtainDecoderConfig(&myTaskList)
+		err1 := decoder.Decode(selRes)
+		common.ErrorHandler(err1, "我的任务完成信息转换发生错误!")
+	}
+	//查询任务对应的会议信息
+	myTaskMeeting := []meeting.Meeting{}
+	var ParamCount []interface{}
+	ParamCount = append(ParamCount, info.CorpCode)
+	ParamCount = append(ParamCount, info.UserId)
+	selCountRes, err2 := dbHandler.SelectList(db_handler.GetMeetingListByTaskId_sql, ParamCount...)
+	if err2 == nil {
+		decoder := ObtainDecoderConfig(&myTaskMeeting)
+		err1 := decoder.Decode(selCountRes)
+		common.ErrorHandler(err1, "我的任务完成会议信息转换发生错误!")
+	}
+	res.MeetingList = myTaskMeeting
+	return res, err
 }

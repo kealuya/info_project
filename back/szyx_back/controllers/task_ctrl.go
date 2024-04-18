@@ -188,3 +188,38 @@ func (TaskCtrl *TaskCtrl) FinishMyTask() {
 		resJson.Msg = fmt.Sprintf("任务完成失败::%s", err)
 	}
 }
+
+// @Title 用户完成任务详情
+// @Tags MyTaskDetails
+// @Summary 用户完成任务详情
+// @accept application/json
+// @Produce application/json
+// @Param data body task.MyTask true "MyTask struct"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"查询成功"}"
+// @router /myTaskDetails [post]
+func (TaskCtrl *TaskCtrl) MyTaskDetails() {
+	resJson := NewJsonStruct(nil)
+	defer func() {
+		TaskCtrl.Data["json"] = resJson
+		TaskCtrl.ServeJSON()
+	}()
+	myTask_Param := new(task.MyTask)
+	var jsonByte = TaskCtrl.Ctx.Input.RequestBody
+	logs.Info("用户任务详情入参：" + string(jsonByte))
+	paramerr := jsoniter.Unmarshal(jsonByte, &myTask_Param)
+	if paramerr != nil {
+		resJson.Success = false
+		resJson.Msg = "入参有误"
+		return
+	}
+	//业务处理
+	res, err := models.MyTaskDetails(myTask_Param)
+	if err == nil {
+		resJson.Success = true
+		resJson.Msg = "用户任务详情查询成功"
+		resJson.Data = res
+	} else {
+		resJson.Success = false
+		resJson.Msg = fmt.Sprintf("用户任务详情查询失败::%s", err)
+	}
+}

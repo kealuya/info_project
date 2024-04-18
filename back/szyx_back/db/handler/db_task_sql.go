@@ -67,4 +67,6 @@ const (
 								where 
 									taskId = ? and userId = ? and corpCode = ?
 								`
+	MyTaskDetails_sql = `select * from kdxf_mytask where corpCode = ? and taskId = ?
+								`
 )

@@ -33,4 +33,6 @@ const (
 						createTime DESC  limit ?,? `
 
 	GetMeetingListCount_sql = `select * from  kdxf_meeting where corpCode = ? ORDER BY createTime DESC `
+
+	GetMeetingListByTaskId_sql = `select * from  kdxf_meeting where corpCode = ? and taskId = ? ORDER BY createTime DESC `
 )

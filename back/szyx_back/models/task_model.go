@@ -43,3 +43,11 @@ func FinishMyTask(myTask_Param *task.MyTask) (err error) {
 	err = db.FinishMyTask(myTask_Param)
 	return err
 }
+
+/**
+查询用户完成任务详情
+*/
+func MyTaskDetails(myTask_Param *task.MyTask) (res task.MyTask, err error) {
+	res, err = db.MyTaskDetails(myTask_Param)
+	return res, err
+}

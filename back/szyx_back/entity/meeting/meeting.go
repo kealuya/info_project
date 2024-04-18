@@ -14,6 +14,7 @@ type Meeting struct {
 	MeetingAudioFileUrl    string `json:"meetingAudioFileUrl" description:"音频文件地址'；'分隔" ` //完成任务是选择文件，不是选择会议，分表处理，存到speech中
 	MeetingMminutesFileUrl string `json:"meetingMminutesFileUrl" description:"会议纪要地址" `   //完成任务是选择文件，不是选择会议，分表处理，存到speech中
 	MeetingBrainMapFileUrl string `json:"meetingBrainMapFileUrl" description:"会议脑图地址" `   //完成任务是选择文件，不是选择会议，分表处理，存到file中
+	TaskId                 string `json:"taskId" description:"任务id，任务与会议为 1对多的关系，故而在此添加关联字段" `
 	//FIXME base 字段，上面的写法，在查询db后，不能赋值
 	CorpName   string `json:"corpName" description:"企业名称" `
 	CorpCode   string `json:"corpCode" description:"企业code"`
