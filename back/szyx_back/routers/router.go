@@ -60,7 +60,16 @@ func init() {
 			),
 			//----------发票识别、验真相关 - 结束 ----------------
 		)
+
+	//Pc端后台管理接口
+	namespace_admin :=
+		beego.NewNamespace("/admin",
+			beego.NSNamespace("/log",
+				beego.NSInclude(&controllers.LogInfoController{}),
+			),
+		)
 	//注册 namespace
 	beego.AddNamespace(namespace)
+	beego.AddNamespace(namespace_admin)
 	beego.SetStaticPath("/swagger", "swagger")
 }

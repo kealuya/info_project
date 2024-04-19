@@ -12,6 +12,11 @@ type MyTask struct {
 	//entity.Base
 	TaskId      string            `json:"taskId" description:"任务ID" `
 	TaskTitle   string            `json:"taskTitle" description:"任务标题" `
+	TaskTarget  string            `json:"taskTarget" description:"任务目标" `
+	TaskContent string            `json:"taskContent" description:"任务内容" `
+	TaskType    string            `json:"taskType" description:"任务类型" `
+	TaskStatus  string            `json:"taskStatus" description:"任务状态" `
+	TaskImg     string            `json:"taskImg" description:"任务图片" `
 	UserId      string            `json:"userId" description:"用户ID" `
 	UserName    string            `json:"userName" description:"用户姓名" `
 	UserMobile  string            `json:"userMobile" description:"用户手机号" `
@@ -21,6 +26,7 @@ type MyTask struct {
 	MeetingId   string            `json:"meetingId" description:"关联的会议ID，用于完成任务关联会议下的会议文件" `
 	MeetingList []meeting.Meeting `json:"MeetingList" description:"完成任务，关联会议" `
 	//FIXME base 字段，上面的写法，在查询db后，不能赋值
+
 	CorpName   string `json:"corpName" description:"企业名称" `
 	CorpCode   string `json:"corpCode" description:"企业code"`
 	CreateTime string `json:"createTime" description:"创建时间"`

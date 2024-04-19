@@ -56,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import {getMessageCaptcha,messageLogin} from './services/index.ts';
+import {getMessageCaptcha,messageLogin} from './services/index';
 import {userInfoData} from "./store";
 import { ref } from 'vue';
 import {showToast, showSuccessToast} from "vant";

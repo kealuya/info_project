@@ -56,8 +56,15 @@ const (
 													TaskData
 												)values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 
-	GetTaskList_sql = `select * from  kdxf_mytask where corpCode = ? and flag = ? and userId = ? ORDER BY 
-						createTime DESC  limit ?,? `
+	GetTaskList_sql = `select mytask.*,
+								pool.taskTarget as taskTarget,
+								pool.taskTarget as taskContent,
+								pool.taskImg as taskImf
+						from  kdxf_mytask mytask 
+						left join kdxf_taskpool pool 
+						on mytask.taskId = pool.taskId 
+						where mytask.corpCode = ? and mytask.flag = ? and mytask.userId = ? ORDER BY mytask.createTime DESC  limit ?,? 
+						`
 
 	GetTaskListCount_sql = `select * from  kdxf_mytask where corpCode = ? and flag = ? and userId = ? ORDER BY 
 						createTime DESC`
