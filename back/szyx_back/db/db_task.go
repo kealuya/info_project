@@ -71,10 +71,8 @@ func GetTaskPoolList(info *task.TaskList_Param) (res task.TaskList_Result, msg e
 		err1 := decoder.Decode(selCountRes)
 		common.ErrorHandler(err1, "任务池列表分页信息转换发生错误!")
 	}
-
 	res.TaskList = taskList
 	res.TotalCount = int64(len(taskListCount))
-
 	return res, err
 }
 
@@ -152,6 +150,11 @@ func GetTaskList(info *task.MyTaskList_Param) (res task.MyTaskList_Result, msg e
 	}
 	res.MyTaskList = myTaskList
 	res.TotalCount = int64(len(myTaskListCount))
+	//获取总页数，前端需要
+	res.PageCount = res.TotalCount /  info.PageSize
+	if res.TotalCount % info.PageSize > 0 {
+		res.PageCount++
+	}
 	return res, err
 }
 

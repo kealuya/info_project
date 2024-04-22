@@ -16,4 +16,5 @@ type Paging struct {
 	CurrentPage int64 `json:"currentPage" description:"当前页" `
 	PageSize    int64 `json:"pageSize" description:"一页几条" `
 	TotalCount  int64 `json:"totalCount" description:"总条数" `
+	PageCount   int64 `json:"pageCount" description:"总页数" `
 }
