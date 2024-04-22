@@ -220,19 +220,19 @@ func MyTaskDetails(info *task.MyTask) (res task.MyTask, msg error) {
 	var Param []interface{}
 	Param = append(Param, info.CorpCode)
 	Param = append(Param, info.TaskId)
-	selRes, err := dbHandler.SelectList(db_handler.MyTaskDetails_sql, Param...)
-	myTaskList := []task.MyTask{}
-
+	Param = append(Param, info.UserId)
+	selRes, err := dbHandler.SelectOne(db_handler.MyTaskDetails_sql,Param...)
 	if len(selRes) > 0 && err == nil {
-		decoder := ObtainDecoderConfig(&myTaskList)
+		decoder := ObtainDecoderConfig(&res)
 		err1 := decoder.Decode(selRes)
-		common.ErrorHandler(err1, "我的任务完成信息转换发生错误!")
+		common.ErrorHandler(err1, "查询单条我的任务转换发生错误!")
 	}
 	//查询任务对应的会议信息
 	myTaskMeeting := []meeting.Meeting{}
 	var ParamCount []interface{}
 	ParamCount = append(ParamCount, info.CorpCode)
 	ParamCount = append(ParamCount, info.UserId)
+	ParamCount = append(ParamCount, info.TaskId)  //TODO 我的任务详情 查了会议表，但是没关联 会议文件 会议文件查哪个表？
 	selCountRes, err2 := dbHandler.SelectList(db_handler.GetMeetingListByTaskId_sql, ParamCount...)
 	if err2 == nil {
 		decoder := ObtainDecoderConfig(&myTaskMeeting)
