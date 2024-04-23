@@ -1,0 +1,36 @@
+@charset "utf-8";
+/**
+ * @author https://vue-admin-beautiful.com （不想保留author可删除）
+ * @description 全局主题变量配置
+ */
+/* stylelint-disable */
+
+//框架默认主题色
+$base-color-default: #fff;
+//默认边框颜色
+$base-border-color:#dcdfe6;
+//标题颜色
+$base-title-color: #303133;
+//aside 最小宽度
+$base-aside-minWidth:50px;
+//aside标准宽度
+$base-aside-width:210px;
+//内边距
+$base-padding-24:24px;
+$base-padding-20:20px;
+$base-padding-20:0 20px;
+$base-font-size-big: 16px;
+$base-font-color: #606266;
+//边框
+$base-border-default:1px solid #f0f0f0;
+$base-margin-bottom35:35px;
+$base-margin-bottom30:30px;
+$base-font-size-bigger: 18px;
+
+//盒子阴影
+$base-homeCard-shadow:0px 0px 12px rgba(0, 0, 0, .12);
+//盒子圆角
+$base-box-radius:4px;
+:export {
+    base-color:$base-color-default
+}

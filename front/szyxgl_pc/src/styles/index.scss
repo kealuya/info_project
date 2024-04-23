@@ -1,0 +1,21 @@
+@use './reset.scss' as *;
+@import './element/index.scss';
+.detailbox{
+  width: 100%;
+  .detailbox-card{
+    .title-sag{
+      font-size: 14px;
+      font-weight: 550;
+      margin-bottom: 16px;
+      span{
+        margin-left: 10px;
+      }
+    }
+  }
+}
+.m-b-10{
+  margin-bottom: 10px;
+}
+.f-z-12{
+  font-size: 12px;
+}
