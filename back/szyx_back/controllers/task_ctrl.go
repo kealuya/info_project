@@ -121,6 +121,40 @@ func (TaskCtrl *TaskCtrl) GetTaskList() {
 	}
 }
 
+// @Title  校验是否能参加任务，一个任务只能参加一次
+// @Tags CheckIsJoinTask
+// @Summary 校验是否能参加任务，一个任务只能参加一次
+// @accept application/json
+// @Produce application/json
+// @Param data body task.MyTask true "MyTask struct"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"查询成功"}"
+// @router /checkIsJoinTask [post]
+func (TaskCtrl *TaskCtrl) CheckIsJoinTask() {
+	resJson := NewJsonStruct(nil)
+	defer func() {
+		TaskCtrl.Data["json"] = resJson
+		TaskCtrl.ServeJSON()
+	}()
+	myTask_Param := new(task.MyTask)
+	var jsonByte = TaskCtrl.Ctx.Input.RequestBody
+	logs.Info("校验是否能参加任务入参：" + string(jsonByte))
+	paramerr := jsoniter.Unmarshal(jsonByte, &myTask_Param)
+	if paramerr != nil {
+		resJson.Success = false
+		resJson.Msg = "checkIsJoinTask接口入参有误!"
+		return
+	}
+	//业务处理
+	result,err := models.CheckIsJoinTask(myTask_Param)
+	if err == nil {
+		resJson.Success = true
+		resJson.Msg = result
+	} else {
+		resJson.Success = false
+		resJson.Msg = fmt.Sprintf("checkIsJoinTask接口调用失败::%s", err)
+	}
+}
+
 // @Title 申请参加任务
 // @Tags ApplyJoinTask
 // @Summary 申请参加任务
@@ -189,7 +223,7 @@ func (TaskCtrl *TaskCtrl) FinishMyTask() {
 	}
 }
 
-// @Title 用户完成任务详情
+// @Title 用户任务详情
 // @Tags MyTaskDetails
 // @Summary 用户完成任务详情
 // @accept application/json

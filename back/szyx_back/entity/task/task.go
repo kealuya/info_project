@@ -7,7 +7,7 @@ type Task struct {
 	//entity.Base
 	TaskId      string `json:"taskId" description:"任务ID" `
 	TaskTitle   string `json:"taskTitle" description:"任务标题" `
-	TaskTarget  string `json:"taskTarget" description:"任务目标" `
+	TaskData    string `json:"taskData" description:"任务介绍" `
 	TaskContent string `json:"taskContent" description:"任务内容" `
 	TaskType    string `json:"taskType" description:"任务类型" `
 	TaskStatus  string `json:"taskStatus" description:"任务状态" `

@@ -100,12 +100,8 @@ func GetMeetingList(info *meeting.MeetingList_Param) (res meeting.MeetingList_Re
 		ParamCount = append(ParamCount, info.EndTime)
 		sqlTime_Count = sqlTime_Count + " AND DATE(createTime) BETWEEN ? AND ? "
 	}
-	//计算limit起始值
-	startNum2 := (info.CurrentPage - 1) * info.PageSize
-	ParamCount = append(ParamCount, startNum2)
-	ParamCount = append(ParamCount, info.PageSize)
-	sqlOrderby_Count := "ORDER BY createTime DESC  limit ?,?"
-	selCountRes, err2 := dbHandler.SelectList(db_handler.GetMeetingList_sql + sqlType_Count + sqlMeetingFlag_Count + sqlTime_Count + sqlOrderby_Count, ParamCount...)
+
+	selCountRes, err2 := dbHandler.SelectList(db_handler.GetMeetingList_sql + sqlType_Count + sqlMeetingFlag_Count + sqlTime_Count, ParamCount...)
 	//fmt.Print(db_handler.GetMeetingListCount_sql + sqlType_Count + sqlTime_Count + sqlOrderby_Count)
 	if err2 == nil {
 		decoder := ObtainDecoderConfig(&meetingListCount)
@@ -121,6 +117,22 @@ func GetMeetingList(info *meeting.MeetingList_Param) (res meeting.MeetingList_Re
 	}
 	return res, err
 }
+
+
+//根据会议id 查询会议文件list
+func GetMeetingFileList(meetingId string) (res []meeting.MeetingFile, msg error) {
+	dbHandler := db_handler.NewDbHandler()
+	var Param []interface{}
+	Param = append(Param, meetingId)
+	selRes, err := dbHandler.SelectList(db_handler.GetMeetingFileList_sql,Param...)
+	if len(selRes) > 0 && err == nil {
+		decoder := ObtainDecoderConfig(&res)
+		err1 := decoder.Decode(selRes)
+		common.ErrorHandler(err1, "会议文件list列表信息转换发生错误!")
+	}
+	return res, err
+}
+
 
 //修改会议
 func ModifyMeeting(info *meeting.Meeting) (res meeting.Meeting, msg error) {

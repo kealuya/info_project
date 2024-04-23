@@ -15,6 +15,7 @@ const (
 
 	GetTaskPoolListCount_sql = `select * from  kdxf_taskpool where corpCode = ?  and taskStatus = ? ORDER BY createTime DESC `
 
+	CheckIsJoinTask_sql = `select * from kdxf_mytask where corpCode = ? and userId  = ?  and taskId = ?`
 	//ApplyJoinTask_sql = `insert into kdxf_mytask(
 	//												TaskId,
 	//												TaskTitle,
@@ -39,8 +40,7 @@ const (
 	//											)values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 
 	ApplyJoinTask_sql = `insert into kdxf_mytask(
-													TaskId,
-													TaskTitle,
+													TaskId, 
 													CorpName,
 													CorpCode,
 													CreateTime,
@@ -52,28 +52,28 @@ const (
 													UserName,
 													UserMobile,
 													Flag,
-													FinishTime,
-													TaskData
-												)values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+													FinishTime
+												)values(?,?,?,?,?,?,?,?,?,?,?,?,?)`
 
-	GetTaskList_sql = `select mytask.*,
-								pool.taskTarget as taskTarget,
-								pool.taskTarget as taskContent,
-								pool.taskImg as taskImf
-						from  kdxf_mytask mytask 
-						left join kdxf_taskpool pool 
-						on mytask.taskId = pool.taskId 
-						where mytask.corpCode = ? and mytask.flag = ? and mytask.userId = ? ORDER BY mytask.createTime DESC  limit ?,? 
-						`
+	GetTaskList_sql = `select mytask.*,kt.taskTitle ,kt.taskData ,kt.taskContent,kt.taskType,
+						kt.taskImg ,kt.taskStatus  from kdxf_mytask mytask 
+						left join kdxf_taskpool kt  ON mytask.taskId  = kt.taskId 
+                        where mytask.corpCode = ? and mytask.flag = ? and mytask.userId = ? 
+                        ORDER BY mytask.createTime DESC  limit ?,?`
 
-	GetTaskListCount_sql = `select * from  kdxf_mytask where corpCode = ? and flag = ? and userId = ? ORDER BY 
-						createTime DESC`
+	GetTaskListCount_sql = `select mytask.*,kt.taskTitle ,kt.taskData ,kt.taskContent,kt.taskType,
+						kt.taskImg ,kt.taskStatus  from kdxf_mytask mytask 
+						left join kdxf_taskpool kt  ON mytask.taskId = kt.taskId
+						where mytask.corpCode = ? and mytask.flag = ? and mytask.userId = ? 
+                        ORDER BY mytask.createTime DESC`
 
 	ModifyMyTask_sql = `update kdxf_mytask set
 									flag = ?,finishTime = ?,meetingId = ?
 								where 
 									taskId = ? and userId = ? and corpCode = ?
 								`
-	MyTaskDetails_sql = `select * from kdxf_mytask where corpCode = ? and taskId = ? and userId = ?
-								`
+	MyTaskDetails_sql = `select mytask.*,kt.taskTitle ,kt.taskData ,kt.taskContent,kt.taskType,
+						kt.taskImg ,kt.taskStatus  from kdxf_mytask mytask 
+						left join kdxf_taskpool kt  ON mytask.taskId  = kt.taskId  
+						where  mytask.taskId = ? and mytask.userId = ?  and mytask.corpCode = ? `
 )

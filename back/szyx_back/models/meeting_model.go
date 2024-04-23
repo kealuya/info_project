@@ -20,12 +20,23 @@ func CreateMeeting(meetingDto *meeting.Meeting) (err error) {
 	return err
 }
 
+
+
 /**
 会议列表
 */
 func GetMeetingList(meetingDto *meeting.MeetingList_Param) (res meeting.MeetingList_Result, err error) {
+	// 原集合
 	res, err = db.GetMeetingList(meetingDto)
-	return res, err
+	//遍历会议list 查会议文件 组装fileList到集合结构中
+	for k, v := range res.MeetingList {
+		// 创建目标集合
+		var meetingListNew []meeting.MeetingFile
+		fileList, _ := db.GetMeetingFileList(v.MeetingId)
+		meetingListNew = append(meetingListNew, fileList...)
+		res.MeetingList[k].MeetingFile = meetingListNew
+	}
+	return res,err
 }
 
 /**

@@ -16,10 +16,7 @@ type Meeting struct {
 	MeetingBrainMapFileUrl string `json:"meetingBrainMapFileUrl" description:"会议脑图地址" `   //完成任务是选择文件，不是选择会议，分表处理，存到file中
 	TaskId                 string `json:"taskId" description:"任务id，任务与会议为 1对多的关系，故而在此添加关联字段" `
 	MeetingFlag            string `json:"meetingFlag" description:"会议是否使用" ` //0：未使用   1：已使用   完成任务需要选择会议， 要区分会议是否被使用
-	MeetingAudioName       string `json:"meetingAudioName" description:"音频文件总名称" `   //创建会议 生成的文件总名称  用于选择会议前端展示该字段
-	MeetingMminutesName    string `json:"meetingMminutesName" description:"文档文件总名称" `//创建会议 生成的文件总名称  用于选择会议前端展示该字段
-	MeetingBrainMapName    string `json:"meetingBrainMapName" description:"脑图文件总名称" `//创建会议 生成的文件总名称  用于选择会议前端展示该字段
-	//FIXME base 字段，上面的写法，在查询db后，不能赋值
+	MeetingFile            []MeetingFile `json:"meetingFile" description:"会议文件list" `
 	CorpName   string `json:"corpName" description:"企业名称" `
 	CorpCode   string `json:"corpCode" description:"企业code"`
 	CreateTime string `json:"createTime" description:"创建时间"`
@@ -28,6 +25,22 @@ type Meeting struct {
 	Bz2        string `json:"bz2" description:"备注2"`
 	Bz3        string `json:"bz3" description:"备注3"`
 }
+
+
+//会议文件
+type MeetingFile struct {
+	MeetingId              string `json:"meetingId" description:"关联的会议id" `
+	MeetingTitle           string `json:"meetingTitle" description:"会议标题" `
+	FileType               string `json:"fileType" description:"文件类型" ` //文件类型   音频：mp3   文档：word  脑图：xmind
+	FileName               string `json:"fileName" description:"文件名称" `
+	FileUrl                string `json:"fileUrl" description:"文件云地址" `
+	CorpName   			   string `json:"corpName" description:"企业名称" `
+	CorpCode   			   string `json:"corpCode" description:"企业code"`
+	CreateTime 			   string `json:"createTime" description:"创建时间"`
+	Creater    			   string `json:"creater" description:"创建人"`
+}
+
+
 
 //获取会议列表-入参
 type MeetingList_Param struct {

@@ -76,6 +76,23 @@ func GetTaskPoolList(info *task.TaskList_Param) (res task.TaskList_Result, msg e
 	return res, err
 }
 
+//校验是否能参加任务，一个任务只能参加一次
+func CheckIsJoinTask(myTask_Param *task.MyTask) (result string,msg error) {
+	dbHandler := db_handler.NewDbHandler()
+	var Param []interface{}
+	Param = append(Param, myTask_Param.CorpCode)
+	Param = append(Param, myTask_Param.UserId)
+	Param = append(Param, myTask_Param.TaskId)
+	selRes, err := dbHandler.SelectList(db_handler.CheckIsJoinTask_sql, Param...)
+	//判断用户是否参与过任务
+	if len(selRes) > 0 && err == nil {
+		result = "yesJoinTask"; //已参与任务
+	}else{
+		result = "noJoinTask"; //未参与任务
+	}
+	return result, err
+}
+
 //参加任务--添加我得任务
 func ApplyJoinTask(info *task.MyTask) (msg error) {
 	dbHandler := db_handler.NewDbHandler()
@@ -83,13 +100,6 @@ func ApplyJoinTask(info *task.MyTask) (msg error) {
 	currentTime := time.Now().Format("2006-01-02 15:04:05")
 	var Param []interface{}
 	Param = append(Param, info.TaskId)
-	Param = append(Param, info.TaskTitle)
-	//Param = append(Param, info.TaskTarget)
-	//Param = append(Param, info.TaskContent)
-	//Param = append(Param, info.TaskType)
-	//Param = append(Param, info.TaskContent)
-	//Param = append(Param, info.TaskStatus)
-	//Param = append(Param, info.TaskImg)
 	Param = append(Param, info.CorpName)
 	Param = append(Param, info.CorpCode)
 	Param = append(Param, currentTime)
@@ -102,7 +112,6 @@ func ApplyJoinTask(info *task.MyTask) (msg error) {
 	Param = append(Param, info.UserMobile)
 	Param = append(Param, common.MY_TASK_FLAG_KEY_0) // 任务状态 0.待完成 1.已完成。首次调用申请任务 固定为待完成
 	Param = append(Param, info.FinishTime)
-	Param = append(Param, info.TaskData)
 	num, err := dbHandler.Insert(db_handler.ApplyJoinTask_sql, Param...)
 	if num <= 0 || err != nil {
 		msg = err
@@ -126,9 +135,7 @@ func GetTaskList(info *task.MyTaskList_Param) (res task.MyTaskList_Result, msg e
 	startNum := (info.CurrentPage - 1) * info.PageSize
 	Param = append(Param, startNum)
 	Param = append(Param, info.PageSize)
-
 	selRes, err := dbHandler.SelectList(db_handler.GetTaskList_sql, Param...)
-
 	myTaskList := []task.MyTask{}
 
 	if len(selRes) > 0 && err == nil {
@@ -171,7 +178,6 @@ func FinishMyTask(info *task.MyTask) (msg error) {
 	currentTime := time.Now().Format("2006-01-02 15:04:05")
 	var Param []interface{}
 	Param = append(Param, info.TaskId)                      //价值ID
-	Param = append(Param, info.TaskTitle)                   //价值标题
 	Param = append(Param, "12000")                          //价值评分 //TODO 评分怎样来的，还不确定，是否需要管理端设定，先固定值
 	Param = append(Param, common.MY_WORTH_APPLY_FLAG_KEY_0) //价值状态
 	Param = append(Param, "12000")
@@ -218,9 +224,9 @@ func MyTaskDetails(info *task.MyTask) (res task.MyTask, msg error) {
 	dbHandler := db_handler.NewDbHandler()
 	//我的任务信息
 	var Param []interface{}
-	Param = append(Param, info.CorpCode)
 	Param = append(Param, info.TaskId)
 	Param = append(Param, info.UserId)
+	Param = append(Param, info.CorpCode)
 	selRes, err := dbHandler.SelectOne(db_handler.MyTaskDetails_sql,Param...)
 	if len(selRes) > 0 && err == nil {
 		decoder := ObtainDecoderConfig(&res)
@@ -232,7 +238,7 @@ func MyTaskDetails(info *task.MyTask) (res task.MyTask, msg error) {
 	var ParamCount []interface{}
 	ParamCount = append(ParamCount, info.CorpCode)
 	ParamCount = append(ParamCount, info.UserId)
-	ParamCount = append(ParamCount, info.TaskId)  //TODO 我的任务详情 查了会议表，但是没关联 会议文件 会议文件查哪个表？
+	ParamCount = append(ParamCount, info.TaskId)
 	selCountRes, err2 := dbHandler.SelectList(db_handler.GetMeetingListByTaskId_sql, ParamCount...)
 	if err2 == nil {
 		decoder := ObtainDecoderConfig(&myTaskMeeting)
