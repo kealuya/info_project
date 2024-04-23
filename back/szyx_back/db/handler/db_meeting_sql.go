@@ -29,10 +29,7 @@ const (
 
 	GetMeetingById_sql = `select * from  kdxf_meeting where MeetingId = ? `
 
-	GetMeetingList_sql = `select * from  kdxf_meeting where corpCode = ? ORDER BY 
-						createTime DESC  limit ?,? `
-
-	GetMeetingListCount_sql = `select * from  kdxf_meeting where corpCode = ? ORDER BY createTime DESC `
+	GetMeetingList_sql = `select * from  kdxf_meeting where corpCode = ? and creater = ? `
 
 	GetMeetingListByTaskId_sql = `select * from  kdxf_meeting where corpCode = ? and creater = ? and taskId = ? ORDER BY createTime DESC `
 )

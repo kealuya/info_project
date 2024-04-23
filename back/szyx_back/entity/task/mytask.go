@@ -12,7 +12,7 @@ type MyTask struct {
 	//entity.Base
 	TaskId      string            `json:"taskId" description:"任务ID" `
 	TaskTitle   string            `json:"taskTitle" description:"任务标题" `
-	TaskTarget  string            `json:"taskTarget" description:"任务目标" `
+	TaskData    string            `json:"taskData" description:"任务介绍" `
 	TaskContent string            `json:"taskContent" description:"任务内容" `
 	TaskType    string            `json:"taskType" description:"任务类型" `
 	TaskStatus  string            `json:"taskStatus" description:"任务状态" `
@@ -22,7 +22,6 @@ type MyTask struct {
 	UserMobile  string            `json:"userMobile" description:"用户手机号" `
 	Flag        string            `json:"flag" description:"完成状态" ` // 任务状态    0.待完成    1.已完成
 	FinishTime  string            `json:"finishTime" description:"完成时间" `
-	TaskData    string            `json:"taskData" description:"资料id集合；分割" `
 	MeetingId   string            `json:"meetingId" description:"关联的会议ID，用于完成任务关联会议下的会议文件" `
 	MeetingList []meeting.Meeting `json:"MeetingList" description:"完成任务，关联会议" `
 	//FIXME base 字段，上面的写法，在查询db后，不能赋值

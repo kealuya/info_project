@@ -4,8 +4,8 @@ import "szyx_back/entity"
 
 //会议
 type Meeting struct {
-	//entity.Base
 	MeetingId              string `json:"meetingId" description:"会议id" `
+	MeetingType            string `json:"meetingType" description:"会议类型" ` //audio：音频会议    document：文档会议
 	MeetingTitle           string `json:"meetingTitle" description:"会议标题" `
 	MeetingTime            string `json:"meetingTime" description:"会议时间  年-月-日  时：分：秒" `
 	MeetingCity            string `json:"meetingCity" description:"会议城市" `
@@ -15,6 +15,10 @@ type Meeting struct {
 	MeetingMminutesFileUrl string `json:"meetingMminutesFileUrl" description:"会议纪要地址" `   //完成任务是选择文件，不是选择会议，分表处理，存到speech中
 	MeetingBrainMapFileUrl string `json:"meetingBrainMapFileUrl" description:"会议脑图地址" `   //完成任务是选择文件，不是选择会议，分表处理，存到file中
 	TaskId                 string `json:"taskId" description:"任务id，任务与会议为 1对多的关系，故而在此添加关联字段" `
+	MeetingFlag            string `json:"meetingFlag" description:"会议是否使用" ` //0：未使用   1：已使用   完成任务需要选择会议， 要区分会议是否被使用
+	MeetingAudioName       string `json:"meetingAudioName" description:"音频文件总名称" `   //创建会议 生成的文件总名称  用于选择会议前端展示该字段
+	MeetingMminutesName    string `json:"meetingMminutesName" description:"文档文件总名称" `//创建会议 生成的文件总名称  用于选择会议前端展示该字段
+	MeetingBrainMapName    string `json:"meetingBrainMapName" description:"脑图文件总名称" `//创建会议 生成的文件总名称  用于选择会议前端展示该字段
 	//FIXME base 字段，上面的写法，在查询db后，不能赋值
 	CorpName   string `json:"corpName" description:"企业名称" `
 	CorpCode   string `json:"corpCode" description:"企业code"`
@@ -28,8 +32,12 @@ type Meeting struct {
 //获取会议列表-入参
 type MeetingList_Param struct {
 	entity.Paging        //分页信息
-	SearchKey     string `json:"searchKey" description:"搜索关键字" `
 	CorpCode      string `json:"corpCode" description:"企业ID" `
+	UserId        string `json:"userId" description:"用户id" `
+	MeetingType   string `json:"meetingType" description:"会议类型" `
+	StartTime     string `json:"startTime" description:"会议时间范围开始时间" `
+	EndTime		  string `json:"endTime" description:"会议时间范围结束时间" `
+	MeetingFlag   string `json:"meetingFlag" description:"会议是否使用 0：未使用   1：已使用" `
 }
 
 //会议列表-返回值
