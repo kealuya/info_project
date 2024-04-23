@@ -49,7 +49,7 @@
 <script setup lang="ts">
 import {onBeforeMount, onMounted, ref,nextTick } from 'vue';
 import { showFailToast } from 'vant';
-import {getTaskPoolList} from "../../services/index";
+import {getTaskPoolList} from "../../services/task-processing/index";
 import empty from '../../assets/img/zanwupiaoju.png'
 import  daiwancheng from '../../assets/img/daiwancheng.png'
 import  yiwancheng from '../../assets/img/yiwancheng.png'

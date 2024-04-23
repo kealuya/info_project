@@ -75,7 +75,7 @@
       </van-row>
       <van-row justify="center" align="center" class="tc" v-else-if="isShowImg">
         <div>
-          <img style="height:50vw;width:80vw;object-fit: contain" src="../../assets/img/zanwupiaoju.png" v-cloak/>
+          <img style="height:50vw;width:80vw;object-fit: contain" src="../../assets/img/zanwupiaoju.png" />
           <div class="banner">暂无数据</div>
         </div>
       </van-row>
@@ -100,7 +100,7 @@ import {useRouter} from "vue-router";
   import ApplicationCard from "../home/component/applicationCard.vue";
   import {onMounted, ref} from "vue";
   import {getDocStateList} from "../../services/home";
-  import {getTaskPoolList} from "../../services/index";
+  import {getTaskPoolList} from "../../services/task-processing/index";
   //定义列表数据类型
   interface listType {
     currentPage:Number, //当前页

@@ -50,7 +50,7 @@
 <script lang="ts" setup>
 import { onMounted,ref } from "vue";
 import { useRouter } from "vue-router";
-import {applyJoinTask} from "../../services/index"
+import {applyJoinTask} from "../../services/task-processing/index"
 import { showSuccessToast, showFailToast } from 'vant';
 const props = defineProps({
   title: {
