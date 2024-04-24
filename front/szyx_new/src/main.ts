@@ -3,7 +3,7 @@ import { createApp } from 'vue'
 // import {userInfoData} from "./store";
 import { createPinia} from 'pinia'
 import piniaPluginPersist from 'pinia-plugin-persist';
-import {heightData, useInvoiceData, userInfoData} from "./store";
+import { useInvoiceData, userInfoData,taskData} from "./store";
 import App from './App.vue'
 import Vant from 'vant';
 import router from './router'
@@ -20,10 +20,10 @@ app.use(Vant)
 app.use(VueHashCalendar);
 app.provide('userInfo', userInfoData());
 app.provide('invoiceData', useInvoiceData());
-app.provide('heightData',heightData())
+app.provide('heightData',taskData())
 app.mount('#app')
 const height = window.innerHeight
-const userInfoState: any = heightData();
-userInfoState.setFunctionConfig(height)
-console.log(userInfoState.height)
+// const userInfoState: any = heightData();
+// userInfoState.setFunctionConfig(height)
+// console.log(userInfoState.height)
 

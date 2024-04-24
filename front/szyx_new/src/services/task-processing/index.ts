@@ -67,3 +67,45 @@ export function getTaskList(query :object){
         })
     })
 }
+//我的任务 详情接口
+export function myTaskDetails(query :object){
+    // console.log('query',query)
+    return new Promise(function (resolve, reject) {
+        request({
+            url:'/v4/task/myTaskDetails',
+            data: query
+        }).then((response: object) => {
+            resolve(response)
+        }).catch((error :string) => {
+            resolve({})
+        })
+    })
+}
+//去完成任务 接口
+export function finishMyTask(query :object){
+    // console.log('query',query)
+    return new Promise(function (resolve, reject) {
+        request({
+            url:'/v4/task/finishMyTask',
+            data: query
+        }).then((response: object) => {
+            resolve(response)
+        }).catch((error :string) => {
+            resolve({})
+        })
+    })
+}
+//获取会议列表接口
+export function getMeetingList(query :object){
+    // console.log('query',query)
+    return new Promise(function (resolve, reject) {
+        request({
+            url:'/v4/meeting/getMeetingList',
+            data: query
+        }).then((response: object) => {
+            resolve(response)
+        }).catch((error :string) => {
+            resolve({})
+        })
+    })
+}

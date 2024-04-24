@@ -4,56 +4,74 @@
       left-text="返回"
       left-arrow
       @click-left="onClickLeft"/>
-    <div>
-        <van-form>
-            <div>
-                <van-cell-group class="pb10 mt10">
-                    <van-field v-model="reasonForBorrowing"
-                            name="reasonForBorrowing"
-                            label="任务名称"
-                            placeholder="请选择任务名称"
-                            class="mt10 mb10"
-                            label-width="7.5em"
-                            maxlength="20"
-                            label-align="top"
-                    />
-                  <van-field
-                      v-model="fieldValue"
-                      is-link
-                      readonly
-                      label="任务类型"
-                      placeholder="临床推广"
-                      @click="showPicker = true"
-                  />
-                    <van-notice-bar color="#1989fa" :scrollable="false" wrapable background="#ecf9ff"
-                                     class="f10">
-                        * 完成以下任务内容：
-                        <p>1.根据市场竞争提供科研推荐方案</p>
-                        <p>2.制定临床推广策略，包括推广渠道和目标受众</p>
-                        <p>3.提供科研会议成果资料，及上传会议内容</p>
-                        <p>4.提供成果研究方案及配套针对性论文</p>
-<!--                      //上传附件-->
-                    </van-notice-bar>
-<!--                    <van-field class="mt5" name="uploader" label="上传附件" label-width="6em">-->
-<!--                        <template #input>-->
-<!--                            <van-uploader v-model="fileList" :after-read="getFile" :before-delete="deleteFile"-->
-<!--                                          max-count="4"/>-->
-<!--                        </template>-->
-<!--                    </van-field>-->
-                  <div class="yw_content" @click="taskList">
-                    业务内容<van-icon name="arrow" />
-                  </div>
-               <businessCard :isCollapse="isCollapse"></businessCard>
-                </van-cell-group>
-            </div>
-        </van-form>
-    </div>
+  <div>
+    <van-form>
+      <div>
+        <van-cell-group class="pb10 mt10">
+          <van-field v-model="reasonForBorrowing"
+                     name="reasonForBorrowing"
+                     label="任务名称"
+                     placeholder="请选择任务名称"
+                     class="mt10 mb10"
+                     label-width="7.5em"
+                     maxlength="20"
+                     label-align="top"/>
+          <van-field
+              v-model="fieldValue"
+              is-link
+              readonly
+              label="任务类型"
+              placeholder="临床推广"
+              @click="showPicker = true"
+          />
+          <van-notice-bar color="#1989fa" :scrollable="false" wrapable background="#ecf9ff" class="f10">{{contentTask}}</van-notice-bar>
 
-    <div class="footer_btn">
-        <van-button block type="primary" @click="showLoanStatus">
-            提交任务
-        </van-button>
-    </div>
+          <div class="yw_content" @click="taskList">
+            业务内容<van-icon name="arrow" />
+          </div>
+          <div class="list_card" v-for="item in meetingList" :key="item.id">
+            <div class="flex-space m-b-10">
+              <div style="display: flex;align-items: center">
+                <van-tag type="primary" v-if="item.meetingType == 'audio'">音频会议</van-tag>
+                <van-tag type="success" v-else>文档记录</van-tag>
+                <div class="list_title">{{item.meetingTitle}}</div>
+              </div>
+              <!--                <van-checkbox v-model="item.isCheck" @change="changeCheck"></van-checkbox>-->
+              <!--            <van-image-->
+              <!--                width="20"-->
+              <!--                height="20"-->
+              <!--                :src="businessIcon"-->
+              <!--            />-->
+            </div>
+            <van-divider />
+            <!--          //display:flex;align-items: center;-->
+            <div style="margin-bottom: 10px; margin-left: 10px;display:flex;align-items: center;" v-for="i in item.meetingFile">
+              <van-image :src="word" width="23" height="23" v-if="i.fileType=='word'"></van-image>
+              <van-image :src="xmind" width="23" height="23" v-if="i.fileType=='xmind'"></van-image>
+              <van-image :src="mp3" width="23" height="23" v-if="i.fileType=='mp3'"></van-image>
+              <div class="list_title1">{{i.fileName}}</div>
+              <!--        <div class="list_title1">{{item.meetingBrainMapName?item.meetingBrainMapName:''}}</div>-->
+              <!--        <div class="list_title1">{{item.meetingMminutesName?item.meetingMminutesName:''}}</div>-->
+            </div>
+            <div>
+              <!--            <div class="f-z-12 m-b-10" >所属会议：{{item.sshy}}</div>-->
+              <!--<div class="f-z-12 m-b-10" v-if="item.hyType!=='word'">会议地点：{{item.address}}</div>-->
+              <div class="f-z-12 m-b-10" style="margin-left: 10px;">创建时间：{{item.createTime}}</div>
+
+            </div>
+          </div>
+
+<!--          <businessCard :isCollapse="isCollapse" :meetingList="meetingList"></businessCard>-->
+        </van-cell-group>
+      </div>
+    </van-form>
+  </div>
+
+  <div class="footer_btn">
+    <van-button block type="primary" @click="showLoanStatus">
+      提交任务
+    </van-button>
+  </div>
   <van-popup v-model:show="showPicker" round position="bottom">
     <van-picker
         :columns="columns"
@@ -64,31 +82,43 @@
   <div class="box"></div>
 </template>
 <script lang="ts" setup>
-import businessCard from '../../components/businessCard/index.vue'
-import { ref } from 'vue'
-import { useRouter } from "vue-router";
+import {finishMyTask} from '../../services/task-processing/index'
+import {finishTaskType} from '../../services/task-processing/types/index'
+import {taskData,meetingData} from '../../store/index'
+// import businessCard from '../../components/businessCard/index.vue'
+import {inject, onMounted, ref} from 'vue'
+import { useRouter,useRoute } from "vue-router";
 // import { showSuccessToast, showFailToast } from 'vant';
 import {showSuccessToast} from "vant";
+import word from "../../assets/img/word.png";
+import xmind from "../../assets/img/xmind.png";
+import mp3 from "../../assets/img/mp3.png";
+import {showFailToast} from "vant/es";
 const router = useRouter()
+const route = useRoute()
+const taskStore = taskData()
+const meetingStore = meetingData()
+const contentTask = ref<string>()
 const isCollapse = ref<boolean>(true)
-    const columns = [
-      { text: '临床推广', value: '临床推广' },
-      { text: '科研成果', value: '科研成果' } ,
-      { text: '医药销售', value: '医药销售' }
-    ];
-    const fieldValue = ref('');
-    const showPicker = ref(false);
+const meetingList = ref<any>([])
+const columns = [
+  { text: '临床推广', value: '临床推广' },
+  { text: '科研成果', value: '科研成果' } ,
+  { text: '医药销售', value: '医药销售' }
+];
+const fieldValue = ref('');
+const showPicker = ref(false);
 
-    const onConfirm = ({ selectedOptions }) => {
-      showPicker.value = false;
-      fieldValue.value = selectedOptions[0].text;
-    };
+const onConfirm = ({ selectedOptions }) => {
+  showPicker.value = false;
+  fieldValue.value = selectedOptions[0].text;
+};
 
-    const onClickLeft = () => {
+const onClickLeft = () => {
   // history.go(-2)
   router.replace('/task')
 }
-const reasonForBorrowing = ref<string>('生物标志物作为高血压患者风险评估的有效指标')
+const reasonForBorrowing = ref<string>()
 const loanAmount = ref<string>('临床推广')
 
 const taskProcessingHandle = ()=>{
@@ -100,13 +130,53 @@ const selectBankAccount = ()=>{
   router.replace('/taskList')
 }
 
-function showLoanStatus() {
-  router.replace('/taskProcessing')
+let params = ref<finishTaskType>({
+  taskId:'',
+  corpCode:'',
+  userId:'',
+  userName:'',
+  userMobile:'',
+  meetingId:''
+})
+
+//点击了提交 任务按钮
+const showLoanStatus=()=> {
+  console.log('参数',params.value)
+  //以上是准备接口参数
+  finishMyTask(params.value).then((res:any)=>{
+    if(res.success){
+      showSuccessToast(res.msg)
+      router.replace('/taskProcessing')
+    }else{
+      showFailToast(res.msg)
+    }
+  })
+
+
 }
 const taskList = ()=>{
   router.replace('/taskList')
 }
+onMounted(()=>{
+  console.log(taskStore.getTaskTitle())
+  reasonForBorrowing.value = taskStore.getTaskTitle()
+  contentTask.value = taskStore.getTaskContent()
+  meetingList.value =meetingStore.getMeetingData()  //从本地缓存中取 业务数据  勾选的
+ let arr =  meetingList.value.map((item:any)=>{
+  return item.meetingId
+  })
+  params.value.meetingId = arr
 
+
+
+  params.value.taskId = taskStore.getTaskId()
+  let userInfoData: any = inject("userInfo"); // 取出用户信息用于调用接口
+  params.value.corpCode = localStorage.getItem('corpCode') //从本地获取corpCode
+  params.value.userId = userInfoData.userInfo.userId
+  params.value.userName = userInfoData.userInfo.userName
+  params.value.userMobile = userInfoData.userInfo.userMobile
+  // console.log(route.query)
+})
 </script>
 <style lang="less" scoped>
 .yw_content{
@@ -155,14 +225,14 @@ const taskList = ()=>{
 }
 .content{
   margin:2vw;
-.title_one{
-  text-align:center;
-  font-weight: 550;
-  font-size: 0.875em;
-}
- .f-z-14{
-   font-size: 0.75em;
- }
+  .title_one{
+    text-align:center;
+    font-weight: 550;
+    font-size: 0.875em;
+  }
+  .f-z-14{
+    font-size: 0.75em;
+  }
   //.f-z-12{
   //  font-size: 0.75em;
   //}
@@ -179,6 +249,34 @@ const taskList = ()=>{
 .footer_btn{
   width:95vw;
   padding:2vw;
+}
+.list_card{
+  width:92vw;
+  margin:2vw;
+  padding:2vw;
+  background-color: #FFFFFF;
+  border-radius: 10px;
+  .flex-space{
+    display: flex;
+    justify-content: space-between;
+  }
+  .list_title{
+    font-size: 0.875em;
+    font-weight: 550;
+    margin-left: 2vw;
+  }
+  .f-z-12{
+    font-size: 0.75em;
+    color:#4B5563;
+  }
+  .m-b-10{
+    margin-bottom: 2vw;
+  }
+}
+.list_title1{
+  font-size: 0.75em;
+  //font-weight: 550;
+  margin-left: 2vw;
 }
 ::v-deep(.van-nav-bar__content) {
   background-color: #0088ff;

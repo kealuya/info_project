@@ -90,9 +90,8 @@ const onClickLeft = () => {
   router.replace('/homeNew')
 }
 const taskProcessingHandle = ()=>{
-  // showSuccessToast('参与成功');
-
-  router.replace('/addTasks')
+  router.replace( '/addTasks')
+  // router.replace('/addTasks')
 }
 const taskProcessingHandle1 = ()=>{
   searchLoading.value =true

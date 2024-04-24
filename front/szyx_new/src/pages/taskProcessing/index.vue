@@ -1,5 +1,5 @@
 <template>
-<!--  //最外层盒子必须加上100vh-->
+  <!--  //最外层盒子必须加上100vh-->
   <div class="page-container">
     <van-nav-bar
         left-arrow
@@ -14,40 +14,40 @@
             <div v-if="searchLoading && rwList.length==0" class="h-67">
               <van-loading type="spinner" color="#1989fa" :vertical="true">加载中...</van-loading>
             </div>
-          <van-list
-              v-if="!isShowImg"
-              :offset="30"
-              v-model="loading"
-              :finished="finished"
-              :immediate-check="false"
-              finished-text="没有更多了"
-              loading-text="正在加载中请稍后"
-              style="height: 100%"
-              @load="getListLoad"
-          >
-            <div style="height: 100%">
-              <div v-for="item in rwList" class="list_cardtask" @click="businessDetailHandle(item)">
-                <div class="m-b-10 icon">
-                  <van-image
-                      :src="businessIcon"
-                      height="20"
-                      width="20"
-                  />
-                  <div class="list_title">{{ item.taskTitle }}</div>
-                </div>
-                <van-divider/>
-                <div class="m-b-10 f-z-12"><span style="color: #4BA3FB">任务目标：</span>{{ item.taskData }}</div>
-                <div class="m-b-10 f-z-12" style="display: flex;justify-content: space-between">
-                  <div>
-                    <span style="color: #4BA3FB">发布时间：</span>{{ item.createTime }}
+            <van-list
+                v-if="!isShowImg"
+                :offset="30"
+                v-model="loading"
+                :finished="finished"
+                :immediate-check="false"
+                finished-text="没有更多了"
+                loading-text="正在加载中请稍后"
+                style="height: 100%"
+                @load="getListLoad"
+            >
+              <div style="height: 100%">
+                <div v-for="item in rwList" class="list_cardtask" @click="businessDetailHandle(item)">
+                  <div class="m-b-10 icon">
+                    <van-image
+                        :src="businessIcon"
+                        height="20"
+                        width="20"
+                    />
+                    <div class="list_title">{{ item.taskTitle }}</div>
                   </div>
-                  <van-tag :type="item.flag=='0'?'primary':'success'">{{ item.flag == '0' ? '待处理' : '已完成' }}
-                  </van-tag>
+                  <van-divider/>
+                  <div class="m-b-10 f-z-12"><span style="color: #4BA3FB">任务目标：</span>{{ item.taskData }}</div>
+                  <div class="m-b-10 f-z-12" style="display: flex;justify-content: space-between">
+                    <div>
+                      <span style="color: #4BA3FB">发布时间：</span>{{ item.createTime }}
+                    </div>
+                    <van-tag :type="item.flag=='0'?'primary':'success'">{{ item.flag == '0' ? '待处理' : '已完成' }}
+                    </van-tag>
+                  </div>
                 </div>
               </div>
-            </div>
-            <!--          <div class="box"></div>-->
-          </van-list>
+              <!--          <div class="box"></div>-->
+            </van-list>
             <van-row justify="center" align="center" class="tc" v-else-if="isShowImg">
               <div>
                 <img style="height:50vw;width:80vw;object-fit: contain" src="../../assets/img/zanwupiaoju.png" />
@@ -63,41 +63,41 @@
             <div v-if="searchLoading && rwList.length==0" class="h-67">
               <van-loading type="spinner" color="#1989fa" :vertical="true">加载中...</van-loading>
             </div>
-          <van-list
-              v-if="!isShowImg"
-              :offset="30"
-              v-model="loading"
-              :finished="finished"
-              :immediate-check="false"
-              finished-text="没有更多了"
-              loading-text="正在加载中请稍后"
-              style="height: 100%"
-              @load="getListLoad"
+            <van-list
+                v-if="!isShowImg"
+                :offset="30"
+                v-model="loading"
+                :finished="finished"
+                :immediate-check="false"
+                finished-text="没有更多了"
+                loading-text="正在加载中请稍后"
+                style="height: 100%"
+                @load="getListLoad"
 
-          >
-            <div v-for="item in rwList" class="list_card" @click="businessDetailHandle(item)" >
-              <div class="flex-space m-b-10">
-                <van-image
-                    :src="businessIcon"
-                    height="20"
-                    width="20"
-                />
-                <div class="list_title">{{ item.taskTitle }}</div>
-                <van-image :src="yiwancheng"
-                           height="60"
-                           style="position:absolute;right:8vw;top:4vw" width="72"></van-image>
+            >
+              <div v-for="item in rwList" class="list_card" @click="businessDetailHandle(item)" >
+                <div class="flex-space m-b-10">
+                  <van-image
+                      :src="businessIcon"
+                      height="20"
+                      width="20"
+                  />
+                  <div class="list_title">{{ item.taskTitle }}</div>
+                  <van-image :src="yiwancheng"
+                             height="60"
+                             style="position:absolute;right:8vw;top:4vw" width="72"></van-image>
+                </div>
+                <van-divider/>
+                <div class="m-b-10 f-z-12">任务目标：{{ item.taskData }}</div>
+                <div class="m-b-10 f-z-12"><span class="f-w">创建时间：</span>{{ item.createTime }}</div>
+
+                <div class="m-b-10 f-z-12"><span class="f-w">完成时间：</span>{{ item.finishTime }}</div>
+                <!--          <van-image  width="70"-->
+                <!--                      v-if="item.isShow"-->
+                <!--                      height="70"-->
+                <!--                      :src="daiwancheng" style="position:absolute;right:8vw;top:4vw"></van-image>-->
               </div>
-              <van-divider/>
-              <div class="m-b-10 f-z-12">任务目标：{{ item.taskData }}</div>
-              <div class="m-b-10 f-z-12"><span class="f-w">创建时间：</span>{{ item.createTime }}</div>
-
-              <div class="m-b-10 f-z-12"><span class="f-w">完成时间：</span>{{ item.finishTime }}</div>
-              <!--          <van-image  width="70"-->
-              <!--                      v-if="item.isShow"-->
-              <!--                      height="70"-->
-              <!--                      :src="daiwancheng" style="position:absolute;right:8vw;top:4vw"></van-image>-->
-            </div>
-          </van-list>
+            </van-list>
             <van-row justify="center" align="center" class="tc" v-else-if="isShowImg">
               <div>
                 <img style="height:50vw;width:80vw;object-fit: contain" src="../../assets/img/zanwupiaoju.png" />
@@ -118,6 +118,7 @@ import {inject, onMounted, ref} from 'vue';
 import yiwancheng from '../../assets/img/yiwancheng.png'
 import {useRouter} from "vue-router";
 import businessIcon from "../../assets/img/business_icon.png";
+import {taskData} from '../../store/index'
 import empty from "../../assets/img/zanwupiaoju.png";
 const isLoading = ref<boolean>(false)  //控制 下拉刷新
 const active = ref(0);
@@ -130,6 +131,7 @@ const finishText = ref<string>('没有更多了')
 const searchLoading = ref<Boolean>(false)
 const loading = ref(true);
 const finished = ref(false);
+const taskStore = taskData()
 interface itemType{
   taskContent:string,
   taskData:string,
@@ -153,7 +155,7 @@ const changeList = async (name: number) => {
   if (name == 1) {
     params.value.currentPage = 1
     rwList.value = []
-    isLoading.value = true
+    // isLoading.value = true
     await getList()
     tabIndex.value = true
 
@@ -181,7 +183,12 @@ const rwListComplete = ref<LISTTYPE[]>([]);
 //   router.replace('/taskDetail')
 // }
 const businessDetailHandle = (item:any) => {
-  router.replace({path:'/task',query:item})
+  taskStore.setTaskId(item.taskId)
+  taskStore.setTaskTitle(item.taskTitle)
+  taskStore.setTaskContent(item.taskContent)
+
+  //把数据存到 pinia
+  router.replace('/task')
 
 }
 const onClickLeft = () => {
@@ -195,12 +202,12 @@ const getList = async () => {
     console.log('res', res)
     if (res.success) {
       // if (active.value == 0) {  //说明是我的任务
-        rwList.value = rwList.value.concat(res.data.myTaskList)
-        isLoading.value =false   //关闭下拉刷新的加载
-        totalCount.value = res.data.totalCount  //总条数
-        //todo 总页
-        pageCount.value = res.data.pageCount //总页码
-       if(rwList.value.length==totalCount.value){
+      rwList.value = rwList.value.concat(res.data.myTaskList)
+      isLoading.value =false   //关闭下拉刷新的加载
+      totalCount.value = res.data.totalCount  //总条数
+      //todo 总页
+      pageCount.value = res.data.pageCount //总页码
+      if(rwList.value.length==totalCount.value){
         loading.value = false   //关闭下拉刷新的加载
         finished.value = true
       }
@@ -211,12 +218,12 @@ const getList = async () => {
         isShowImg.value = false
         finishText.value = '没有更多数据了'
       }
-      }
-      // else{  //已完成列表
-      //   rwListComplete.value = rwListComplete.value.concat(res.data.myTaskList)
-      //   //todo总条数  判断
-      //   console.log('rwListComplete.value',rwListComplete.value)
-      // }
+    }
+    // else{  //已完成列表
+    //   rwListComplete.value = rwListComplete.value.concat(res.data.myTaskList)
+    //   //todo总条数  判断
+    //   console.log('rwListComplete.value',rwListComplete.value)
+    // }
     // }
   }).finally(()=>{
     searchLoading.value = false
