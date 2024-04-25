@@ -48,6 +48,7 @@ func CheckIsJoinTask(myTask_Param *task.MyTask) (result string,err error) {
 完成任务，生成价值数据
 */
 func FinishMyTask(myTask_Param *task.MyTask) (err error) {
+	//完成任务
 	err = db.FinishMyTask(myTask_Param)
 	return err
 }

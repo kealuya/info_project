@@ -173,51 +173,69 @@ func FinishMyTask(info *task.MyTask) (msg error) {
 		_ = tx.Rollback()
 		msg = errors.New(fmt.Sprintf("%s%s", "完成我的任务::", err.Error()))
 	})
-
-	//价值数据组装
+	//当前时间生成
 	currentTime := time.Now().Format("2006-01-02 15:04:05")
+
+	//完成任务数据组装
+	var finishParam []interface{}
+	finishParam = append(finishParam, common.MY_TASK_FLAG_KEY_1) //修改状态为已完成
+	finishParam = append(finishParam, currentTime)
+	finishParam = append(finishParam, info.TaskId)
+	finishParam = append(finishParam, info.UserId)
+	finishParam = append(finishParam, info.CorpCode)
+	num, err := tx.Exec(db_handler.ModifyMyTask_sql, finishParam...)
+	rows, _ := num.RowsAffected()
+	if rows < 0 || err != nil {
+		errors.New("修改我的任务发生错误!")
+		return
+	}
+
+	//遍历完成任务所选的会议列表，根据会议ID 更新会议表所关联的任务ID。一个任务对应多个会议
+	for _, meetingId := range info.MeetingIdList {
+		var ParamMeeting []interface{}
+		ParamMeeting = append(ParamMeeting, info.TaskId) //任务id
+		ParamMeeting = append(ParamMeeting, common.MY_MEETING_FLAG_KEY_1) //修改会议使用状态为 已使用:1
+		ParamMeeting = append(ParamMeeting, meetingId) // 会议id
+		ParamMeeting = append(ParamMeeting, info.UserId)
+		ParamMeeting = append(ParamMeeting, info.CorpCode)
+		numMeeting, err := tx.Exec(db_handler.UpDateMeetingInTackId_sql, ParamMeeting...)
+		rows3, _ := numMeeting.RowsAffected()
+		if rows3 < 0 || err != nil {
+			errors.New("更新会议表所关联的任务ID发生错误!")
+			return
+		}
+	}
+
+	//完成任务后 价值数据生成组装
 	var Param []interface{}
-	Param = append(Param, info.TaskId)                      //价值ID
-	Param = append(Param, "12000")                          //价值评分 //TODO 评分怎样来的，还不确定，是否需要管理端设定，先固定值
-	Param = append(Param, common.MY_WORTH_APPLY_FLAG_KEY_0) //价值状态
-	Param = append(Param, "12000")
+	btTime := time.Now().Format("2006-01-02")
+	Param = append(Param, info.TaskId)     //价值ID //TODO 目前先用任务id 作为价值id，目前业务是一个完成的任务对应一条价值
+	Param = append(Param, "85")     //价值评分 //TODO 评分怎样来的，还不确定，是否需要管理端设定，先固定值
+	Param = append(Param, btTime +"-"+ info.UserName + "-价值申请") //价值标题
+	Param = append(Param, common.MY_WORTH_APPLY_FLAG_KEY_0) //价值状态 0：未申请   1：已申请
+	Param = append(Param, "5000.00")  //价值申请金额  //TODO 目前不知道价值申请金额怎么定义  先固定值
 	Param = append(Param, info.UserId)
 	Param = append(Param, info.UserName)
 	Param = append(Param, info.UserMobile)
 	Param = append(Param, info.CorpName)
 	Param = append(Param, info.CorpCode)
 	Param = append(Param, currentTime) //创建时间
-	Param = append(Param, "完成创建")
+	Param = append(Param, info.UserId)
 	Param = append(Param, info.Bz1)
 	Param = append(Param, info.Bz2)
 	Param = append(Param, info.Bz3)
-
-	//完成任务数据组装
-	var finishParam []interface{}
-	finishParam = append(finishParam, common.MY_TASK_FLAG_KEY_1)
-	finishParam = append(finishParam, info.MeetingId) //关联的会议ID，用于完成任务关联会议下的会议文件
-	finishParam = append(finishParam, currentTime)
-	finishParam = append(finishParam, info.TaskId)
-	finishParam = append(finishParam, info.UserId)
-	finishParam = append(finishParam, info.CorpCode)
-
-	num, err := tx.Exec(db_handler.ModifyMyTask_sql, finishParam...)
-	rows, _ := num.RowsAffected()
-	if rows <= 0 || err != nil {
-		errors.New("修改我的任务状态发生错误!")
-		return
-	}
 	insertNum, err := tx.Exec(db_handler.CreateWorth_sql, Param...)
 	rows2, _ := insertNum.RowsAffected()
-	if rows2 <= 0 || err != nil {
+	if rows2 < 0 || err != nil {
 		errors.New("添加价值数据发生错误!")
 		return
 	}
+	//执行操作
 	comRrr := tx.Commit()
 	common.ErrorHandler(comRrr)
-
 	return msg
 }
+
 
 //查看我的任务详情
 func MyTaskDetails(info *task.MyTask) (res task.MyTask, msg error) {

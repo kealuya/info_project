@@ -22,10 +22,9 @@ type MyTask struct {
 	UserMobile  string            `json:"userMobile" description:"用户手机号" `
 	Flag        string            `json:"flag" description:"完成状态" ` // 任务状态    0.待完成    1.已完成
 	FinishTime  string            `json:"finishTime" description:"完成时间" `
-	MeetingId   string            `json:"meetingId" description:"关联的会议ID，用于完成任务关联会议下的会议文件" `
-	MeetingList []meeting.Meeting `json:"MeetingList" description:"完成任务，关联会议" `
+	MeetingList []meeting.Meeting `json:"meetingList" description:"完成任务，关联会议" `
+	MeetingIdList []string       `json:"meetingIdList" description:"会议id-list" `
 	//FIXME base 字段，上面的写法，在查询db后，不能赋值
-
 	CorpName   string `json:"corpName" description:"企业名称" `
 	CorpCode   string `json:"corpCode" description:"企业code"`
 	CreateTime string `json:"createTime" description:"创建时间"`

@@ -8,6 +8,14 @@ const (
 	MY_TASK_FLAG_VALUE_1 = "已完成"
 )
 
+//会议使用状态
+const (
+	MY_MEETING_FLAG_KEY_0   = "0"
+	MY_MEETING_FLAG_VALUE_0 = "未使用"
+	MY_MEETING_FLAG_KEY_1   = "1"
+	MY_MEETING_FLAG_VALUE_1 = "已使用"
+)
+
 //录音使用状态
 const (
 	MY_SPEECH_USE_FLAG_KEY_0   = "0"

@@ -20,7 +20,7 @@ func GenerateToken(empCode, password string, corpCode string) (string, error) {
 
 	//token 过期时间 access_token 过期时间为5分钟
 	nowTime := time.Now()
-	expireTime := nowTime.Add(5 * time.Minute)
+	expireTime := nowTime.Add(5000 * time.Minute)
 
 	//1. aud 标识token的接收者.
 	//2. exp 过期时间.通常与Unix UTC时间做对比过期后token无效

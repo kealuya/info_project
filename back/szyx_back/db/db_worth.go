@@ -7,10 +7,10 @@ import (
 	"time"
 )
 
-//修改价值
+//提交申请价值
 func ModifyWorthApply(info *worth.Worth) (res worth.Worth, msg error) {
 	dbHandler := db_handler.NewDbHandler()
-	//修改价值
+	//申请价值时间
 	currentTime := time.Now().Format("2006-01-02 15:04:05")
 	var Param []interface{}
 	Param = append(Param, common.MY_WORTH_APPLY_FLAG_KEY_1)
@@ -74,6 +74,10 @@ func GetWorthList(info *worth.WorthList_Param) (res worth.WorthList_Result, msg 
 
 	res.WorthList = worthList
 	res.TotalCount = int64(len(worthListCount))
-
+	//获取总页数，前端需要
+	res.PageCount = res.TotalCount /  info.PageSize
+	if res.TotalCount % info.PageSize > 0 {
+		res.PageCount++
+	}
 	return res, err
 }

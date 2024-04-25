@@ -67,13 +67,15 @@ const (
 						where mytask.corpCode = ? and mytask.flag = ? and mytask.userId = ? 
                         ORDER BY mytask.createTime DESC`
 
-	ModifyMyTask_sql = `update kdxf_mytask set
-									flag = ?,finishTime = ?,meetingId = ?
-								where 
-									taskId = ? and userId = ? and corpCode = ?
-								`
+	ModifyMyTask_sql = `update kdxf_mytask set  flag = ?,finishTime = ?
+						 where taskId = ? and userId = ? and corpCode = ? `
+
 	MyTaskDetails_sql = `select mytask.*,kt.taskTitle ,kt.taskData ,kt.taskContent,kt.taskType,
 						kt.taskImg ,kt.taskStatus  from kdxf_mytask mytask 
 						left join kdxf_taskpool kt  ON mytask.taskId  = kt.taskId  
 						where  mytask.taskId = ? and mytask.userId = ?  and mytask.corpCode = ? `
+
+	//更新会议表所关联的任务ID，一个任务对应多个会议
+	UpDateMeetingInTackId_sql = `update kdxf_meeting  set  taskId  = ?,meetingFlag  = ? 
+						where meetingId  = ? and creater  = ? and corpCode = ? `
 )

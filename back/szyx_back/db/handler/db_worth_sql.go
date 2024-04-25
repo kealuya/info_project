@@ -15,21 +15,9 @@ const (
 
 	GetWorthListCount_sql = `select * from  kdxf_worth where corpCode = ? and userId = ? and status = ? ORDER BY createTime DESC `
 
-	CreateWorth_sql = `insert into kdxf_worth(
-													WorthId,
-													WorthTitle,
-													WorthScore,
-													Status,
-													Money,
-													UserId,
-													UserName,
-													UserMobile,
-													CorpName,
-													CorpCode,
-													CreateTime,
-													Creater,
-													Bz1,
-													Bz2,
-													Bz3
-												)values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+	CreateWorth_sql = `insert into kdxf_worth(worthId,worthScore,worthTitle,
+											  status,money,userId,userName,
+											  userMobile,corpName,corpCode,
+											  createTime,creater,bz1,bz2,bz3)
+						values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 )

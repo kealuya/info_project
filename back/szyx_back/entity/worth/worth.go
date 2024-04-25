@@ -4,16 +4,15 @@ import "szyx_back/entity"
 
 //价值
 type Worth struct {
-	//entity.Base
 	WorthId    string `json:"worthId" description:"价值Id" `
 	WorthTitle string `json:"worthTitle" description:"价值title" `
-	WorthScore string `json:"worthScore" description:"价值评分" `
-	Status     string `json:"status" description:"状态" `
-	Money      string `json:"money" description:"钱数" `
+	WorthScore string `json:"worthScore" description:"任务价值评分" `
+	ApplyTime  string `json:"applyTime" description:"价值申请时间" `
+	Status     string `json:"status" description:"状态" ` //状态 价值状态 0：未申请   1：已申请
+	Money      string `json:"money" description:"价值申请金额" `
 	UserId     string `json:"userId" description:"用户ID" `
 	UserName   string `json:"userName" description:"用户姓名" `
 	UserMobile string `json:"userMobile" description:"用户手机号" `
-	//FIXME base 字段，上面的写法，在查询db后，不能赋值
 	CorpName   string `json:"corpName" description:"企业名称" `
 	CorpCode   string `json:"corpCode" description:"企业code"`
 	CreateTime string `json:"createTime" description:"创建时间"`
