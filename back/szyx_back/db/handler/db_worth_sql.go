@@ -5,7 +5,7 @@ const (
 	ModifyWorthByApplyWorth_sql = `update kdxf_worth set
 									status = ?,applyTime = ?
 								where 
-									userId = ? and corpCode = ?
+									userId = ? and corpCode = ? and worthId = ?
 								`
 	//查询价值
 	SelectWorthById_sql = `select * from kdxf_worth where worthId = ? `

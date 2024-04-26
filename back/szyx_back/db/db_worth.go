@@ -17,6 +17,7 @@ func ModifyWorthApply(info *worth.Worth) (res worth.Worth, msg error) {
 	Param = append(Param, currentTime)
 	Param = append(Param, info.UserId)
 	Param = append(Param, info.CorpCode)
+	Param = append(Param, info.WorthId)
 
 	num, err := dbHandler.Update(db_handler.ModifyWorthByApplyWorth_sql, Param...)
 	if num <= 0 {
