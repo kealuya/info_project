@@ -68,7 +68,7 @@ func GetMeetingList(info *meeting.MeetingList_Param) (res meeting.MeetingList_Re
 	Param = append(Param, startNum)
 	Param = append(Param, info.PageSize)
 	sqlOrderby := "ORDER BY createTime DESC  limit ?,?"
-	selRes, err := dbHandler.SelectList(db_handler.GetMeetingList_sql + sqlType + sqlMeetingFlag + sqlTime + sqlOrderby, Param...)
+	selRes, err := dbHandler.SelectList(db_handler.GetMeetingList_sql+sqlType+sqlMeetingFlag+sqlTime+sqlOrderby, Param...)
 	fmt.Print(db_handler.GetMeetingList_sql + sqlType + sqlTime + sqlOrderby)
 	meetingList := []meeting.Meeting{}
 
@@ -101,7 +101,7 @@ func GetMeetingList(info *meeting.MeetingList_Param) (res meeting.MeetingList_Re
 		sqlTime_Count = sqlTime_Count + " AND DATE(createTime) BETWEEN ? AND ? "
 	}
 
-	selCountRes, err2 := dbHandler.SelectList(db_handler.GetMeetingList_sql + sqlType_Count + sqlMeetingFlag_Count + sqlTime_Count, ParamCount...)
+	selCountRes, err2 := dbHandler.SelectList(db_handler.GetMeetingList_sql+sqlType_Count+sqlMeetingFlag_Count+sqlTime_Count, ParamCount...)
 	//fmt.Print(db_handler.GetMeetingListCount_sql + sqlType_Count + sqlTime_Count + sqlOrderby_Count)
 	if err2 == nil {
 		decoder := ObtainDecoderConfig(&meetingListCount)
@@ -111,20 +111,19 @@ func GetMeetingList(info *meeting.MeetingList_Param) (res meeting.MeetingList_Re
 	res.MeetingList = meetingList
 	res.TotalCount = int64(len(meetingListCount))
 	//获取总页数，前端需要
-	res.PageCount = res.TotalCount /  info.PageSize
-	if res.TotalCount % info.PageSize > 0 {
+	res.PageCount = res.TotalCount / info.PageSize
+	if res.TotalCount%info.PageSize > 0 {
 		res.PageCount++
 	}
 	return res, err
 }
-
 
 //根据会议id 查询会议文件list
 func GetMeetingFileList(meetingId string) (res []meeting.MeetingFile, msg error) {
 	dbHandler := db_handler.NewDbHandler()
 	var Param []interface{}
 	Param = append(Param, meetingId)
-	selRes, err := dbHandler.SelectList(db_handler.GetMeetingFileList_sql,Param...)
+	selRes, err := dbHandler.SelectList(db_handler.GetMeetingFileList_sql, Param...)
 	if len(selRes) > 0 && err == nil {
 		decoder := ObtainDecoderConfig(&res)
 		err1 := decoder.Decode(selRes)
@@ -132,7 +131,6 @@ func GetMeetingFileList(meetingId string) (res []meeting.MeetingFile, msg error)
 	}
 	return res, err
 }
-
 
 //修改会议
 func ModifyMeeting(info *meeting.Meeting) (res meeting.Meeting, msg error) {
@@ -155,6 +153,39 @@ func ModifyMeeting(info *meeting.Meeting) (res meeting.Meeting, msg error) {
 			common.ErrorHandler(err, "会议展示信息转换发生错误!")
 		} else {
 			err = err1
+		}
+	}
+
+	return res, err
+}
+
+//查看会议详情
+func GetMeetingDetails(info *meeting.Meeting) (res meeting.Meeting, msg error) {
+	dbHandler := db_handler.NewDbHandler()
+	//会议信息
+	var Param []interface{}
+	Param = append(Param, info.MeetingId)
+
+	//查询会议主表
+	num, err := dbHandler.SelectOne(db_handler.GetMeetingById_sql, Param...)
+	if err != nil {
+		common.ErrorHandler(err, "会议详情查询发生错误!")
+	} else {
+		//查询会议，返回前台展示
+		decoder := ObtainDecoderConfig(&res)
+		err := decoder.Decode(num)
+		common.ErrorHandler(err, "会议详情转换发生错误!")
+
+		meetingFileList := []meeting.MeetingFile{}
+		num2, err2 := dbHandler.SelectList(db_handler.GetMeetingFileList_sql, Param...)
+		if err2 != nil {
+			common.ErrorHandler(err2, "会议文件详情查询发生错误!")
+		} else {
+			//查询会议，返回前台展示
+			decoder1 := ObtainDecoderConfig(&meetingFileList)
+			err3 := decoder1.Decode(num2)
+			common.ErrorHandler(err3, "会议文件详情转换发生错误!")
+			res.MeetingFile = meetingFileList
 		}
 	}
 

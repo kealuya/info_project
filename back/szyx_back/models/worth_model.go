@@ -29,3 +29,11 @@ func GetWorthList(worthList_Param *worth.WorthList_Param) (res worth.WorthList_R
 	res, err = db.GetWorthList(worthList_Param)
 	return res, err
 }
+
+/**
+价值详情
+*/
+func GetWorthDetails(worth_Param *worth.Worth) (res worth.Worth, err error) {
+	res, err = db.GetWorthDetails(worth_Param)
+	return res, err
+}

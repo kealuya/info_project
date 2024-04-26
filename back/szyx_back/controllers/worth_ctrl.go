@@ -121,3 +121,38 @@ func (WorthCtrl *WorthCtrl) GetWorthList() {
 		resJson.Msg = fmt.Sprintf("价值列表获取失败::%s", err)
 	}
 }
+
+// @Title 价值详情
+// @Tags GetWorthDetails
+// @Summary 价值详情
+// @accept application/json
+// @Produce application/json
+// @Param data body worth.Worth true "Worth struct"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"查询成功"}"
+// @router /getWorthDetails [post]
+func (WorthCtrl *WorthCtrl) GetWorthDetails() {
+	resJson := NewJsonStruct(nil)
+	defer func() {
+		WorthCtrl.Data["json"] = resJson
+		WorthCtrl.ServeJSON()
+	}()
+	worth_Param := new(worth.Worth)
+	var jsonByte = WorthCtrl.Ctx.Input.RequestBody
+	logs.Info("价值详情入参：" + string(jsonByte))
+	paramerr := jsoniter.Unmarshal(jsonByte, &worth_Param)
+	if paramerr != nil {
+		resJson.Success = false
+		resJson.Msg = "入参有误"
+		return
+	}
+	//业务处理
+	worthList, err := models.GetWorthDetails(worth_Param)
+	if err == nil {
+		resJson.Success = true
+		resJson.Msg = "价值详情获取成功"
+		resJson.Data = worthList
+	} else {
+		resJson.Success = false
+		resJson.Msg = fmt.Sprintf("价值详情获取失败::%s", err)
+	}
+}

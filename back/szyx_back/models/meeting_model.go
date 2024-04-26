@@ -20,8 +20,6 @@ func CreateMeeting(meetingDto *meeting.Meeting) (err error) {
 	return err
 }
 
-
-
 /**
 会议列表
 */
@@ -36,7 +34,7 @@ func GetMeetingList(meetingDto *meeting.MeetingList_Param) (res meeting.MeetingL
 		meetingListNew = append(meetingListNew, fileList...)
 		res.MeetingList[k].MeetingFile = meetingListNew
 	}
-	return res,err
+	return res, err
 }
 
 /**
@@ -84,5 +82,13 @@ func CreateMeetingBrainMap(meetingDto *meeting.Meeting) (res meeting.Meeting, er
 		err = err
 	})
 
+	return res, err
+}
+
+/**
+会议详情
+*/
+func GetMeetingDetails(meetingDto *meeting.Meeting) (res meeting.Meeting, err error) {
+	res, err = db.GetMeetingDetails(meetingDto)
 	return res, err
 }

@@ -75,9 +75,26 @@ func GetWorthList(info *worth.WorthList_Param) (res worth.WorthList_Result, msg 
 	res.WorthList = worthList
 	res.TotalCount = int64(len(worthListCount))
 	//获取总页数，前端需要
-	res.PageCount = res.TotalCount /  info.PageSize
-	if res.TotalCount % info.PageSize > 0 {
+	res.PageCount = res.TotalCount / info.PageSize
+	if res.TotalCount%info.PageSize > 0 {
 		res.PageCount++
 	}
+	return res, err
+}
+
+//查看价值详情
+func GetWorthDetails(info *worth.Worth) (res worth.Worth, msg error) {
+	dbHandler := db_handler.NewDbHandler()
+	//价值详情信息
+	var Param []interface{}
+	Param = append(Param, info.WorthId)
+
+	selRes, err := dbHandler.SelectOne(db_handler.SelectWorthById_sql, Param...)
+	if len(selRes) > 0 && err == nil {
+		decoder := ObtainDecoderConfig(&res)
+		err1 := decoder.Decode(selRes)
+		common.ErrorHandler(err1, "价值信息转换发生错误!")
+	}
+
 	return res, err
 }
