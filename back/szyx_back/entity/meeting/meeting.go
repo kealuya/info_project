@@ -21,11 +21,15 @@ type Meeting struct {
 	MeetingFile            []MeetingFile `json:"meetingFile" description:"会议文件list" `
 	CorpName               string        `json:"corpName" description:"企业名称" `
 	CorpCode               string        `json:"corpCode" description:"企业code"`
-	CreateTime             string        `json:"createTime" description:"创建时间"`
+	CreateTime             string        `json:"createTime" description:"创建时间、结束时间"`
 	Creater                string        `json:"creater" description:"创建人"`
 	Bz1                    string        `json:"bz1" description:"备注1"`
 	Bz2                    string        `json:"bz2" description:"备注2"`
 	Bz3                    string        `json:"bz3" description:"备注3"`
+	MeetingAudioSummary    string        `json:"meetingAudioSummary" description:"音频会议摘要"`    //通过关联关系获取
+	MeetingAudioMinutes    string        `json:"meetingAudioMinutes" description:"音频会议纪要"`    //通过关联关系获取
+	MeetingDocumentSummary string        `json:"meetingDocumentSummary" description:"文档会议摘要"` //通过关联关系获取
+	MeetingDocumentMinutes string        `json:"meetingDocumentMinutes" description:"文档会议纪要"` //通过关联关系获取
 }
 
 //会议文件

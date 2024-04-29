@@ -27,7 +27,13 @@ const (
 									MeetingId = ?
 								`
 
-	GetMeetingById_sql = `select * from  kdxf_meeting where MeetingId = ? `
+	GetMeetingById_sql = `select meeting.*, 
+									speech.summary as meetingAudioSummary,speech.meetingMinutes as meetingAudioMinutes,  
+									knowledge.summary as meetingDocumentSummary,knowledge.meeting_minutes as meetingDocumentMinutes 
+									from  kdxf_meeting meeting  
+									left join kdxf_speech speech on meeting.meetingId = speech.meetingId  
+									left join kdxf_knowledge  knowledge  on meeting.meetingId = knowledge.meetingId 
+								where meeting.MeetingId = ? `
 
 	GetMeetingList_sql = `select * from  kdxf_meeting where corpCode = ? and creater = ? `
 
