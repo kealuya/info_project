@@ -36,3 +36,10 @@ type LoginRequestPar struct {
 	LoginWay      int    `json:"loginWay" description:"登录方式" `      // 1 -- 企业用户  2-- 手机号邮箱 3--二维码
 	EquipmentType string `json:"equipmentType" description:"设备类型" ` //登录设备类型 PC,APP
 }
+
+//统计返回信息
+type UserInfoCount_Result struct {
+	MeetingCount int64   `json:"meetingCount" description:"会议数" `
+	TaskCount    int64   `json:"taskCount" description:"任务数" `
+	WorthCount   float64 `json:"worthCount" description:"价值钱数" `
+}

@@ -73,11 +73,16 @@ func GetTaskPoolList(info *task.TaskList_Param) (res task.TaskList_Result, msg e
 	}
 	res.TaskList = taskList
 	res.TotalCount = int64(len(taskListCount))
+	//获取总页数，前端需要
+	res.PageCount = res.TotalCount / info.PageSize
+	if res.TotalCount%info.PageSize > 0 {
+		res.PageCount++
+	}
 	return res, err
 }
 
 //校验是否能参加任务，一个任务只能参加一次
-func CheckIsJoinTask(myTask_Param *task.MyTask) (result string,msg error) {
+func CheckIsJoinTask(myTask_Param *task.MyTask) (result string, msg error) {
 	dbHandler := db_handler.NewDbHandler()
 	var Param []interface{}
 	Param = append(Param, myTask_Param.CorpCode)
@@ -86,9 +91,9 @@ func CheckIsJoinTask(myTask_Param *task.MyTask) (result string,msg error) {
 	selRes, err := dbHandler.SelectList(db_handler.CheckIsJoinTask_sql, Param...)
 	//判断用户是否参与过任务
 	if len(selRes) > 0 && err == nil {
-		result = "yesJoinTask"; //已参与任务
-	}else{
-		result = "noJoinTask"; //未参与任务
+		result = "yesJoinTask" //已参与任务
+	} else {
+		result = "noJoinTask" //未参与任务
 	}
 	return result, err
 }
@@ -158,8 +163,8 @@ func GetTaskList(info *task.MyTaskList_Param) (res task.MyTaskList_Result, msg e
 	res.MyTaskList = myTaskList
 	res.TotalCount = int64(len(myTaskListCount))
 	//获取总页数，前端需要
-	res.PageCount = res.TotalCount /  info.PageSize
-	if res.TotalCount % info.PageSize > 0 {
+	res.PageCount = res.TotalCount / info.PageSize
+	if res.TotalCount%info.PageSize > 0 {
 		res.PageCount++
 	}
 	return res, err
@@ -193,9 +198,9 @@ func FinishMyTask(info *task.MyTask) (msg error) {
 	//遍历完成任务所选的会议列表，根据会议ID 更新会议表所关联的任务ID。一个任务对应多个会议
 	for _, meetingId := range info.MeetingIdList {
 		var ParamMeeting []interface{}
-		ParamMeeting = append(ParamMeeting, info.TaskId) //任务id
+		ParamMeeting = append(ParamMeeting, info.TaskId)                  //任务id
 		ParamMeeting = append(ParamMeeting, common.MY_MEETING_FLAG_KEY_1) //修改会议使用状态为 已使用:1
-		ParamMeeting = append(ParamMeeting, meetingId) // 会议id
+		ParamMeeting = append(ParamMeeting, meetingId)                    // 会议id
 		ParamMeeting = append(ParamMeeting, info.UserId)
 		ParamMeeting = append(ParamMeeting, info.CorpCode)
 		numMeeting, err := tx.Exec(db_handler.UpDateMeetingInTackId_sql, ParamMeeting...)
@@ -209,11 +214,11 @@ func FinishMyTask(info *task.MyTask) (msg error) {
 	//完成任务后 价值数据生成组装
 	var Param []interface{}
 	btTime := time.Now().Format("2006-01-02")
-	Param = append(Param, info.TaskId)     //价值ID //TODO 目前先用任务id 作为价值id，目前业务是一个完成的任务对应一条价值
-	Param = append(Param, "85")     //价值评分 //TODO 评分怎样来的，还不确定，是否需要管理端设定，先固定值
-	Param = append(Param, btTime +"-"+ info.UserName + "-价值申请") //价值标题
+	Param = append(Param, info.TaskId)                      //价值ID //TODO 目前先用任务id 作为价值id，目前业务是一个完成的任务对应一条价值
+	Param = append(Param, "85")                             //价值评分 //TODO 评分怎样来的，还不确定，是否需要管理端设定，先固定值
+	Param = append(Param, btTime+"-"+info.UserName+"-价值申请") //价值标题
 	Param = append(Param, common.MY_WORTH_APPLY_FLAG_KEY_0) //价值状态 0：未申请   1：已申请
-	Param = append(Param, "5000.00")  //价值申请金额  //TODO 目前不知道价值申请金额怎么定义  先固定值
+	Param = append(Param, "5000.00")                        //价值申请金额  //TODO 目前不知道价值申请金额怎么定义  先固定值
 	Param = append(Param, info.UserId)
 	Param = append(Param, info.UserName)
 	Param = append(Param, info.UserMobile)
@@ -236,7 +241,6 @@ func FinishMyTask(info *task.MyTask) (msg error) {
 	return msg
 }
 
-
 //查看我的任务详情
 func MyTaskDetails(info *task.MyTask) (res task.MyTask, msg error) {
 	dbHandler := db_handler.NewDbHandler()
@@ -245,7 +249,7 @@ func MyTaskDetails(info *task.MyTask) (res task.MyTask, msg error) {
 	Param = append(Param, info.TaskId)
 	Param = append(Param, info.UserId)
 	Param = append(Param, info.CorpCode)
-	selRes, err := dbHandler.SelectOne(db_handler.MyTaskDetails_sql,Param...)
+	selRes, err := dbHandler.SelectOne(db_handler.MyTaskDetails_sql, Param...)
 	if len(selRes) > 0 && err == nil {
 		decoder := ObtainDecoderConfig(&res)
 		err1 := decoder.Decode(selRes)
