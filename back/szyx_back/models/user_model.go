@@ -18,3 +18,9 @@ func MessageLogin(mobile string) (loginResp LoginResponseData, err error) {
 	}
 	return loginResp, err
 }
+
+//用户信息统计 任务数  会议数  价值数
+func GetUserInfoCount(user *UserInfo) (userInfoCount UserInfoCount_Result, err error) {
+	userInfoCount, err = db.GetUserInfoCount(user)
+	return userInfoCount, err
+}
