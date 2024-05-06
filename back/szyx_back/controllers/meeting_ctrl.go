@@ -115,8 +115,11 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingAudioFile() {
 	}
 
 	if flag {
+		fileStruct := new(meeting.MeetingFile_Result)
+		fileStruct.FileUrl = fpath
 		resJson.Success = true
 		resJson.Msg = "上传成功"
+		resJson.Data = fileStruct
 	} else {
 		resJson.Success = false
 		resJson.Msg = fmt.Sprintf("会议录音上传失败::%s", err)
@@ -155,10 +158,14 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingFile() {
 	ext := path.Ext(h.Filename)
 	//fmt.Println("------------" + ext)
 
-	//验证后缀名是否符合要求   mp3/blob
+	//验证后缀名是否符合要求   doc/txt
 	AllowExtMap := map[string]bool{
-		".mp3":  true,
-		".blob": true,
+		".doc":  true,
+		".docx": true,
+		".txt":  true,
+		".xls":  true,
+		".xlsx": true,
+		".pdf":  true,
 	}
 
 	if _, ok := AllowExtMap[ext]; !ok {
@@ -189,11 +196,14 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingFile() {
 	}
 
 	if flag {
+		fileStruct := new(meeting.MeetingFile_Result)
+		fileStruct.FileUrl = fpath
 		resJson.Success = true
 		resJson.Msg = "上传成功"
+		resJson.Data = fileStruct
 	} else {
 		resJson.Success = false
-		resJson.Msg = fmt.Sprintf("会议录音上传失败::%s", err)
+		resJson.Msg = fmt.Sprintf("会议文件上传失败::%s", err)
 	}
 
 }

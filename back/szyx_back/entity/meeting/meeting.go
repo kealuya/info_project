@@ -61,3 +61,8 @@ type MeetingList_Result struct {
 	entity.Paging           //分页信息
 	MeetingList   []Meeting //会议list
 }
+
+//文件上传返回值
+type MeetingFile_Result struct {
+	FileUrl string `json:"fileUrl" description:"上传后的地址" `
+}
