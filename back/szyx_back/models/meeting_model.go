@@ -48,7 +48,7 @@ func ModifyMeeting(meetingDto *meeting.Meeting) (res meeting.Meeting, err error)
 /**
 会议纪要
 */
-func CreateMeetingMminutes(speechDto *kdxf.Kdxf_speech) (res kdxf.Kdxf_speech, err error) {
+func CreateMeetingMminutes(speechDto *kdxf.Kdxf_audio_param) (res kdxf.Kdxf_speech, err error) {
 	defer common.RecoverHandler(func(err error) {
 		err = err
 	})

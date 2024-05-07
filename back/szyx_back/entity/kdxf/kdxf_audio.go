@@ -2,6 +2,16 @@ package kdxf
 
 import "szyx_back/entity"
 
+//语音识别入参-生成会议记录
+type Kdxf_audio_param struct {
+	UserId    string `json:"userId" description:"用户ID" `
+	CorpCode  string `json:"corpCode" description:"企业ID" `
+	MeetingId string `json:"meetingId" description:"会议ID" `
+	FileId    string `json:"fileId" description:"文件ID" `
+	FileUrl   string `json:"fileUrl" description:"文件地址" `
+	FileName  string `json:"fileName" description:"文件名称" `
+}
+
 //语音识别返回值
 type Kdxf_audio_result struct {
 	Msg      string `json:"msg" description:"msg" `

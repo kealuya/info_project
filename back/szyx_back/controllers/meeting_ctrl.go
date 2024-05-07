@@ -283,7 +283,7 @@ func (MeetingCtrl *MeetingCtrl) ModifyMeeting() {
 // @Summary 会议纪要
 // @accept application/json
 // @Produce application/json
-// @Param data body kdxf.Kdxf_speech true "Kdxf_speech struct"
+// @Param data body kdxf.Kdxf_audio_param true "Kdxf_audio_param struct"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"会议纪要生成成功"}"
 // @router /createMeetingMminutes [post]
 func (MeetingCtrl *MeetingCtrl) CreateMeetingMminutes() {
@@ -292,7 +292,7 @@ func (MeetingCtrl *MeetingCtrl) CreateMeetingMminutes() {
 		MeetingCtrl.Data["json"] = resJson
 		MeetingCtrl.ServeJSON()
 	}()
-	speech := new(kdxf.Kdxf_speech)
+	speech := new(kdxf.Kdxf_audio_param)
 	var jsonByte = MeetingCtrl.Ctx.Input.RequestBody
 	logs.Info("生成会议纪要入参：" + string(jsonByte))
 	paramerr := jsoniter.Unmarshal(jsonByte, &speech)
