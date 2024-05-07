@@ -16,11 +16,12 @@ func CreateMeeting(info *meeting.Meeting) (msg error) {
 	var Param []interface{}
 	Param = append(Param, info.MeetingId)
 	Param = append(Param, info.MeetingTitle)
+	Param = append(Param, info.MeetingType)
 	Param = append(Param, info.MeetingTime)
 	Param = append(Param, info.MeetingCity)
 	Param = append(Param, info.MeetingAddress)
 	Param = append(Param, info.MeetingPeople)
-	Param = append(Param, info.MeetingAudioFileUrl)
+	Param = append(Param, "0") //会议是否使用 0：未使用   1：已使用
 	Param = append(Param, info.CorpName)
 	Param = append(Param, info.CorpCode)
 	Param = append(Param, currentTime)

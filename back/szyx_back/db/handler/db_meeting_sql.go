@@ -3,23 +3,24 @@ package handler
 const (
 	InsertMeeting_sql = `INSERT INTO kdxf_meeting 
 						( 
-							MeetingId,
-							MeetingTitle,
-							MeetingTime,
-							MeetingCity,
-							MeetingAddress,
-							MeetingPeople,
-							MeetingAudioFileUrl,
-							CorpName,
-							CorpCode,
-							CreateTime,
-							Creater,
-							Bz1,
-							Bz2,
-							Bz3
+							meetingId,
+							meetingTitle,
+							meetingType,
+							meetingTime,
+							meetingCity,
+							meetingAddress,
+							meetingPeople,
+							meetingFlag,
+							corpName,
+							corpCode,
+							createTime,
+							creater,
+							bz1,
+							bz2,
+							bz3
 						) 
 							VALUE
-						(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+						(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 
 	ModifyMeetingAudioFileUrl_sql = `update kdxf_meeting set
 									MeetingAudioFileUrl = ?
