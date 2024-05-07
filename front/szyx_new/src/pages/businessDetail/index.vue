@@ -6,19 +6,15 @@
       @click-left="onClickLeft"
   />
   <div class="content">
-    <div class="title_one m-b-10 f-z-14" >针对当前互联网营销策略会议</div>
+    <div class="title_one m-b-10 f-z-14" >{{meetingTitle}}</div>
     <div class="title_two f-z-14 f-w-550  m-b-10">
-      <span>会议摘要</span>
+      <span>{{meetingType=='document'?'文档':'会议'}}摘要</span>
     </div>
     <div class="f-z-12 m-b-10">
-      &nbsp;&nbsp;互联网营销策略包括多种方法和技术，旨在利用互联网平台、工具和资源来推广产品或服务、增加品牌曝光、吸引潜在客户并提高销售业绩。
+     {{meetingAudioSummary}}
     </div>
     <div class="f-z-12 m-b-10">
-      &nbsp; 网站优化（SEO）： 通过优化网站内容和结构，提高在搜索引擎中的排名，增加有机流量
-      搜索引擎营销（SEM）： 利用付费广告在搜索引擎上展示，提高网站访问量和曝光度
-      内容营销： 制作有吸引力和有价值的内容，如博客文章、视频、社交媒体内容等，吸引目标受众并建立品牌认知度
-      社交媒体营销： 通过社交媒体平台与潜在客户互动，推广品牌、产品和服务，增加用户参与和忠诚度
-      影响营销： 与影响者合作，借助他们的影响力在社交媒体上推广产品或服务
+      &nbsp;
     </div>
 <!--    <div class="f-z-12 m-b-10">-->
 <!--      &nbsp;&nbsp;症状采集：医生会询问患者当前的症状，比如疼痛、咳嗽、发热等。患者描述症状的特点和变化有助于医生判断疾病的可能性。-->
@@ -33,46 +29,43 @@
 <!--      &nbsp;&nbsp;诊断过程：医生根据患者提供的信息、体征和检查结果，进行综合分析和判断，最终做出诊断并制定治疗方案。-->
 <!--    </div>-->
     <div class="f-z-14  m-b-10 space">
-      <span class="f-w-550">会议记录</span>
-      <div class="right">
+      <span class="f-w-550">{{meetingType=='document'?'文档':'会议'}}记录</span>
+      <div class="right" @click="aiHandle">
         <van-image :src="Ai"  width="20" height="20">
         </van-image>
         <span class="c-blue">生成</span>
       </div>
     </div>
-    <div class="f-z-12  m-b-10 space">
-      <span>会议纪要</span>
-    </div>
     <van-text-ellipsis
         rows="5"
-        :content="text"
+        :content="meetingAudioMinutes"
         expand-text="展开纪要"
         collapse-text="收起纪要"
     />
-    <div class="metting">
+    <div class="metting" v-for="item in wordFiles">
       <van-image :src="Word"  width="23" height="23">
       </van-image>
-      <div class="c-blue f-z-14">20240408-聚醚酮酮数字化临床效果会议.word <span>&nbsp;下载附件</span></div>
+      <div class="c-blue f-z-14">{{item.fileName}}<span @click="downloadFile(item.fileUrl)">&nbsp;下载附件</span></div>
     </div>
     <div class="f-z-14  m-b-10 space">
-      <span class="f-w-550">会议脑图</span>
-      <div class="right">
+      <span class="f-w-550">{{meetingType=='document'?'文档':'会议'}}脑图</span>
+      <div class="right" @click="aiHandle">
         <van-image :src="Ai"  width="23" height="23">
         </van-image>
         <span class="c-blue">生成</span>
       </div>
     </div>
     <svg class="flex-1" ref="svgRef" />
-    <div class="metting">
+    <div class="metting" v-for="item in xmindFiles">
       <van-image :src="Xmind"  width="23" height="23">
       </van-image>
-      <div class="c-blue f-z-14"> &nbsp;&nbsp;20240408-聚醚酮酮数字化临床效果会议.xmind<span>&nbsp;下载附件</span></div>
+      <div class="c-blue f-z-14">{{item.fileName}}<span @click="downloadFile(item.fileUrl)">&nbsp;下载附件</span></div>
     </div>
     <div class="title_two f-z-14 f-w-550  m-b-10">
-      <span>会议信息</span>
+      <span>{{meetingType=='document'?'文档':'会议'}}信息</span>
     </div>
-    <div class="f-z-12">会议地址：天津市南开区红旗南路大厦B座</div>
-    <div class="f-z-12">会议时长：1小时53分钟</div>
+    <div class="f-z-12">会议地址：{{meetingCity}}{{meetingAddress}}</div>
+<!--    <div class="f-z-12">会议时长：1小时53分钟</div>-->
   </div>
   <div class="box"></div>
 </template>
@@ -81,11 +74,45 @@ import Ai from '../../assets/img/ai.png';
 
 import Word from '../../assets/img/word.png'
 import Xmind from '../../assets/img/xmind.png'
-import {useRouter} from "vue-router";
+import {useRouter,useRoute} from "vue-router";
+import {getMeetingDetails} from '../../services/task-processing/index'
+import {onMounted,ref} from "vue";
 const router = useRouter()
+const route = useRoute()
+let meetingAudioMinutes = ref()
+let meetingAudioSummary = ref()
+let meetingCity = ref()
+let meetingAddress = ref()
+let wordFiles = ref()
+let xmindFiles = ref()
+let meetingTitle = ref()
+let meetingType = ref()
 const onClickLeft = () => {
   router.push('/business')
 }
+const downloadFile = async (value) => {
+  console.log(value)
+  window.location.href = value; //
+};
+//ai 生成的事件
+const aiHandle = ()=>{
+
+}
+onMounted(()=>{
+  const id = route.query.meetingId
+  getMeetingDetails({MeetingId:id}).then(res=>{
+    if(res.success){
+      meetingAudioMinutes.value = res.data.meetingAudioMinutes
+      meetingAudioSummary.value = res.data.meetingAudioSummary
+      meetingCity.value = res.data.meetingCity
+      meetingAddress.value = res.data.meetingAddress
+      meetingTitle.value = res.data.meetingTitle
+      meetingType.value = res.data.meetingType
+      wordFiles.value = res.data.meetingFile.filter(file => file.fileType === 'word');
+      xmindFiles.value = res.data.meetingFile.filter(file => file.fileType === 'xmind');
+    }
+  })
+})
 </script>
 <script>
 import naotu from '../../assets/img/naotu.png'

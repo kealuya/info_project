@@ -1,5 +1,5 @@
 <template>
-  <taskCard :title="title" :taskTitle="taskTitle" :picSrc="picSrc" :target="target" :content="content" :isComplete="isComplete"></taskCard>
+  <taskCard :title="title" :taskTitle="taskTitle" :picSrc="picSrc" :target="target" :content="content" :isComplete="isComplete" :finished="finished"></taskCard>
 </template>
 <script lang="ts" setup>
 import bgc from '../../assets/img/task_bgc_01.png'
@@ -18,6 +18,8 @@ const taskTitle = ref<string>('')
 const picSrc = ref<string>(bgc)
 const target = ref<string>()
 const content = ref<string>()
+// const taskId = ref<any>()
+let finished = ref<any>()
 const taskStore = taskData()
 interface dataType{
   taskTitle:string | undefined,
@@ -40,10 +42,13 @@ const onClickLeft = () => {
 //   router.replace({ path: '/addTasks', query: queryData as any });
 // }
 onMounted(()=>{
+  finished.value = route.query.isFinished
+  console.log(' finished.value', finished.value)
   console.log('taskStore',taskStore.getTaskId())
   let corpCode =  localStorage.getItem('corpCode')
   let userInfoData: any = inject("userInfo"); // 取出用户信息用于调用接口
   let userId =  userInfoData.userInfo.userId
+   // taskId.value = taskStore.getTaskId()
   let params = {
     taskId:taskStore.getTaskId(),
     corpCode:corpCode,

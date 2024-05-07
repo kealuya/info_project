@@ -134,7 +134,7 @@
 </template>
 
 <script lang="ts" setup>
-import {heightData, useInvoiceData, userInfoData} from "../../store";
+import { useInvoiceData, userInfoData} from "../../store";
 import zanwupiaoju from '../../assets/img/zanwupiaoju.png'
 import speech from "../../assets/img/speech.png";
 // import logoIcon from "../../assets/img/avatar.jpeg";
@@ -219,8 +219,8 @@ const checkMobile = () => {
 onMounted(() => {
   //打开页面，获取权限
   win.recOpen()
-  const userInfoState: any = heightData();
-  height.value = userInfoState.height
+  // const userInfoState: any = heightData();
+  // height.value = userInfoState.height
   checkMobile()
 })
 const seeHeight = ref()

@@ -1,339 +1,491 @@
 <template>
-  <van-nav-bar
-      title="价值申请"
-      left-text="返回"
-      left-arrow
-      @click-left="onClickLeft"
-  />
-  <van-tabs v-model:active="active">
-    <van-tab title="待申请列表">
-      <!--      <div class="box"></div>-->
-      <!--  !&#45;&#45;   //列表部分&ndash;&gt;-->
+  <div class="container">
+    <van-nav-bar
+        left-arrow
+        left-text="返回"
+        title="价值申请"
+        @click-left="onClickLeft"
+    />
+    <van-tabs v-model:active="active" @change="tabChange">
+      <van-tab title="待申请列表">
+
+      </van-tab>
+      <van-tab title="申请记录">
+
+      </van-tab>
+
+
+    </van-tabs>
+    <div :class="{ 'list1': tabIndex }">
       <div class="list">
-        <div class="list_card" v-for="item in jzList" :key="item.id">
-          <div class="flex-space m-b-10">
+        <van-pull-refresh v-model="isLoading" success-text="刷新成功" @refresh="onRefresh">
+          <div v-if="searchLoading && list.length==0" class="h-67">
+            <van-loading :vertical="true" color="#1989fa" type="spinner">加载中...</van-loading>
+          </div>
+          <van-radio-group v-if="!isShowImg" v-model="selectedItem" @change="handleRadioChange">
+            <van-list
+                v-model:loading="loading"
+                :finished="finished"
+                :immediate-check="false"
+                :offset="30"
+                finished-text="没有更多了"
+                loading-text="正在加载中请稍后"
+                style="height: 100%"
+                @load="getListLoad"
+
+            >
+              <div v-for="item in list" :key="item.worthId" class="list_card">
+                <div class="flex-space m-b-10">
+                  <div style="display:flex">
+                    <van-image :src="Money" height="20" width="20"></van-image>
+                    <div class="list_title">{{ item.worthTitle }}</div>
+                  </div>
+                  <van-radio :name="item.worthId"/>
+                  <!--                  <van-checkbox v-model="item.isCheck" @change="changeCheck"></van-checkbox>-->
+                </div>
+                <van-divider/>
+                <div class="f-z-12 m-b-10">任务评分：{{ item.worthScore }}分</div>
+                <div class="flex-space f-z-12 m-b-10">
+                  <div>预计可申请金额：{{ item.money }}</div>
+                </div>
+                <div class="flex-space f-z-12 m-b-10">
+                  <!--              <div></div>-->
+                  <div>创建时间：{{ item.createTime }}</div>
+                </div>
+              </div>
+            </van-list>
+          </van-radio-group>
+          <van-row v-else-if="isShowImg" align="center" class="tc" justify="center">
+            <div class="noData">
+              <img src="../../assets/img/zanwupiaoju.png" style="height:50vw;width:80vw;object-fit: contain"/>
+              <div class="banner">暂无数据</div>
+            </div>
+          </van-row>
+        </van-pull-refresh>
+      </div>
+      <div class="footer_btn">
+        <van-button block type="primary" @click="handleSubmit">
+          提交申请
+        </van-button>
+      </div>
+    </div>
+    <div :class="{ 'list1': !tabIndex}" class="listReacord">
+      <van-pull-refresh v-model="isLoading" :disabled="isShowImg" success-text="刷新成功" @refresh="onRefresh">
+        <div v-if="searchLoading && list.length==0" class="h-67">
+          <van-loading :vertical="true" color="#1989fa" type="spinner">加载中...</van-loading>
+        </div>
+        <van-list
+            v-if="!isShowImg"
+            v-model:loading="loading"
+            :finished="finished"
+            :immediate-check="false"
+            :offset="80"
+            finished-text="没有更多了"
+            loading-text="正在加载中请稍后"
+            style="height: 100%"
+            @load="getListLoad"
+
+        >
+          <div v-for="item in list" class="list_card" @click="handleJump(item.worthId)">
             <div style="display:flex">
-              <van-image :src="Money" width="20" height="20"></van-image>
-              <div class="list_title">{{item.name}}</div>
+              <van-image :src="Money" height="20" width="20"></van-image>
+              <div class="list_title">{{ item.worthTitle }}</div>
             </div>
-            <van-checkbox v-model="item.isCheck"></van-checkbox>
-            <!--            <van-image-->
-            <!--                width="20"-->
-            <!--                height="20"-->
-            <!--                :src="businessIcon"-->
-            <!--            />-->
+            <van-divider/>
+            <div class="f-z-12 m-b-10">任务评分:{{ item.worthScore }}</div>
+            <div class="f-z-12 m-b-10">预计可申请金额:{{ item.money }}</div>
+            <div class="flex-space f-z-12">
+              <!--            <div>已关联任务100002</div>-->
+              <div>已完成时间：2024-04-12 15:20:15</div>
+            </div>
+            <div v-if="item.status=='0'" class="list_icon">
+              <van-image :src="waitshenpi" height="60" width="60"></van-image>
+            </div>
+            <div v-else-if="item.status =='1'" class="list_icon">
+              <van-image :src="yitongyi" height="60" width="60"></van-image>
+            </div>
           </div>
-          <van-divider />
+        </van-list>
+        <van-row v-else-if="isShowImg" align="center" class="tc" justify="center">
           <div>
-            <div class="f-z-12 m-b-10" >任务评分：{{item.number}}</div>
-            <div class="flex-space f-z-12 m-b-10">
-              <div>预计可申请金额：{{item.sqje}}</div>
-            </div>
-            <div class="flex-space f-z-12 m-b-10">
-<!--              <div></div>-->
-              <div>创建时间：{{item.time}}</div>
-<!--              <div>已完成</div>-->
-
-            </div>
+            <img src="../../assets/img/zanwupiaoju.png" style="height:50vw;width:80vw;object-fit: contain"/>
+            <div class="banner">暂无数据</div>
           </div>
-        </div>
-        <div class="footer_btn">
-          <van-button block type="primary" @click="handleSubmit">
-            提交申请
-          </van-button>
-        </div>
-      </div>
-      <!--      <van-row  justify="space-around" :getter="20" align="center" class="mt10">-->
-      <!--        <van-col span="11">-->
-      <!--          <div class="mainButton f_white">-->
-      <!--            <div>-->
-      <!--              <van-row justify="space-between" align="center">-->
-      <!--                <van-col>-->
-      <!--                  <p class="f16">音频记录</p>-->
-      <!--                  &lt;!&ndash;                <p class="f12">快速申请 规范流程</p>&ndash;&gt;-->
-      <!--                </van-col>-->
-      <!--                <van-col>-->
-      <!--                  &lt;!&ndash;              <van-icon :name="shenqingdanIcon" size="3em"   />&ndash;&gt;-->
-      <!--                </van-col>-->
-      <!--              </van-row>-->
-      <!--            </div>-->
-      <!--          </div>-->
-      <!--        </van-col>-->
-      <!--        <van-col span="11">-->
-      <!--          <div class="mainButton_sec  f_white">-->
-      <!--            <div>-->
-      <!--              <van-row justify="space-between" align="center">-->
-      <!--                <van-col>-->
-      <!--                  <p class="f16">文档上传</p>-->
-      <!--                  &lt;!&ndash;                <p class="f12">移动报销 随时随地</p>&ndash;&gt;-->
-      <!--                </van-col>-->
-      <!--                <van-col>-->
-      <!--                  &lt;!&ndash;              <van-icon :name="danjuIcon" size="3em"  />&ndash;&gt;-->
-      <!--                </van-col>-->
-      <!--              </van-row>-->
-      <!--            </div>-->
-      <!--          </div>-->
-      <!--        </van-col>-->
-      <!--      </van-row>-->
-    </van-tab>
-    <van-tab title="申请记录">
-      <!--      <div class="box"></div>-->
-      <!--  !&#45;&#45;   //列表部分&ndash;&gt;-->
-      <div class="list">
-        <div class="list_card" v-for="item in jzList1" @click="handleJump">
-          <div style="display:flex">
-            <van-image :src="Money" width="20" height="20"></van-image>
-            <div class="list_title">{{item.name}}</div>
-          </div>
-<!--            <van-image-->
-<!--                width="20"-->
-<!--                height="20"-->
-<!--                :src="businessIcon"-->
-<!--            />-->
-<!--          </div>-->
-          <van-divider />
-          <div class="f-z-12 m-b-10" >任务评分:{{item.number}}</div>
-          <div class="f-z-12 m-b-10">预计可申请金额:{{item.sqje}}</div>
-          <div class="flex-space f-z-12">
-<!--            <div>已关联任务100002</div>-->
-            <div>已完成时间：2024-04-12 15:20:15</div>
-          </div>
-          <div class="list_icon" v-if="item.isShow"><van-image :src="waitshenpi" width="60" height="60"></van-image></div>
-          <div class="list_icon" v-else><van-image :src="yitongyi" width="60" height="60"></van-image></div>
-        </div>
+        </van-row>
+      </van-pull-refresh>
+    </div>
 
-      </div>
-      <!--      <van-row  justify="space-around" :getter="20" align="center" class="mt10">-->
-      <!--        <van-col span="11">-->
-      <!--          <div class="mainButton f_white">-->
-      <!--            <div>-->
-      <!--              <van-row justify="space-between" align="center">-->
-      <!--                <van-col>-->
-      <!--                  <p class="f16">音频记录</p>-->
-      <!--                  &lt;!&ndash;                <p class="f12">快速申请 规范流程</p>&ndash;&gt;-->
-      <!--                </van-col>-->
-      <!--                <van-col>-->
-      <!--                  &lt;!&ndash;              <van-icon :name="shenqingdanIcon" size="3em"   />&ndash;&gt;-->
-      <!--                </van-col>-->
-      <!--              </van-row>-->
-      <!--            </div>-->
-      <!--          </div>-->
-      <!--        </van-col>-->
-      <!--        <van-col span="11">-->
-      <!--          <div class="mainButton_sec  f_white">-->
-      <!--            <div>-->
-      <!--              <van-row justify="space-between" align="center">-->
-      <!--                <van-col>-->
-      <!--                  <p class="f16">文档上传</p>-->
-      <!--                  &lt;!&ndash;                <p class="f12">移动报销 随时随地</p>&ndash;&gt;-->
-      <!--                </van-col>-->
-      <!--                <van-col>-->
-      <!--                  &lt;!&ndash;              <van-icon :name="danjuIcon" size="3em"  />&ndash;&gt;-->
-      <!--                </van-col>-->
-      <!--              </van-row>-->
-      <!--            </div>-->
-      <!--          </div>-->
-      <!--        </van-col>-->
-      <!--      </van-row>-->
-    </van-tab>
-  </van-tabs>
-
+  </div>
   <!--  <div class="mb10"></div>-->
 </template>
-<script setup lang="ts">
+<script lang="ts" setup>
 import waitshenpi from '../../assets/img/waitshenpi_icon.png'
 import yitongyi from '../../assets/img/yitongyi_icon.png'
 import Money from '../../assets/img/money.png'
 import businessIcon from '../../assets/img/business_icon.png';
-import {ref,computed} from 'vue';
+import {ref, computed, onMounted, inject} from 'vue';
 // import userRouter from 'user'
-import { useRouter } from "vue-router";
+import {useRouter} from "vue-router";
+import {getWorthList, applyWorth} from '../../services/task-processing/index'
+import {showSuccessToast} from "vant";
+import {showFailToast} from "vant/es";
+
+const selectedItem = ref<any>()
+const loading = ref(false);
+const finished = ref(false);
+const totalCount = ref<number>(0)
+const pageCount = ref<number>(0)
+const isLoading = ref<boolean>(false)  //控制 下拉刷新
+const tabIndex = ref(false)
+const searchLoading = ref<Boolean>(false)  //控制 数据没请求回来的 loading
+const finishText = ref<string>('没有更多了')
+const isShowImg = ref<boolean>(false)  //数据为空的时候 控制图片的显示隐藏
+let lastRefreshTime = 0;
+const refreshInterval = 15000; // 15秒
+interface listValueType {
+  currentPage: number,//	当前页
+  pageSize: number,//	每页显示条数
+  corpCode: string | undefined | null	//	企业code
+  status: string,//	是	状态，0未申请，1已申请，当前接口传0
+  userId: string//	用户ID
+}
+
+interface paramsValueType {
+  worthId: string,//	价值ID，对应任务的ID
+  corpCode: string | null,//	MX	String	是	企业code
+  userId: string,//	是	用户ID
+  userName: string,//	否	用户姓名
+  userMobile: string	//否	用户手机号
+}
+
+let params = ref<listValueType>({
+  currentPage: 1,//	当前页
+  pageSize: 10,//	每页显示条数
+  corpCode: '',	//	企业code
+  status: '0',//	是	状态，0未申请，1已申请，当前接口传0
+  userId: ''//	用户ID
+})
+let paramsValue = ref<paramsValueType>({
+  worthId: '',//	价值ID，对应任务的ID
+  corpCode: '',
+  userId: '',
+  userName: '',
+  userMobile: ''
+})
 const checked = ref(false);
 const active = ref(0);
 const router = useRouter()
-const value2 = ref('a');
-const timer = ref<string>()
-const showDate = ref<boolean>(false)
+const list = ref<any>([])
+const lists = ref<any>([])
+const handleRadioChange = (value: any) => {
+  console.log('value', value)
+  paramsValue.value.worthId = value
+}
+//点击了tab切换
+const tabChange = async (name: number) => {
+  console.log('检测到了切换')
+  if (name == 1) {
+    params.value.currentPage = 1
+    params.value.status = '1'
+    list.value = []
+    //这个必须加
+    loading.value = true
+    finished.value = false
+    await getValueList()
+    tabIndex.value = true
+  } else {
+    params.value.status = '0'
+    params.value.currentPage = 1
+    list.value = []
+    //这个必须加
+    loading.value = true
+    finished.value = false
+    await getValueList()
+    tabIndex.value = false
+  }
+}
+// 下拉刷新
+// const onRefresh = async () => {
+//   loading.value = true
+//   isLoading.value = true
+//   // finished.value = false
+//   params.value.currentPage = 1
+//   list.value.length = 0
+//   await getValueList()
+// }
+const onRefresh = async () => {
+  const currentTime = Date.now();
+  if (currentTime - lastRefreshTime < refreshInterval) {
+    showFailToast("刷新操作太频繁，请稍后再试！");
+    isLoading.value = false; // 关闭下拉刷新的 loading
+    return; // 直接返回，不执行加载数据的操作
+  }
+  lastRefreshTime = currentTime;
+  isLoading.value = true; // 打开下拉刷新的 loading
+  params.value.currentPage = 1; // 重置页码
+  list.value = []; // 清空表单
+  await getValueList(); // 重新加载数据
+  showSuccessToast("刷新成功！");
+
+  isLoading.value = false; // 关闭下拉刷新的 loading
+};
+
+
+
+
+
+
+
+//勾选了价值
+const changeCheck = () => {
+  let arr = list.value.filter((item: any) => item.isCheck);
+  console.log('arr', arr)
+  // let worthId = arr.map((item: any) => {
+  //   return item.worthId
+  // })
+
+
+}
+//触底事件
+const getListLoad = async () => {
+  // loading.value = true
+  if (list.value.length < totalCount.value && params.value.currentPage < pageCount.value) {
+    params.value.currentPage = params.value.currentPage + 1
+    // setTimeout(() => {
+    //   getValueList()
+    // },500)
+    await getValueList()
+  }
+}
 //业务数据列表
 //价值申请数据列表
-const handleJump = ()=>{
-  router.replace('/valueDetails')
-}
-const jzList = ref([{
-  id: '1',
-  name: '2024年数字化转型互联网营销驱动销售会议',
-  number: '67分',
-  sqje: '12,000',
-  time: '2024-04-07 15:15:35',
-  state: '待申请',
-  isCheck:false
-}, {
-  id: '2',
-  name: '销售达人高峰会',
-  number: '78.5分',
-  sqje: '32,000',
-  time: '2024-04-06 15:19:45',
-  state: '待申请',
-  isCheck:false
-
-}, {
-  id: '3',
-  name: '融合营销创新打造高效团队讨论会议',
-  number: '58.5分',
-  sqje: '10,500',
-  time: '2024-04-05 14:15:35',
-  state: '已完成',
-  isCheck:false
-
-} ])
-const jzList1 = ref([{
-  id: '1',
-  name: '共创市场领先营销销售策略探讨会议',
-  number: '87分',
-  sqje: '32,000',
-  time: '2024-04-05 15:15:35',
-  state: '待申请',
-  isCheck:false,
-  isShow:false
-}, {
-  id: '2',
-  name: '拓展市场空间销售策略优化与执行相关会议',
-  number: '78.5分',
-  sqje: '32,000',
-  time: '2024-04-06 15:19:45',
-  state: '待申请',
-  isCheck:false,
-  isShow: true
-
-} ])
-const option2 = [
-  { text: '文档', value: 'a' },
-  { text: '文档1', value: 'b' },
-  { text: '文档2', value: 'c' },
-];
-const thisYear = new Date().getFullYear();
-
-const minDate = computed(() => {
-  return new Date(thisYear, 0); // 今年一月
-});
-
-const maxDate = computed(() => {
-  return new Date(thisYear + 1, 0); // 明年一月
-});
-const formatDate = (date: any) => `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;  //格式化日期 （年-月-日）
-const onConfirm = async(values: any) => {
-  const [start, end] = values;
-  // console.log(values,'zheli')
-  showDate.value = false;
-  let beginTime = formatDate(start);
-  let endTime = formatDate(end);
-  console.log(beginTime,endTime)
-  timer.value = `${beginTime}~${endTime}`;
-
-};
-const businessDetailHandle = ()=>{
-  router.replace('/businessDetail')
+const handleJump = (id:string | undefined) => {
+  router.replace({path:'/valueDetails',query:{id}})
 }
 const onClickLeft = () => {
   router.replace('/homeNew')
 }
-const handleSubmit = ()=>{
+//点击了提交申请按钮
+const handleSubmit = async () => {
   active.value = 1
+  params.value.status = '1'
+  tabIndex.value = true
+  params.value.currentPage = 1
+  loading.value = true
+  finished.value = false
+  list.value.length = 0
+  applyWorth(paramsValue.value).then(async (res: any) => {
+    if (res.success) {
+      showSuccessToast(res.msg)
+    }
+  }).finally(async()=>{
+    await getValueList()
+  })
 }
+//获取价值列表
+const getValueList = () => {
+    searchLoading.value = true
+    // loading.value = true
+  getWorthList(params.value).then((res: any) => {
+    if (res.success) {
+      list.value = list.value.concat(res.data.worthList)
+      totalCount.value = res.data.totalCount  //总条数
+      //todo 总页
+      pageCount.value = res.data.pageCount //总页码
+      setInterval(() => {
+        isLoading.value = false
+      }, 2000)
+      if (list.value.length == totalCount.value) {
+        loading.value = false   //关闭下拉刷新的加载
+        finished.value = true
+      }else{
+        loading.value = false
+        finished.value = false
+      }
+      if (res.data.totalCount == 0) {
+        isShowImg.value = true
+        finishText.value = ''
+      } else {
+        isShowImg.value = false
+        finishText.value = '没有更多数据了'
+      }
+    }
+  }).finally(() => {
+    searchLoading.value = false
+  })
+}
+onMounted(async () => {
+  let userInfoData: any = inject("userInfo"); // 取出用户信息用于调用接口
+  params.value.corpCode = localStorage.getItem('corpCode') //从本地获取corpCode
+  //从本地获取corpCode
+  params.value.userId = userInfoData.userInfo.userId
+  paramsValue.value.userId = userInfoData.userInfo.userId
+  paramsValue.value.userName = userInfoData.userInfo.userName
+  paramsValue.value.userMobile = userInfoData.userInfo.userMobile
+  paramsValue.value.corpCode = localStorage.getItem('corpCode') //从本地获取corpCode
+  await getValueList()
+})
 </script>
 <style lang="less" scoped>
-.header {
-  position: fixed;
-  z-index: 99;
-  width: 100%;
-  height: 60px;
-  background-color: #fff;
-  // padding: 0 10px;
-  font-size: 14px;
-  display: flex;
-  text-align: center;
-  height: 50px;
-  line-height: 60px;
-  border-bottom: 1px solid #f0f0f0;
-  //margin-bottom: 50px;
-  .menuItems {
+.container {
+  height: 100vh;
+
+  .header {
+    position: fixed;
+    z-index: 99;
+    width: 100%;
+    height: 60px;
+    background-color: #fff;
+    // padding: 0 10px;
     font-size: 14px;
-    width: 50%;
+    display: flex;
+    text-align: center;
+    height: 50px;
+    line-height: 60px;
+    border-bottom: 1px solid #f0f0f0;
+    //margin-bottom: 50px;
+    .menuItems {
+      font-size: 14px;
+      width: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      // border: 1px solid red;
+    }
+  }
+
+  .footer_btn {
+    width: 96vw;
+    padding: 0 2vw;
+    margin-bottom: 2vh;
+  }
+.noData{
+  min-height:calc(100vh - var(--van-nav-bar-height) - var(--van-tabs-line-height) - var(--van-tabbar-height) - var(--van-button-default-height) - 2vh)
+}
+  .box {
+    height: 50px;
+  }
+
+  .list1 {
+    display: none;
+  }
+  .h-67 {
+    height: 20vh;
+    align-items: center;
     display: flex;
     justify-content: center;
-    align-items: center;
-    // border: 1px solid red;
   }
-}
-.footer_btn{
-  width:92vw;
-  padding:2vw;
-  margin: 2vw;
-  position: fixed;
-  bottom:50px;
-}
-.box{
-  height:50px;
-}
-.list{
-  //max-height: 75vh;
-  //overflow: auto;
-  .list_card{
-    position: relative;
-    width:92vw;
-    margin:2vw;
-    padding:2vw;
-    background-color: #FFFFFF;
+  .list {
+    height: calc(100vh - var(--van-nav-bar-height) - var(--van-tabs-line-height) - var(--van-tabbar-height) - var(--van-button-default-height) - 2vh);
+    overflow-y: auto;
+
+    .list_card {
+      position: relative;
+      width: 92vw;
+      margin: 2vw;
+      padding: 2vw;
+      background-color: #FFFFFF;
+      border-radius: 10px;
+
+      .flex-space {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .list_title {
+        font-size: 0.875em;
+        font-weight: 550;
+        margin-left: 2vw;
+      }
+
+      .f-z-12 {
+        font-size: 0.75em;
+        color: #4B5563;
+      }
+
+      .m-b-10 {
+        margin-bottom: 2vw;
+      }
+
+      .list_icon {
+        position: absolute;
+        right: 30px;
+        top: 40px;
+      }
+    }
+
+  }
+
+  .listReacord {
+    height: calc(100vh - var(--van-nav-bar-height) - var(--van-tabs-line-height) - var(--van-tabbar-height));
+    overflow-y: auto;
+
+    .list_card {
+      position: relative;
+      width: 92vw;
+      margin: 2vw;
+      padding: 2vw;
+      background-color: #FFFFFF;
+      border-radius: 10px;
+
+      .flex-space {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .list_title {
+        font-size: 0.875em;
+        font-weight: 550;
+        margin-left: 2vw;
+      }
+
+      .f-z-12 {
+        font-size: 0.75em;
+        color: #4B5563;
+      }
+
+      .m-b-10 {
+        margin-bottom: 2vw;
+      }
+
+      .list_icon {
+        position: absolute;
+        right: 30px;
+        top: 40px;
+      }
+    }
+
+  }
+
+  .mainButton {
     border-radius: 10px;
-    .flex-space{
-      display: flex;
-      justify-content: space-between;
-    }
-    .list_title{
-      font-size: 0.875em;
-      font-weight: 550;
-      margin-left: 2vw;
-    }
-    .f-z-12{
-      font-size: 0.75em;
-      color:#4B5563;
-    }
-    .m-b-10{
-      margin-bottom: 2vw;
-    }
-    .list_icon{
-      position: absolute;
-      right:30px;
-      top:40px;
-    }
+    padding: 2vw;
+    width: 42vw;
+    height: 50px;
+    background: url('../../assets/img/radio.png') no-repeat center;
+    background-size: 100vw 10vh;
+    //background-image: linear-gradient(to right bottom, #0080FF, #6AB5FF);
   }
 
-}
-.mainButton {
-  border-radius: 10px;
-  padding: 2vw;
-  width:42vw;
-  height: 50px;
-  background: url('../../assets/img/radio.png') no-repeat center;
-  background-size: 100vw 10vh;
-  //background-image: linear-gradient(to right bottom, #0080FF, #6AB5FF);
+  .mainButton_sec {
+    border-radius: 10px;
+    padding: 2vw;
+    width: 42vw;
+    height: 50px;
+    background: url('../../assets/img/radio.png') no-repeat center;
+    background-size: 100vw 10vh;
+    //background-image: linear-gradient(to right bottom, #33B2AD, #3BD7D3);
+  }
 }
 
-.mainButton_sec {
-  border-radius: 10px;
-  padding: 2vw;
-  width:42vw;
-  height: 50px;
-  background: url('../../assets/img/radio.png') no-repeat center;
-  background-size: 100vw 10vh;
-  //background-image: linear-gradient(to right bottom, #33B2AD, #3BD7D3);
-}
-:deep(.van-dropdown-menu__bar){
+:deep(.van-dropdown-menu__bar) {
   box-shadow: none;
 }
-:deep(.van-divider){
+
+:deep(.van-divider) {
   margin: 2vw;
 }
+
 ::v-deep(.van-nav-bar__content) {
   background-color: #0088ff;
 }

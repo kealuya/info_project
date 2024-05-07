@@ -34,7 +34,7 @@
     <!--  </div>-->
   </div>
   <div class="footer_btn" v-if="isComplete">
-    <van-button block type="primary" @click="taskProcessingHandle">
+    <van-button block type="primary" @click="taskProcessingHandle" v-if="finished=='false'">
       去完成
     </van-button>
   </div>
@@ -50,7 +50,7 @@
 <script lang="ts" setup>
 import { onMounted,ref } from "vue";
 import { useRouter } from "vue-router";
-import {applyJoinTask} from "../../services/task-processing/index"
+import {applyJoinTask,checkIsJoinTask} from "../../services/task-processing/index"
 import { showSuccessToast, showFailToast } from 'vant';
 const props = defineProps({
   title: {
@@ -80,6 +80,10 @@ const props = defineProps({
   params:{
     type:Object,
     default:{}
+  },
+  finished:{
+    type:String,
+    default:''
   }
 })
 const searchLoading = ref<Boolean>(false)
@@ -95,19 +99,31 @@ const taskProcessingHandle = ()=>{
 }
 const taskProcessingHandle1 = ()=>{
   searchLoading.value =true
-  applyJoinTask(paramsData.value).then((res:any)=>{
-    console.log('res',res)
-    if(res.success){
-      searchLoading.value =false
-      //给提示，跳转到首页
-      showSuccessToast(res.msg);
-      router.replace('/homeNew')
-    }else{
-      showFailToast(res.msg)
-      searchLoading.value =false
+  checkIsJoinTask(props.params).then((res:any)=>{
+   if(res.success){
+     applyJoinTask(paramsData.value).then((res:any)=>{
+       console.log('res',res)
+       if(res.success){
+         searchLoading.value =false
+         //给提示，跳转到首页
+         showSuccessToast(res.msg);
+         router.replace('/homeNew')
+       }else{
+         showFailToast(res.msg)
+         searchLoading.value =false
 
-    }
+       }
+     })
+   }else{
+     showFailToast(res.msg)
+   }
+
   })
+
+
+
+
+
   // applyJoinTask()
   // // isLoading.value = true
   // showSuccessToast('参与成功');

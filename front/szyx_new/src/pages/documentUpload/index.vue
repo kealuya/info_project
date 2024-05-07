@@ -25,9 +25,9 @@
 
     <div style="display:flex;justify-content: space-between;align-items: center">
       <div>
-        <div class="f-z-14-c m-t-10">会议标题</div>
+        <div class="f-z-14 m-t-10">会议标题</div>
         <div class="f-z-16"> <van-field   placeholder="请输入文档名称" /></div>
-        <div class="f-z-14-c m-t-10">图片文件</div>
+        <div class="f-z-14 m-t-10">图片文件</div>
         <div class="f-z-16"> <van-uploader :after-read="afterRead" /></div>
         <div class="f-z-14-c m-t-10">附件上传</div>
         <div class="f-z-16">

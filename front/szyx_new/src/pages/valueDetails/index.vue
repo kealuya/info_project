@@ -6,43 +6,27 @@
       @click-left="onClickLeft"
   />
     <div class="content">
-      <div class="title_one m-b-10" >2024年数字化转型互联网营销驱动销售会议</div>
+      <div class="title_one m-b-10" >{{worthTitle}}</div>
       <div class="title_two f-z-14 f-w-550  m-b-10">
         <span>价值概况</span>
 <!--        <span class="m-l">发布日期</span>-->
       </div>
       <div class="f-z-14  m-b-10">
-        &nbsp; &nbsp;拓展市场空间意味着风险分散，一旦某个市场遇到挑战，企业仍能依靠其他市场维持业务运营通过优化销售策略，企业可以更好地了解市场需求，制定针对性的销售计划，提高竞争力并抢占市场份额。
+        &nbsp;{{worthData}}
       </div>
       <div class="title_two f-z-14 f-w-550  m-b-10">
         <span>申请价值内容</span>
       </div>
       <div class="f-z-14 m-b-10">
-        &nbsp; &nbsp;有效的销售策略和市场拓展将为企业创造更多商机和增长机会，推动业务快速发展，综合来看，拓展市场空间和优化销售策略能够为企业带来多方面的价值，包括增长、创新、竞争力提升等，是实现企业长期可持续发展的关键因素。
-
+        &nbsp;{{worthContent}}
       </div>
-<!--      <div class="f-z-14 m-b-10">-->
-<!--        症状采集：医生会询问患者当前的症状，比如疼痛、咳嗽、发热等。患者描述症状的特点和变化有助于医生判断疾病的可能性。-->
-<!--      </div>-->
-<!--      <div class="f-z-14 m-b-10">-->
-<!--        体征检查：医生会进行体格检查，包括测量体温、血压、心率、听诊心肺等。体征检查可以提供重要的诊断线索。-->
-<!--      </div>-->
-<!--      <div class="f-z-14 m-b-10">-->
-<!--        实验室检查：医生可能会要求患者进行实验室检查，包括血液检查、尿液检查、影像学检查（如X光、CT、MRI等），以获取更多的诊断信息。-->
-<!--      </div>-->
-<!--      <div class="f-z-14 m-b-10">-->
-<!--        诊断过程：医生根据患者提供的信息、体征和检查结果，进行综合分析和判断，最终做出诊断并制定治疗方案。-->
-<!--      </div>-->
-<!--      <div class="f-z-14 m-b-10">-->
-<!--        医患诊断采集是医疗过程中非常重要的一环，准确的信息采集和综合分析有助于医生做出正确的诊断和治疗决策，提高患者的治疗效果和生活质量。在现代医疗中，随着信息技术的发展，电子病历系统等工具也广泛应用于医患诊断采集过程，提高了信息的准确性和可追溯性。-->
-<!--      </div>-->
     </div>
     <div class="card_small">
       <div class="left">
         <van-image :src="pingfen" width="25" height="25"></van-image>
         <div>价值申请评分</div>
       </div>
-      <div class="right"> <div>87分</div></div>
+      <div class="right"> <div>{{worthScore}}分</div></div>
     </div>
   <div class="card_small">
     <div class="left">
@@ -50,7 +34,7 @@
       <div>价值申请金额</div>
 
     </div>
-    <div class="right"> <div>32,000元</div></div>
+    <div class="right"> <div>{{money}}元</div></div>
   </div>
   <div style="wdith:96vw;margin:2vw;text-align: center;background-color:#fff;">
     <div><van-image :src="erweima" width="230" height="200"></van-image></div>
@@ -67,10 +51,36 @@
 import erweima from '../../assets/img/erweima.jpg'
 import pingfen from '../../assets/img/pf001.png'
 import jine from '../../assets/img/jz001.png'
-import {useRouter} from "vue-router";
+import {getWorthDetails} from '../../services/task-processing/index'
+import {useRouter,useRoute} from "vue-router";
 // import { showSuccessToast, showFailToast } from 'vant';
 import {showSuccessToast} from "vant";
+import {inject, onMounted, ref} from "vue";
 const router = useRouter()
+const route = useRoute()
+let worthScore = ref<string>()
+let money= ref<string>()
+let worthData = ref<string>()
+let worthContent = ref<string>()
+let worthTitle = ref<string>()
+interface paramsType{
+  worthId: string, //价值ID，对应任务的ID
+  corpName: string | undefined | null, //企业名称
+  corpCode: string, //企业code
+  userId: string, //用户ID
+  userName: string, //用户姓名
+  userMobile: string //用户手机号
+}
+let params =ref<paramsType>(
+    {
+      worthId: '', //价值ID，对应任务的ID
+      corpName: "", //企业名称
+      corpCode: '', //企业code
+      userId: "", //用户ID
+      userName: "", //用户姓名
+      userMobile: "" //用户手机号
+    }
+)
 const onClickLeft = () => {
   // history.go(-2)
   router.replace('/applicationValue')
@@ -80,6 +90,26 @@ const taskProcessingHandle = ()=>{
 
   router.replace('/homeNew')
 }
+onMounted(()=>{
+  params.value.worthId = route.query.id
+  let userInfoData: any = inject("userInfo"); // 取出用户信息用于调用接口
+  params.value.corpCode = localStorage.getItem('corpCode') //从本地获取corpCode
+  //从本地获取corpCode
+  params.value.userId = userInfoData.userInfo.userId
+  params.value.userName = userInfoData.userInfo.userName
+  params.value.userMobile = userInfoData.userInfo.userMobile
+  params.value.corpName = userInfoData.userInfo.corpName
+  console.log('params',params.value)
+  getWorthDetails(params.value).then((res:any)=>{
+  if(res.success){
+    worthScore.value = res.data.worthScore
+    money.value = res.data.money
+    worthTitle.value = res.data.worthTitle
+    worthData.value = res.data.worthData
+    worthContent.value = res.data.worthContent
+  }
+  })
+})
 </script>
 <style lang="less" scoped>
 .card_small{

@@ -6,7 +6,7 @@
       @click-left="onClickLeft"
   />
   <div class="content">
-    <div class="title_one m-b-10 f-z-14" >在线消费趋势，探索互联网销售的未来</div>
+    <div class="title_one m-b-10 f-z-14" >{{meetingTitle}}</div>
     <div class="title_two f-z-14 f-w-550  m-b-10">
       <span>文档摘要</span>
     </div>
@@ -68,90 +68,37 @@
     <div class="title_two f-z-14 f-w-550  m-b-10">
       <span>会议信息</span>
     </div>
-    <div class="f-z-12">会议地址：天津市南开区红旗南路大厦B座</div>
+    <div class="f-z-12">会议地址：{{meetingCity}}{{meetingAddress}}</div>
     <div class="f-z-12">会议时长：1小时53分钟</div>
   </div>
   <div class="box"></div>
 </template>
-<script setup>
+<script setup lang="ts">
 import Ai from '../../assets/img/ai.png';
-
+import {getMeetingDetails} from '../../services/task-processing/index'
 import Word from '../../assets/img/word.png'
 import Xmind from '../../assets/img/xmind.png'
-import {useRouter} from "vue-router";
+import {useRouter,useRoute} from "vue-router";
+import {onMounted,ref} from "vue";
 const router = useRouter()
+const route = useRoute()
+const meetingTitle = ref<string>()
+const meetingCity = ref<string>()
+const meetingAddress = ref<string>()
 const onClickLeft = () => {
   router.push('/business')
 }
-</script>
-<script>
-import naotu from '../../assets/img/naotu.png'
-import {useRouter} from "vue-router";
-
-import { Transformer } from 'markmap-lib';
-import { Markmap } from 'markmap-view';
-const transformer = new Transformer();
-const initValue = `# 会议纪要：
-
-## 报销流程讨论：
-- 报销员指定报销项目提交审批。
-- 项目负责人审批后进行报销。
-- 团委部门结算其负担的费用部分。
-
-## 学生团队出行报销处理：
-- 存在院系层面的报销。
-- 需要按每个学生的明细检索并发起二次报销。
-- 二次报销选择院系所负担的项目，提交审批。
-- 记录第一次与第二次报销信息，进行第三次报销。
-- 所有报销层级需附上发票信息。
-
-## 报销流程复杂性讨论：
-- 当前流程复杂，考虑创建单独模块处理团委报销。
-- 对于团队出行的多个报销处理方式未确定。
-- 讨论是否应将团委报销单独处理。`;
-const text =
-
-    '      1. 各小组汇报本季度营销计划和执行方案\n' +
-    '      - 讨论营销预算及资源分配。\n' +
-    '      - 确定本季度预算分配及资源需求\n' +
-    '      - 推进销售与营销协同.\n' +
-    '      2. 报销明细表设计讨论\n' +
-    '      - 设计了一个差旅报销汇总表。\n' +
-    '      - 领队填写实际报销金额，计算应报和实报金额。\n' +
-    '      - 多次选择同一行程申请单的控制方法未确定。\n' +
-    '\n' +
-    '      3. 探讨如何提高销售与营销部门协同效能：\n' +
-    '      - 集成多项功能。\n' +
-    '      - 担心功能多而使用情况不佳，需做前评估。\n' +
-    '      - 先梳理逻辑框架和业务流程，确保易用性。\n' +
-    '\n' +
-    '      4. 后续步骤讨论\n' +
-    '      - 确定先后顺序，先开发效果显著的部分。\n' +
-    '      - 讨论整个逻辑框架的合理性和业务匹配度。\n' +
-    '      - 确保老师能按照流程完成任务。;'
-// export default {
-//   name: 'App',
-//   data() {
-//     return {
-//       value: initValue,
-//     };
-//   },
-//   watch: {
-//     value: 'update',
-//   },
-//   methods: {
-//     update() {
-//       const { root } = transformer.transform(this.value);
-//       this.mm.setData(root);
-//       this.mm.fit();
-//     },
-//   },
-//   mounted() {
-//     this.mm = Markmap.create(this.$refs.svgRef);
-//     this.update();
-//   },
-// };
-
+onMounted(()=>{
+// console.log(route.query.meetingId)
+  const id = route.query.meetingId
+  getMeetingDetails({MeetingId:id}).then((res:any)=>{
+    if(res.success){
+      meetingTitle.value = res.data.meetingTitle
+      meetingCity.value = res.data.meetingCity
+      meetingAddress.value = res.data.meetingAddress
+    }
+  })
+})
 </script>
 <style lang="less" scoped>
 .content{

@@ -43,15 +43,15 @@
   <div class="dataTip">
     <van-row justify="center" align="center">
       <van-col span="8">
-        <div>13次</div>
+        <div>{{meetingCount}}次</div>
         <div>累计会议</div>
       </van-col>
       <van-col span="8">
-        <div>35单</div>
+        <div>{{taskCount}}单</div>
         <div>累计任务</div>
       </van-col>
       <van-col span="8">
-        <div>12,000 积分 </div>
+        <div>{{worthCount}}积分 </div>
         <div>累计价值</div>
       </van-col>
     </van-row>
@@ -102,9 +102,10 @@ import moment from "moment";
 import {useRouter} from "vue-router";
 // 用户信息图标
 import userInfoIcon from '../../assets/icon/userInfo.png'
-import {inject, onBeforeMount,reactive,ref} from "vue";
+import {inject, onBeforeMount, onMounted, reactive, ref} from "vue";
 import {showConfirmDialog} from "vant";
 import {countAmountNumber, modifyUserInfo} from "../../services/user";
+import {getUserInfoCount} from '../../services/task-processing/index'
 let userInfo=reactive<any>({});
 let userInfoData: any = inject("userInfo"); // 取出用户信息用于调用接口
 let nowDate=new Date(); // 获取当前时间
@@ -113,7 +114,19 @@ let appNumber=ref('0'); // 累计申请
 let bxMoneyAmount=ref('0'); // 累计申请
 let travelMoney=ref('0'); // 累计出行金额
 const router = useRouter(); //使用路由跳转
+interface paramsType{
+  userId:string | undefined | null,
+  corpCode:string | undefined | null
+}
+//获取统计数据的参数
+let params = ref<paramsType>({
+  userId:'',
+  corpCode:''
+})
 
+const meetingCount =ref<number>(0)
+const taskCount =ref<number>(0)
+const worthCount =ref<number>(0)
 function wdrw() {
   router.replace('/taskProcessing')
 }
@@ -176,6 +189,17 @@ const gotoPath=(code:any)=>{
 //   userInfo=JSON.parse(userInfoJson);
 //   getAmountCheck();
 // })
+onMounted(()=>{
+  let userInfoData: any = inject("userInfo"); // 取出用户信息用于调用接口
+  params.value.corpCode = localStorage.getItem('corpCode') //从本地获取corpCode
+  //从本地获取corpCode
+  params.value.userId = userInfoData.userInfo.userId
+  getUserInfoCount(params.value).then((res:any)=>{
+    meetingCount.value = res.data.meetingCount
+    taskCount.value = res.data.taskCount
+    worthCount.value = res.data.worthCount
+  })
+})
 </script>
 
 <style lang="less" scoped>

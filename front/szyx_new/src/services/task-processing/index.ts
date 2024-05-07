@@ -95,12 +95,98 @@ export function finishMyTask(query :object){
         })
     })
 }
+// 校验能不能参与 /v4/task/ checkIsJoinTask
+export function checkIsJoinTask(query :object){
+    // console.log('query',query)
+    return new Promise(function (resolve, reject) {
+        request({
+            url:'/v4/task/checkIsJoinTask',
+            data: query
+        }).then((response: object) => {
+            resolve(response)
+        }).catch((error :string) => {
+            resolve({})
+        })
+    })
+}
 //获取会议列表接口
 export function getMeetingList(query :object){
     // console.log('query',query)
     return new Promise(function (resolve, reject) {
         request({
             url:'/v4/meeting/getMeetingList',
+            data: query
+        }).then((response: object) => {
+            resolve(response)
+        }).catch((error :string) => {
+            resolve({})
+        })
+    })
+}
+//获取我的价值列表数据
+export function getWorthList(query :object){
+    // console.log('query',query)
+    return new Promise(function (resolve, reject) {
+        request({
+            url:'/v4/worth/getWorthList',
+            data: query
+        }).then((response: object) => {
+            resolve(response)
+        }).catch((error :string) => {
+            resolve({})
+        })
+    })
+}
+//提交价值申请接口
+export function applyWorth(query :object){
+    // console.log('query',query)
+    return new Promise(function (resolve, reject) {
+        request({
+            url:'/v4/worth/applyWorth',
+            data: query
+        }).then((response: object) => {
+            resolve(response)
+        }).catch((error :string) => {
+            resolve({})
+        })
+    })
+}
+//获取价值详情接口
+// /v4/worth/getWorthDetails
+export function getWorthDetails(query :object){
+    // console.log('query',query)
+    return new Promise(function (resolve, reject) {
+        request({
+            url:'/v4/worth/getWorthDetails',
+            data: query
+        }).then((response: object) => {
+            resolve(response)
+        }).catch((error :string) => {
+            resolve({})
+        })
+    })
+}
+//获取会议 详情接口
+export function getMeetingDetails(query :object){
+    // console.log('query',query)
+    return new Promise(function (resolve, reject) {
+        request({
+            url:'/v4/meeting/getMeetingDetails',
+            data: query
+        }).then((response: object) => {
+            resolve(response)
+        }).catch((error :string) => {
+            resolve({})
+        })
+    })
+}
+//个人中心页面
+// /v4/userinfo/getUserInfoCount
+export function getUserInfoCount(query :object){
+    // console.log('query',query)
+    return new Promise(function (resolve, reject) {
+        request({
+            url:'/v4/userinfo/getUserInfoCount',
             data: query
         }).then((response: object) => {
             resolve(response)

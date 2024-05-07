@@ -24,7 +24,10 @@
               placeholder="临床推广"
               @click="showPicker = true"
           />
-          <van-notice-bar color="#1989fa" :scrollable="false" wrapable background="#ecf9ff" class="f10">{{contentTask}}</van-notice-bar>
+          <van-notice-bar color="#1989fa" :scrollable="false" wrapable background="#ecf9ff" class="f10">
+            任务目标：
+           <p>{{contentTask}}</p>
+          </van-notice-bar>
 
           <div class="yw_content" @click="taskList">
             业务内容<van-icon name="arrow" />
@@ -162,19 +165,34 @@ onMounted(()=>{
   reasonForBorrowing.value = taskStore.getTaskTitle()
   contentTask.value = taskStore.getTaskContent()
   meetingList.value =meetingStore.getMeetingData()  //从本地缓存中取 业务数据  勾选的
- let arr =  meetingList.value.map((item:any)=>{
-  return item.meetingId
-  })
-  params.value.meetingId = arr
-
-
-
+  if(meetingList.value){
+    let arr =  meetingList.value.map((item:any)=>{
+      return item.meetingId
+    })
+    params.value.meetingId = arr
+  }
   params.value.taskId = taskStore.getTaskId()
   let userInfoData: any = inject("userInfo"); // 取出用户信息用于调用接口
   params.value.corpCode = localStorage.getItem('corpCode') //从本地获取corpCode
   params.value.userId = userInfoData.userInfo.userId
   params.value.userName = userInfoData.userInfo.userName
   params.value.userMobile = userInfoData.userInfo.userMobile
+
+
+  router.beforeEach((to, from, next) => {
+    console.log('用户从哪个页面跳转到哪个页面');
+    if(from.fullPath =='/addTasks'&&to.fullPath=='/taskList'){  //不清空
+      next(); // 允许导航继续
+    }else if(from.fullPath =='/taskList'&&to.fullPath=='/addTasks'){
+      next(); // 允许导航继续
+    }else{
+      meetingStore.removeMeetingData()
+      next(); // 允许导航继续
+    }
+    console.log('从：', from.fullPath);
+    console.log('到：', to.fullPath);
+
+  });
   // console.log(route.query)
 })
 </script>

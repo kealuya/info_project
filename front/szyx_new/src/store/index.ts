@@ -121,6 +121,9 @@ export const meetingData = defineStore("meetingData", {
        },
         getMeetingData(){
           return this.checkList
+        },
+        removeMeetingData(){
+           this.checkList = []
         }
     },
 })

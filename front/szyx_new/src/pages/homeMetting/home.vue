@@ -80,7 +80,7 @@
         </div>
       </van-row>
      <van-row justify="center" align="center">
-       <van-button type="default" class="more_btn" @click="moreTasks" v-if="list.length>0">查看更多</van-button>
+       <van-button type="primary" class="more_btn" @click="moreTasks" v-if="list.length>0">查看更多</van-button>
      </van-row>
     </van-list>
   <div v-if="searchLoading" class="h-67">
