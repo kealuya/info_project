@@ -191,3 +191,25 @@ func GetMeetingDetails(info *meeting.Meeting) (res meeting.Meeting, msg error) {
 
 	return res, err
 }
+
+//上传文件，文件基础信息存表。用于选择业务内容关联展示
+func AddMeetingFileInfo(meetingFile *meeting.MeetingFile) (msg error) {
+	dbHandler := db_handler.NewDbHandler()
+	//创建时间
+	currentTime := time.Now().Format("2006-01-02 15:04:05")
+	var Param []interface{}
+	Param = append(Param, meetingFile.MeetingId)
+	Param = append(Param, meetingFile.MeetingTitle)
+	Param = append(Param, meetingFile.FileType)
+	Param = append(Param, meetingFile.FileName)
+	Param = append(Param, meetingFile.FileUrl)
+	Param = append(Param, meetingFile.Creater)
+	Param = append(Param, meetingFile.CorpName)
+	Param = append(Param, meetingFile.CorpCode)
+	Param = append(Param, currentTime)
+	num, err := dbHandler.Insert(db_handler.AddMeetingFileInfo_sql, Param...)
+	if num <= 0 {
+		common.ErrorHandler(err, "保存文件基础信息存表发生错误!")
+	}
+	return err
+}

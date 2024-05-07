@@ -40,4 +40,9 @@ const (
 	GetMeetingListByTaskId_sql = `select * from  kdxf_meeting where corpCode = ? and creater = ? and taskId = ? ORDER BY createTime DESC `
 
 	GetMeetingFileList_sql = `select * from  kdxf_meetingFile where meetingId = ? `
+
+	AddMeetingFileInfo_sql = `INSERT INTO kdxf_meetingFile ( 
+							  meetingId,meetingTitle,fileType,
+							  fileName,fileUrl,creater,corpName,
+							  corpCode,createTime) VALUE  (?,?,?,?,?,?,?,?,?)`
 )
