@@ -46,10 +46,11 @@ const onClickLeft = () => {
 //   }, 2000);
 // }
 onMounted(async ()=>{
+  console.log(111)
   let userInfoData: any = inject("userInfo"); // 取出用户信息用于调用接口
   params.value.corpCode = await localStorage.getItem('corpCode') //从本地获取corpCode
   taskTitle.value = route.query.taskTitle as string
-  target.value = route.query.taskTarget as string
+  target.value = route.query.taskData as string
   content.value = route.query.taskContent as string
   params.value.taskId = route.query.taskId as string
   params.value.taskTitle = route.query.taskTitle as string

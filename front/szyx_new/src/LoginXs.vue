@@ -58,8 +58,8 @@
 <script setup lang="ts">
 import {getMessageCaptcha,messageLogin} from './services/task-processing/index';
 import {userInfoData} from "./store";
-import { ref } from 'vue';
-import {showToast, showSuccessToast} from "vant";
+import {onMounted, ref} from 'vue';
+import {showToast, showSuccessToast, showFailToast} from "vant";
 import { useRouter } from "vue-router";
 const router = useRouter();
 const phone = ref<string>()
@@ -97,10 +97,9 @@ const getMessage = () => {
 // }
 const onSubmit = async (values: any) => {
   let result: any = await messageLogin(values);
-  console.log(values)
-  if (result.msg!='error') {
+  console.log(result)
+  if (result.success) {
     let data = result.data;
-    console.log(data)
     await localStorage.setItem('token', data.jwt);
     await localStorage.setItem('refreshToken', data.refreshToken);
     await localStorage.setItem('corpCode',data.user.corpCode)
@@ -116,10 +115,15 @@ const onSubmit = async (values: any) => {
     // showSuccessToast('登录成功');
     // // sessionStorage.setItem('myIconCodeList', JSON.stringify(staticCodeIconList.value));
     await router.replace('/homeNew');
+      password.value = ''
+      phone.value = ''
   } else {
-    showToast(result.data);
+    showFailToast(result.msg);
   }
 };
+// onMounted(()=>{
+//
+// })
 </script>
 
 <style lang="less" scoped>

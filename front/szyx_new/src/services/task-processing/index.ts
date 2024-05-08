@@ -1,4 +1,6 @@
 import request from "../request";
+import { stringify } from 'qs';
+import axios from "axios";
 //获取验证码接口
 export function getMessageCaptcha(query :object){
     return new Promise(function (resolve, reject) {
@@ -187,6 +189,59 @@ export function getUserInfoCount(query :object){
     return new Promise(function (resolve, reject) {
         request({
             url:'/v4/userinfo/getUserInfoCount',
+            data: query
+        }).then((response: object) => {
+            resolve(response)
+        }).catch((error :string) => {
+            resolve({})
+        })
+    })
+}
+//会议文件上传/v4/meeting/uploadMeetingFile
+// export function uploadMeetingFile(query :object){
+//     // console.log('query',query)
+//     return new Promise(function (resolve, reject) {
+//         request({
+//             url:'/v4/meeting/uploadMeetingFile',
+//             data: query
+//         }).then((response: object) => {
+//             resolve(response)
+//         }).catch((error :string) => {
+//             resolve({})
+//         })
+//     })
+// }
+export function uploadMeetingFile(query: object) {
+    return new Promise(function (resolve, reject) {
+        const formData = new FormData();
+
+        // 将 JSON 对象中的每个键值对添加到 FormData 中
+        for (const key in query) {
+            if (Object.prototype.hasOwnProperty.call(query, key)) {
+                formData.append(key, query[key]);
+            }
+        }
+
+        request({
+            url: '/v4/meeting/uploadMeetingFile',
+            method: 'POST', // 或者其他 HTTP 方法
+            data: formData,
+            headers: {
+                'Content-Type': 'multipart/form-data', // 设置表单数据的 Content-Type
+            },
+        }).then((response: object) => {
+            resolve(response);
+        }).catch((error: string) => {
+            resolve({});
+        });
+    });
+}
+//创建会议的接口
+export function createMeeting(query :object){
+    // console.log('query',query)
+    return new Promise(function (resolve, reject) {
+        request({
+            url:'/v4/meeting/createMeeting',
             data: query
         }).then((response: object) => {
             resolve(response)

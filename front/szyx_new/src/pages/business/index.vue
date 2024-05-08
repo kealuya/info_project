@@ -12,10 +12,23 @@
        <van-dropdown-item v-model="value2" :options="option2" @change="dropdownChange"/>
      </van-dropdown-menu>
      <div class="menuItems" @click="open">{{ timer ? timer : '时间范围' }}</div>
-     <van-calendar v-model:show="showDate" :max-date="maxDate" :min-date="minDate" type="range" @confirm="onConfirm" ref="calendarRef"/>
-     <div class="menuItems1" @click="resetHandel">
-       重置时间
-     </div>
+       <van-calendar v-model:show="showDate" :max-date="maxDate" :min-date="minDate" type="range"  ref="calendarRef" @select="checkedConfirm">
+           <template  #footer>
+               <div class="mb10 mt10">
+                   <van-row style="display: flex;align-items: center;">
+                       <van-col span="6">
+                           <van-button type="default" @click="resetHandle" >重置</van-button>
+                       </van-col>
+                       <van-col span="18">
+                           <van-button type="primary" block @click="onConfirm">确定</van-button>
+                       </van-col>
+                   </van-row>
+               </div>
+           </template>
+       </van-calendar>
+<!--     <div class="menuItems1" @click="resetHandel">-->
+<!--       重置时间-->
+<!--     </div>-->
    </div>
    <van-pull-refresh v-model="isLoading" success-text="刷新成功" @refresh="onRefresh" :disabled="isShowImg || pullRefreshDisabled">
      <div v-if="searchLoading && ywList.length==0&&!isPull" class="h-67">
@@ -42,9 +55,9 @@
            </div>
          </div>
          <van-divider/>
-         <div class="f-z-12 m-b-10">会议时长：{{ item.time }}</div>
+<!--         <div class="f-z-12 m-b-10">会议时长：{{ item.time }}</div>-->
          <div class="f-z-12 m-b-10">会议地址：{{ item.meetingCity }}{{item.meetingAddress}}</div>
-         <div class="f-z-12 m-b-10">结束时间：{{ item.createTime }}</div>
+         <div class="f-z-12 m-b-10">创建时间：{{ item.createTime }}</div>
 <!--         <div class="f-z-12 m-b-10">-->
 <!--           <span v-if="item.hyType" style="color: #0080FF">已关联任务：RW202404080001</span>-->
 <!--         </div>-->
@@ -151,8 +164,16 @@ const  resetHandel = ()=>{
 }
 const open =()=>{
   showDate.value = true
-  calendarRef.value?.reset();
-
+}
+//重置时间
+const resetHandle = async()=>{
+    calendarRef.value?.reset();
+    params.value.endTime = ''
+    params.value.startTime = ''
+    params.value.currentPage = 1
+    showDate.value = false
+    ywList.value.length = 0 //清空数据
+    await getList()
 }
 //业务数据列表
 const ywList = ref([])
@@ -212,20 +233,48 @@ const minDate = computed(() => {
 const maxDate = computed(() => {
   return new Date(thisYear + 1, 0); // 明年一月
 });
-const formatDate = (date: any) => `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;  //格式化日期 （年-月-日）
-const onConfirm = async (values: any) => {
-  const [start, end] = values;
-  // console.log(values,'zheli')
-  showDate.value = false;
-  let beginTime = formatDate(start);
-  let endTime = formatDate(end);
-  params.value.startTime = beginTime
-  params.value.endTime = endTime
-  params.value.currentPage = 1
-  ywList.value.length = 0
-  await getList()
+const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // 补0
+    const day = date.getDate().toString().padStart(2, '0');           // 补0
 
+    return `${year}-${month}-${day}`;
 };
+const onConfirm=async()=>{
+   console.log(params.value,'jkvcjdsjkvjdvbjh')
+    params.value.currentPage = 1
+    ywList.value.length = 0
+    await getList()
+}
+const checkedConfirm = (value)=>{
+    console.log('value',value)
+    if (value.length === 2) {
+        const [startDate, endDate] = value;
+        console.log('开始日期:', startDate);
+        console.log('结束日期:', endDate);
+        params.value.startTime = formatDate(startDate)
+        params.value.endTime = formatDate(endDate)
+    }
+}
+  // const onConfirm=()=>{
+  //       // 使用保存的日期范围
+  //       if (this.selectedRange) {
+  //           const [startDate, endDate] = this.selectedRange;
+  //           console.log('已确认的开始和结束日期:', startDate, endDate);
+  //       } else {
+  //           console.log('没有选择任何日期范围');
+  //       }
+  //       this.showDate = false; // 隐藏日历
+  //   }
+  // // console.log(values,'zheli')
+  // showDate.value = false;
+  // let beginTime = formatDate(start);
+  // let endTime = formatDate(end);
+  // params.value.startTime = beginTime
+  // params.value.endTime = endTime
+  // params.value.currentPage = 1
+  // ywList.value.length = 0
+  // await getList()
 const businessDetailHandle = (type: string,meetingId:string) => {
   console.log('type', type)
     router.replace({path:'/businessDetail',query:{meetingId}})
@@ -246,23 +295,28 @@ const getList =()=>{
   //   searchLoading.value = true
   // }
   getMeetingList(params.value).then((res:any)=>{
-    console.log(res)
-    ywList.value =  ywList.value.concat(res.data.MeetingList)
-    isLoading.value =false   //关闭下拉刷新的加载
-    totalCount.value = res.data.totalCount
-    pageCount.value = res.data.pageCount
-    if (res.data.totalCount == 0) {
-      isShowImg.value = true
-    } else {
-      isShowImg.value = false
-    }
-    if (ywList.value.length == totalCount.value) {
-      loading.value = false   //关闭下拉刷新的加载
-      finished.value = true
-    }else{
-      loading.value = false
-      finished.value = false
-    }
+   if(res.success){
+       showDate.value = false
+       ywList.value =  ywList.value.concat(res.data.MeetingList)
+       isLoading.value =false   //关闭下拉刷新的加载
+       totalCount.value = res.data.totalCount
+       pageCount.value = res.data.pageCount
+       if (res.data.totalCount == 0) {
+           isShowImg.value = true
+       } else {
+           isShowImg.value = false
+       }
+       if (ywList.value.length == totalCount.value) {
+           loading.value = false   //关闭下拉刷新的加载
+           finished.value = true
+       }else{
+           loading.value = false
+           finished.value = false
+       }
+   }else {
+       //请求失败的处理
+   }
+
   }).finally(()=>{
     searchLoading.value = false
   })
@@ -308,12 +362,12 @@ onMounted(async()=>{
   display: flex;
   text-align: center;
   height: 50px;
-  line-height: 50px;
+  //line-height: 50px;
   border-bottom: 1px solid #f0f0f0;
   //margin-bottom: 50px;
   .menuItems {
     font-size: 14px;
-    width: 40%;
+    width: 50%;
     display: flex;
     justify-content: center;
     align-items: center;

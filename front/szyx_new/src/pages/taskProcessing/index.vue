@@ -46,7 +46,7 @@
               <div class="m-b-10 f-z-12"><span style="color: #4BA3FB">任务目标：</span>{{ item.taskData }}</div>
               <div class="m-b-10 f-z-12" style="display: flex;justify-content: space-between">
                 <div>
-                  <span style="color: #4BA3FB">发布时间：</span>{{ item.createTime }}
+                  <span style="color: #4BA3FB">创建时间：</span>{{ item.createTime }}
                 </div>
                 <van-tag :type="item.flag=='0'?'primary':'success'">{{ item.flag == '0' ? '待处理' : '已完成' }}
                 </van-tag>
@@ -92,10 +92,10 @@
                          style="position:absolute;right:8vw;top:4vw" width="72"></van-image>
             </div>
             <van-divider/>
-            <div class="m-b-10 f-z-12">任务目标：{{ item.taskData }}</div>
-            <div class="m-b-10 f-z-12"><span class="f-w">创建时间：</span>{{ item.createTime }}</div>
+            <div class="m-b-10 f-z-12"><span style="color: #4BA3FB">任务目标：</span>{{ item.taskData }}</div>
+            <div class="m-b-10 f-z-12"><span style="color: #4BA3FB">创建时间：</span>{{ item.createTime }}</div>
 
-            <div class="m-b-10 f-z-12"><span class="f-w">完成时间：</span>{{ item.finishTime }}</div>
+            <div class="m-b-10 f-z-12"><span style="color: #4BA3FB">完成时间：</span>{{ item.finishTime }}</div>
             <!--          <van-image  width="70"-->
             <!--                      v-if="item.isShow"-->
             <!--                      height="70"-->

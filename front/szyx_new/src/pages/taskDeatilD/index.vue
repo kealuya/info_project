@@ -57,8 +57,8 @@ onMounted(()=>{
   myTaskDetails(params).then((res:any)=>{
     if(res.success){
       taskTitle.value = res.data.taskTitle
-      target.value = res.data.taskContent
-      content.value = res.data.taskData
+      target.value = res.data.taskData
+      content.value = res.data.taskContent
     }
   })
 // console.log(route.query)

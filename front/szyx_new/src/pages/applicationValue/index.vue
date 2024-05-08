@@ -70,7 +70,7 @@
       </div>
     </div>
     <div :class="{ 'list1': !tabIndex}" class="listReacord">
-      <van-pull-refresh v-model="isLoading" :disabled="isShowImg" success-text="刷新成功" @refresh="onRefresh">
+      <van-pull-refresh v-model="isLoading" success-text="刷新成功" @refresh="onRefresh">
         <div v-if="searchLoading && list.length==0" class="h-67">
           <van-loading :vertical="true" color="#1989fa" type="spinner">加载中...</van-loading>
         </div>

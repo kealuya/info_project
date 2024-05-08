@@ -5,6 +5,9 @@
       <span class="headContext">高效、合规、降本，提升企业管理价值</span>
     </div>
   </div>
+    <div v-if="isShowLoading" class="h-67">
+        <van-loading :vertical="true" color="#1989fa" type="spinner">加载中...</van-loading>
+    </div>
   <div class="mt10">
     <van-form @submit="onSubmit" ref="loginForm" autocomplete="off">
       <van-cell-group inset>
@@ -71,9 +74,11 @@ const password = ref('');
 const timer =ref(true);
 const ses=ref(0);
 let loginForm = ref();
+const isShowLoading = ref<Boolean>(false)
 // 是否点击为
 const onSubmit = async (values: any) => {
   let result: any = await messageLogin(values);
+  console.log(result)
   if (result.msg!='error') {
       let data = result.data;
       await localStorage.setItem('token', data.jwt);
@@ -98,10 +103,12 @@ const onPolicy = (values: any) => {
 };
 const getMessage = () => {
     loginForm.value.validate('phone').then(async () => {
+        isShowLoading.value = true
         let result: any = await getMessageCaptcha({
             'phone': phone.value
         });
         if (result.success) {
+            isShowLoading.value = false
             showToast(result.msg);
           timer.value=false;
           ses.value=59;
@@ -116,6 +123,7 @@ const getMessage = () => {
           }, 1000)
 
         } else {
+            isShowLoading.value = false
             showToast(result.msg);
         }
     })

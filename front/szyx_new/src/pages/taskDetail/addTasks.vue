@@ -119,7 +119,7 @@ const onConfirm = ({ selectedOptions }) => {
 
 const onClickLeft = () => {
   // history.go(-2)
-  router.replace('/task')
+  router.replace({path:'/task',query:{isComplete:true,finished:false}})
 }
 const reasonForBorrowing = ref<string>()
 const loanAmount = ref<string>('临床推广')
@@ -139,7 +139,7 @@ let params = ref<finishTaskType>({
   userId:'',
   userName:'',
   userMobile:'',
-  meetingId:''
+  meetingIdList:''
 })
 
 //点击了提交 任务按钮
@@ -169,7 +169,7 @@ onMounted(()=>{
     let arr =  meetingList.value.map((item:any)=>{
       return item.meetingId
     })
-    params.value.meetingId = arr
+    params.value.meetingIdList = arr
   }
   params.value.taskId = taskStore.getTaskId()
   let userInfoData: any = inject("userInfo"); // 取出用户信息用于调用接口

@@ -20,7 +20,7 @@
 
         >
           <div v-if="!isShowImg">
-            <div class="list_cardtask" v-for="item in listData">
+            <div class="list_cardtask" v-for="item in listData" @click="toDetail(item)">
               <div class="m-b-10 icon">
                 <van-image
                     width="20"
@@ -30,14 +30,14 @@
                 <div class="list_title">{{item.taskTitle}}</div>
               </div>
               <!--              <van-divider />-->
-              <div class="m-b-10 f-z-12"><span style="color: #4BA3FB" >任务目标：</span>{{item.taskTarget}}</div>
-              <div class="m-b-10 f-z-12"><span style="color: #4BA3FB" >任务类型：</span>{{item.taskType}}</div>
+              <div class="m-b-10 f-z-12"><span style="color: #4BA3FB" >任务目标：</span>{{item.taskData}}</div>
+<!--              <div class="m-b-10 f-z-12"><span style="color: #4BA3FB" >任务类型：</span>{{item.taskType}}</div>-->
               <div class="m-b-10 f-z-12" style="display: flex;justify-content: space-between">
                 <div>
                   <span style="color: #4BA3FB" >创建时间：</span>{{item.createTime}}
                 </div>
                 <van-tag type="success" v-if="item.taskStatus==1">已完成</van-tag>
-                <van-tag type="danger" v-else-if="item.taskStatus==0">未完成</van-tag>
+                <van-tag type="warning" v-else-if="item.taskStatus==0">未参与</van-tag>
               </div>
               <!--          <div class="m-b-10 f-z-12"><span style="font-size: 12px;color: #4BA3FB">发布时间：<span>{{item.time}}</span></span></div>-->
             </div>
@@ -93,6 +93,10 @@ let params = ref<any>({
 const businessDetailHandle = ()=>{
   router.replace('/task')
 
+}
+//点击跳转到详情页面
+const toDetail=(row:any)=>{
+  router.replace({name:'taskDetail',query:row})
 }
 const onClickLeft = () => {
   // history.go(-2)

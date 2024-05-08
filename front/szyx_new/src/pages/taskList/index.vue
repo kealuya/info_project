@@ -94,7 +94,7 @@
                 <div style="display: flex;align-items: center">
                   <van-tag type="primary" v-if="item.meetingType == 'audio'">音频会议</van-tag>
                   <van-tag type="success" v-else>文档记录</van-tag>
-                  <div class="list_title">{{item.meetingTitle}}-{{item.isCheck}}</div>
+                  <div class="list_title">{{item.meetingTitle}}</div>
                 </div>
 <!--                <van-checkbox v-model="item.isCheck" @change="changeCheck"></van-checkbox>-->
                 <!--            <van-image-->

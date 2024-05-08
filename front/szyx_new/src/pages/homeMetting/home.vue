@@ -58,7 +58,7 @@
     >
       <van-row v-if="list.length>0">
         <div class="task2  f_white" v-for="item in list" :key="item.taskId">
-          <van-image :src="test" class="task_bgc">
+          <van-image :src="item.taskImg" class="task_bgc">
           </van-image>
           <div class="task_card">
             <div class="task_title">

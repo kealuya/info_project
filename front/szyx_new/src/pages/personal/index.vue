@@ -9,7 +9,7 @@
           <van-col :span="16">
             <van-row>
               <van-col :span="8">
-                <span class="f20 f_white">Administrator</span>
+                <span class="f20 f_white">{{userName}}</span>
               </van-col>
 <!--              <van-col :span="14" class="tr">-->
 <!--                <span class="f14 f_white">{{111}}</span>-->
@@ -17,17 +17,17 @@
             </van-row>
             <div class="mt5 mb5">
               <van-row>
-                <span class="f_white f14">XXXXX有限责任公司</span>
+                <span class="f_white f14">{{corpName}}</span>
               </van-row>
-              <van-row>
+              <!-- <van-row>
                 <span  class="f_white f14">所属部门： 研发一部</span>
-              </van-row>
+              </van-row> -->
             </div>
             <div>
               <van-row>
                 <van-col :span="16">
-                  <div  class="f_white f14">Tel: 15066668888</div>
-                  <div  class="f_white f14">No: 0001</div>
+                  <div  class="f_white f14">Tel:{{userMobile}}</div>
+                  <div  class="f_white f14">No: {{userId}}</div>
                 </van-col>
                 <van-col :span="8">
                   <van-image :src="userInfoIcon"  width="50px" height="50px" />
@@ -114,6 +114,10 @@ let appNumber=ref('0'); // 累计申请
 let bxMoneyAmount=ref('0'); // 累计申请
 let travelMoney=ref('0'); // 累计出行金额
 const router = useRouter(); //使用路由跳转
+const userName = ref<string>('')
+const corpName = ref<string>('')
+const userMobile = ref<string>('')
+const userId =ref<string>('')
 interface paramsType{
   userId:string | undefined | null,
   corpCode:string | undefined | null
@@ -142,9 +146,9 @@ const escUser=()=>{
         '您确定要退出吗？',
   })
       .then(() => {
-        /*localStorage.clear()
+        localStorage.clear()
         sessionStorage.clear();
-        location.reload()*/
+        // location.reload()
         router.replace('/login')
         // on confirm
       })
@@ -191,6 +195,11 @@ const gotoPath=(code:any)=>{
 // })
 onMounted(()=>{
   let userInfoData: any = inject("userInfo"); // 取出用户信息用于调用接口
+  console.log('userInfoData',userInfoData.userInfo)
+ userName.value = userInfoData.userInfo.userName
+ corpName.value = userInfoData.userInfo.corpName
+ userMobile.value = userInfoData.userInfo.userMobile
+ userId.value = userInfoData.userInfo.userId
   params.value.corpCode = localStorage.getItem('corpCode') //从本地获取corpCode
   //从本地获取corpCode
   params.value.userId = userInfoData.userInfo.userId
