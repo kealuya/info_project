@@ -46,7 +46,7 @@ func (sysLoginCrtl *SysLoginController) GetMessageCaptcha() {
 
 	loginResp, err := models.MessageLogin(getMessageCaptcha.Mobile)
 	//测试账号，不需要发短信
-	if getMessageCaptcha.Mobile == "18888889999" {
+	if getMessageCaptcha.Mobile == "18888889999" || getMessageCaptcha.Mobile == "13131535887" {
 		key := origin + "-" + getMessageCaptcha.Mobile
 		err2 := redis.SetStr(key, validateCode, 5*time.Minute)
 		common.ErrorHandler(err2, "验证码缓存失败")
@@ -64,7 +64,7 @@ func (sysLoginCrtl *SysLoginController) GetMessageCaptcha() {
 			resJson.Msg = messageReturn.Msg
 		} else {
 			resJson.Success = false
-			resJson.Msg = "短信获取验证码失败"
+			resJson.Msg = "短信获取验证码失败：" +  messageReturn.Msg
 		}
 	} else {
 		resJson.Success = false
@@ -99,7 +99,7 @@ func (sysLoginCrtl *SysLoginController) MessageLogin() {
 	value := redis.GetStrs(key)
 	dataJson := new(system.ResultInfo)
 	if value == "" {
-		resJson.Data = "验证码过期"
+		resJson.Msg = "验证码过期"
 	} else {
 		if messageLogin.ValidateCode == value || messageLogin.Mobile == "13131535887" {
 			loginResp, err := models.MessageLogin(messageLogin.Mobile)

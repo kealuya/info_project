@@ -235,11 +235,11 @@ func (MeetingCtrl *MeetingCtrl) GetMeetingList() {
 	res, err := models.GetMeetingList(metting_param)
 	if err == nil {
 		resJson.Success = true
-		resJson.Msg = "操作成功"
+		resJson.Msg = "获取会议列表成功"
 		resJson.Data = res
 	} else {
 		resJson.Success = false
-		resJson.Msg = fmt.Sprintf("会议查询失败::%s", err)
+		resJson.Msg = fmt.Sprintf("会议列表查询失败::%s", err)
 	}
 }
 

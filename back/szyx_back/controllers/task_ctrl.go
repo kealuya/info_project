@@ -145,10 +145,11 @@ func (TaskCtrl *TaskCtrl) CheckIsJoinTask() {
 		return
 	}
 	//业务处理
-	result,err := models.CheckIsJoinTask(myTask_Param)
+	result,msg,err := models.CheckIsJoinTask(myTask_Param)
 	if err == nil {
 		resJson.Success = true
-		resJson.Msg = result
+		resJson.Data = result
+		resJson.Msg = msg
 	} else {
 		resJson.Success = false
 		resJson.Msg = fmt.Sprintf("checkIsJoinTask接口调用失败::%s", err)

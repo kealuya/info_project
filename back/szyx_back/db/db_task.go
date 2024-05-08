@@ -82,7 +82,7 @@ func GetTaskPoolList(info *task.TaskList_Param) (res task.TaskList_Result, msg e
 }
 
 //校验是否能参加任务，一个任务只能参加一次
-func CheckIsJoinTask(myTask_Param *task.MyTask) (result string, msg error) {
+func CheckIsJoinTask(myTask_Param *task.MyTask) (result string, msg string, err error) {
 	dbHandler := db_handler.NewDbHandler()
 	var Param []interface{}
 	Param = append(Param, myTask_Param.CorpCode)
@@ -92,10 +92,12 @@ func CheckIsJoinTask(myTask_Param *task.MyTask) (result string, msg error) {
 	//判断用户是否参与过任务
 	if len(selRes) > 0 && err == nil {
 		result = "yesJoinTask" //已参与任务
+		msg = "您已参与任务，请勿重复参与。"
 	} else {
 		result = "noJoinTask" //未参与任务
+		msg = "用户未参与任务"
 	}
-	return result, err
+	return result,msg, err
 }
 
 //参加任务--添加我得任务

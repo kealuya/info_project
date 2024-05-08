@@ -39,9 +39,9 @@ func ApplyJoinTask(myTask_Param *task.MyTask) (err error) {
 /**
 校验是否能参加任务，一个任务只能参加一次
 */
-func CheckIsJoinTask(myTask_Param *task.MyTask) (result string,err error) {
-	result,err = db.CheckIsJoinTask(myTask_Param)
-	return result,err
+func CheckIsJoinTask(myTask_Param *task.MyTask) (result string,msg string,err error) {
+	result,msg,err = db.CheckIsJoinTask(myTask_Param)
+	return result,msg,err
 }
 
 /**
