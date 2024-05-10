@@ -148,11 +148,11 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingFile() {
 		MeetingCtrl.ServeJSON()
 	}()
 
-	file, h, _ := MeetingCtrl.GetFile("file")       //获取上传的文件
-	meetingId := MeetingCtrl.GetString("meetingId") //获取会议ID
+	file, h, _ := MeetingCtrl.GetFile("file")             //获取上传的文件
+	meetingId := MeetingCtrl.GetString("meetingId")       //获取会议ID
 	meetingTitle := MeetingCtrl.GetString("meetingTitle") //会议标题
-	userId := MeetingCtrl.GetString("userId")       //用户ID
-	corpCode := MeetingCtrl.GetString("corpCode")     //企业code
+	userId := MeetingCtrl.GetString("userId")             //用户ID
+	corpCode := MeetingCtrl.GetString("corpCode")         //企业code
 
 	ext := path.Ext(h.Filename)
 	//验证后缀名是否符合要求   doc/txt
@@ -197,7 +197,7 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingFile() {
 			resJson.Success = true
 			resJson.Msg = "上传成功"
 			resJson.Data = fileStruct
-		}else{
+		} else {
 			resJson.Success = false
 			resJson.Msg = fmt.Sprintf("会议文件信息保存失败", err2)
 		}
@@ -278,7 +278,45 @@ func (MeetingCtrl *MeetingCtrl) ModifyMeeting() {
 	}
 }
 
-// @Title 会议纪要，用于根据录音得到会议纪要
+//FIXME 开始联调
+
+// @Title 语音会议翻译成文字
+// @Tags CreateMeetingTranslation
+// @Summary 语音会议翻译成文字
+// @accept application/json
+// @Produce application/json
+// @Param data body kdxf.Kdxf_audio_param true "Kdxf_audio_param struct"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"语音会议转译成功"}"
+// @router /createMeetingTranslation [post]
+func (MeetingCtrl *MeetingCtrl) CreateMeetingTranslation() {
+	resJson := NewJsonStruct(nil)
+	defer func() {
+		MeetingCtrl.Data["json"] = resJson
+		MeetingCtrl.ServeJSON()
+	}()
+	speech := new(kdxf.Kdxf_audio_param)
+	var jsonByte = MeetingCtrl.Ctx.Input.RequestBody
+	logs.Info("语音会议转译入参：" + string(jsonByte))
+	paramerr := jsoniter.Unmarshal(jsonByte, &speech)
+	if paramerr != nil {
+		resJson.Success = false
+		resJson.Msg = "入参有误"
+		return
+	}
+	//业务处理
+	res, err := models.CreateMeetingTranslation(speech)
+
+	if err == nil {
+		resJson.Success = true
+		resJson.Msg = "操作成功"
+		resJson.Data = res
+	} else {
+		resJson.Success = false
+		resJson.Msg = fmt.Sprintf("语音会议转译失败::%s", err)
+	}
+}
+
+// @Title 会议纪要生成
 // @Tags CreateMeetingMminutes
 // @Summary 会议纪要
 // @accept application/json

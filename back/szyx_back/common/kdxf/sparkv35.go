@@ -52,15 +52,15 @@ var (
 	apiKeySpark    = secret.KDXF_SPARK_API_KEY
 )
 
-// const SYSTEM_CONTENT = "你是一个展业的文职秘书，可以把描述的事情变成标准的会议纪要，其中可能包括参会人员、会议总结、各个角色的会话要点及后续计划等。"
+// const SYSTEM_CONTENT = "你是一个专业的文职秘书，可以把描述的事情变成标准的会议纪要，其中可能包括参会人员、会议总结、各个角色的会话要点及后续计划等。"
 //const SYSTEM_CONTENT = "你是一个医生，只回答医疗相关问题，如果没关系的问题，请礼貌的拒绝"
 
-func SparkV35(systemContent string, questions []Message) (<-chan map[string]any, error) {
+func SparkV35(systemContent string, questions []Message) (<-chan map[string]interface{}, error) {
 
 	d := websocket.Dialer{
 		HandshakeTimeout: 5 * time.Second,
 	}
-	logs.Info("asdfasdfs")
+	logs.Info("星火大模型问答开始")
 	//握手并建立websocket 连接
 	conn, resp, err := d.Dial(assembleAuthUrl1(hostUrlSpark, apiKeySpark, apiSecretSpark), nil)
 	if err != nil {
@@ -72,7 +72,7 @@ func SparkV35(systemContent string, questions []Message) (<-chan map[string]any,
 		return nil, err
 	}
 
-	myChannel := make(chan map[string]any)
+	myChannel := make(chan map[string]interface{})
 
 	go func() {
 
@@ -108,7 +108,7 @@ func SparkV35(systemContent string, questions []Message) (<-chan map[string]any,
 			text := choices["text"].([]interface{})
 			content := text[0].(map[string]interface{})["content"].(string)
 
-			m := make(map[string]any)
+			m := make(map[string]interface{})
 			if status != 2 {
 				answer += content
 				m["content"] = content

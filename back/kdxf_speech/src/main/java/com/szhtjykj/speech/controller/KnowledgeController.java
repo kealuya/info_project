@@ -1,5 +1,8 @@
 package com.szhtjykj.speech.controller;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.szhtjykj.speech.xfyun.knowledge.XfyunKnowledgeService;
 import com.szhtjykj.speech.xfyun.speech.XfyunSpeechService;
 import org.noear.solon.annotation.Controller;
@@ -12,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,7 +32,12 @@ public class KnowledgeController {
     XfyunKnowledgeService xfyunKnowledgeService;
 
 
-    //通过获取已经翻译成文字的会议内容，生成概要
+    /**
+     * 录音  文件 生成会议纪要
+     * 通过获取已经翻译成文字的会议内容，生成概要
+     * @param ctx
+     * @return
+     */
     @Post
     @Mapping("/convertAudioToSummary")
     public Map convertAudioToSummary(Context ctx) {
@@ -50,6 +60,13 @@ public class KnowledgeController {
             return returnMap;
         }
     }
+
+
+    /**
+     * 录音  文件 生成会议纪要
+     * @param ctx
+     * @return
+     */
     @Post
     @Mapping("/convertAudioToMeetingMinute")
     public Map convertAudioToMeetingMinute(Context ctx) {
@@ -64,6 +81,12 @@ public class KnowledgeController {
         return returnMap;
     }
 
+
+    /**
+     * 录音文件 生成脑图
+     * @param ctx
+     * @return
+     */
     @Post
     @Mapping("/convertAudioToBrainMap")
     public Map convertAudioToBrainMap(Context ctx) {
@@ -76,5 +99,37 @@ public class KnowledgeController {
         returnMap.put("brainMap",brainMap);
 
         return returnMap;
+    }
+
+    //============================================文档处理=========================
+
+    /**
+     * 通过文档内容，生成概要
+     * @param
+     * @return
+     */
+    @Post
+    @Mapping("/convertDocumentToSummary")
+    public Map convertDocumentToSummary(String meetingId,String fileUrl){
+
+        Map<String, Object> returnMap = new HashMap<>();
+        try {
+
+            String fileId = xfyunKnowledgeService.uploadDocumentFile(fileUrl,meetingId);
+            xfyunKnowledgeService.makeSummaryAndMeeting(meetingId,fileId);
+
+            returnMap.put("fileId",fileId);
+            returnMap.put("success", true);
+            returnMap.put("msg", "申请成功");
+
+            return returnMap;
+        } catch (Exception e) {
+            log.error("发生错误::", e);
+
+            returnMap.put("success", false);
+            returnMap.put("msg", e.toString());
+
+            return returnMap;
+        }
     }
 }

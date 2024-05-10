@@ -20,4 +20,6 @@ public class KdxfKnowledge {
     private String chat1;
     private String chat2;
     private String file_id;
+    private String meetingId;
+    private String taskId;
 }

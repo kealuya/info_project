@@ -6,10 +6,7 @@ import com.szhtjykj.speech.model.KdxfSpeech;
 import com.szhtjykj.speech.xfyun.speech.XfyunSpeechService;
 import org.beetl.sql.solon.annotation.Db;
 import org.noear.solon.Solon;
-import org.noear.solon.annotation.Controller;
-import org.noear.solon.annotation.Inject;
-import org.noear.solon.annotation.Mapping;
-import org.noear.solon.annotation.Post;
+import org.noear.solon.annotation.*;
 import org.noear.solon.core.handle.Context;
 import org.noear.solon.core.handle.UploadedFile;
 import org.noear.solon.data.annotation.Tran;
@@ -91,6 +88,12 @@ public class SpeechController {
     public Map getResult(String orderId, String orderId2) throws Exception {
 
         return xfyunService.manualGetResult(orderId, orderId2);
+    }
+
+    @Get
+    @Mapping("/callbackMsg")
+    public void callbackMsg(String orderId, String status) throws Exception {
+        //TODO 回调信息方法
     }
 
 

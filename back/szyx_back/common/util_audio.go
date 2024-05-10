@@ -9,11 +9,24 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
-	"time"
 )
 
 //kdxf音频转换地址
 var kdxf_audio = "http://localhost:7003/uploadAudio"
+
+//kdxf音频会议总结
+var kdxf_CreateMeetingSummary = "http://localhost:7003/convertAudioToSummary"
+
+//kdxf音频会议纪要
+var kdxf_CreateMeetingMminutes = "http://localhost:7003/convertAudioToMminutes"
+
+//kdxf音频会议脑图
+var kdxf_CreateMeetingBrainMap = "http://localhost:7003/convertAudioToBrainMap"
+
+//==================================文档操作=====================
+
+//kdxf 文档  会议纪要生成
+var kdxf_CreateMeetingMminutes_document = "http://localhost:7003/convertDocumentToSummary"
 
 //kdxf音频转换项目，测试地址
 var test_audio = "http://localhost:7003/hello"
@@ -87,31 +100,50 @@ func DoHttpPost_Audio(fileUrl string, filename string, options ...map[string]str
 
 }
 
-//kdxf音频转换
-func DoHttpPost_Audio_err(fileUrl string, options ...map[string]string) (respBody string) {
-	req := httplib.Post(kdxf_audio)
-	req.Header("Content-Type", "multipart/form-data")
-	req.Header("accept", "*/*")
-	req.Header("accept-encoding", "gzip, deflate, br")
-	req.Header("connection", "keep-alive")
-
-	//设置连接超时为5分钟，读写超时为5分钟
-	req.SetTimeout(1*time.Minute, 1*time.Minute)
-	req.PostFile("file", fileUrl)
+//kdxf 语音翻译后  生成会议总结
+func DoHttpPost_kdxf_audio_summary(orderId string, options ...map[string]string) (respBody string) {
+	req := httplib.Post(kdxf_CreateMeetingSummary)
+	req.Header("Content-Type", "application/json")
+	req.Param("orderId", orderId)
 	respBody, err := req.String()
 	ErrorHandler(err)
-	logs.Warn(req.String())
+	logs.Warn(respBody)
 	return respBody
 }
 
-//http Post 请求
-func DoHttpPost_audio(url string, param string, options ...map[string]string) (respBody string) {
-	req := httplib.Post(test_audio)
+//kdxf 语音翻译后  生成会议纪要
+func DoHttpPost_kdxf_audio_mminutes(orderId string, options ...map[string]string) (respBody string) {
+	req := httplib.Post(kdxf_CreateMeetingMminutes)
 	req.Header("Content-Type", "application/json")
-	req.Body(param)
+	req.Param("orderId", orderId)
 	respBody, err := req.String()
 	ErrorHandler(err)
+	logs.Warn(respBody)
+	return respBody
+}
 
+//kdxf 语音翻译后  生成会议脑图  BrainMap
+func DoHttpPost_kdxf_audio_brainMap(orderId string, options ...map[string]string) (respBody string) {
+	req := httplib.Post(kdxf_CreateMeetingBrainMap)
+	req.Header("Content-Type", "application/json")
+	req.Param("orderId", orderId)
+	respBody, err := req.String()
+	ErrorHandler(err)
+	logs.Warn(respBody)
+	return respBody
+}
+
+//==========================================文档操作=======================
+
+//kdxf 文档生成会议记录
+func DoHttpPost_kdxf(meetingId string, fileUrl string, options ...map[string]string) (respBody string) {
+	req := httplib.Post(kdxf_CreateMeetingMminutes_document)
+	req.Header("Content-Type", "application/json")
+	//req.Body(param)
+	req.Param("meetingId", meetingId)
+	req.Param("fileUrl", fileUrl)
+	respBody, err := req.String()
+	ErrorHandler(err)
 	logs.Warn(respBody)
 	return respBody
 }

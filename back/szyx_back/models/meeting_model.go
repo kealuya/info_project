@@ -46,18 +46,16 @@ func ModifyMeeting(meetingDto *meeting.Meeting) (res meeting.Meeting, err error)
 }
 
 /**
-会议纪要
+语音  会议转译
 */
-func CreateMeetingMminutes(speechDto *kdxf.Kdxf_audio_param) (res kdxf.Kdxf_speech, err error) {
+func CreateMeetingTranslation(speechDto *kdxf.Kdxf_audio_param) (res kdxf.Kdxf_speech, err error) {
 	defer common.RecoverHandler(func(err error) {
 		err = err
 	})
 
-	//FIXME 语音转会议纪要
+	//FIXME 语音转文字
 	//拼接路径
 	//audioFullPath := "/Users/zhanbaohua/webStorm_work/github.com/info_project/back/szyx_back/" + fpath
-	//audioFullPath := "/Users/zhanbaohua//github.com/info_project/back/kdxf_speech/src/main/audio/合成音频.wav"
-	//audioFullPath := "/Users/zhanbaohua/Downloads/demo/audio/3344555.m4a"
 	audioFullPath := configs.FILE_UPLOAD_URL + speechDto.FileUrl
 	//调用的路径
 	logs.Info("调用路径" + audioFullPath)
@@ -69,7 +67,28 @@ func CreateMeetingMminutes(speechDto *kdxf.Kdxf_audio_param) (res kdxf.Kdxf_spee
 	if kdxf_audio_result.Success == "true" {
 		res.FileName = kdxf_audio_result.FileName
 	} else {
-		err = errors.New(fmt.Sprintf("会议纪要生成失败::%s", kdxf_audio_result.Msg))
+		err = errors.New(fmt.Sprintf("语音会议转译生成失败::%s", kdxf_audio_result.Msg))
+	}
+	return res, err
+}
+
+/**
+会议纪要
+*/
+func CreateMeetingMminutes(speechDto *kdxf.Kdxf_audio_param) (res kdxf.Kdxf_speech, err error) {
+	defer common.RecoverHandler(func(err error) {
+		err = err
+	})
+
+	////FIXME 会议文件地址
+	responseStr := common.DoHttpPost_kdxf(speechDto.MeetingId, speechDto.FileUrl)
+
+	kdxf_document_result := new(kdxf.Kdxf_document_result)
+	common.Unmarshal([]byte(responseStr), &kdxf_document_result)
+	if kdxf_document_result.Success == true {
+		res.MeetingId = speechDto.MeetingId
+	} else {
+		err = errors.New(fmt.Sprintf("会议纪要生成失败::%s", kdxf_document_result.Msg))
 	}
 	return res, err
 }

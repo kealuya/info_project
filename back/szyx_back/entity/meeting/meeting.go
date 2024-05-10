@@ -34,6 +34,7 @@ type Meeting struct {
 
 //会议文件
 type MeetingFile struct {
+	Id           string `json:"id" description:"id,主键" `
 	MeetingId    string `json:"meetingId" description:"关联的会议id" `
 	MeetingTitle string `json:"meetingTitle" description:"会议标题" `
 	FileType     string `json:"fileType" description:"文件类型" ` //文件类型   音频：mp3   文档：word  脑图：xmind

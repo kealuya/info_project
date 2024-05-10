@@ -20,6 +20,12 @@ type Kdxf_audio_result struct {
 	Success  string `json:"success" description:"" `
 }
 
+//文档信息  文档概要  返回值
+type Kdxf_document_result struct {
+	Msg     string `json:"msg" description:"msg" `
+	Success bool   `json:"success" description:"" `
+}
+
 //录音文件
 type Kdxf_speech struct {
 	entity.Base         //预留多公司模式
