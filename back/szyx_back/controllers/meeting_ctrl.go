@@ -73,20 +73,16 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingAudioFile() {
 
 	file, h, _ := MeetingCtrl.GetFile("file")       //获取上传的文件
 	meetingId := MeetingCtrl.GetString("meetingId") //获取会议ID
-	userId := MeetingCtrl.GetString("userId")       //用户ID
-
-	fmt.Println("------------" + meetingId)
-	fmt.Println("------------" + userId)
+	meetingTitle := MeetingCtrl.GetString("meetingTitle") //会议标题
+	userId := MeetingCtrl.GetString("userId")             //用户ID
+	corpCode := MeetingCtrl.GetString("corpCode")         //企业code
 
 	ext := path.Ext(h.Filename)
-	//fmt.Println("------------" + ext)
-
 	//验证后缀名是否符合要求   mp3/blob
 	AllowExtMap := map[string]bool{
 		".mp3":  true,
 		".blob": true,
 	}
-
 	if _, ok := AllowExtMap[ext]; !ok {
 		flag = false
 		resJson.Success = false
@@ -95,34 +91,39 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingAudioFile() {
 	}
 
 	uploadDir := "static/upload/"
-
-	////创建目录 不需要
-	//uploadDir := "static/upload/"
-	//err := os.MkdirAll(uploadDir, 777)
-	//if err != nil {
-	//	MeetingCtrl.Ctx.WriteString(fmt.Sprintf("%v"))
-	//	return
-	//}
-
 	//构造上传路径+文件名
-	fpath := uploadDir + h.Filename
+	filePath := uploadDir + h.Filename
 	defer file.Close() //关闭上传的文件，不然的话会出现临时文件不能清除的情况
 
-	err := MeetingCtrl.SaveToFile("file", fpath)
+	err := MeetingCtrl.SaveToFile("file", filePath)
 	if err != nil {
 		MeetingCtrl.Ctx.WriteString(fmt.Sprintf("%v"))
 		flag = false
 	}
-
 	if flag {
-		fileStruct := new(meeting.MeetingFile_Result)
-		fileStruct.FileUrl = fpath
-		resJson.Success = true
-		resJson.Msg = "上传成功"
-		resJson.Data = fileStruct
+		//上传的音频文件基础信息存表。用于选择业务内容关联展示
+		meetingFile := new(meeting.MeetingFile)
+		meetingFile.MeetingId = meetingId
+		meetingFile.MeetingTitle = meetingTitle
+		meetingFile.FileUrl = filePath //TODO 先取构造的上传路径 日后有了文件obs地址在改
+		meetingFile.FileName = h.Filename
+		meetingFile.Creater = userId
+		meetingFile.CorpCode = corpCode
+		meetingFile.FileType = "mp3" //音频文件
+		err2 := models.AddMeetingFileInfo(meetingFile)
+		if err2 == nil {
+			fileStruct := new(meeting.MeetingFile_Result)
+			fileStruct.FileUrl = filePath
+			resJson.Success = true
+			resJson.Msg = "上传成功"
+			resJson.Data = fileStruct
+		} else {
+			resJson.Success = false
+			resJson.Msg = fmt.Sprintf("会议文件信息保存失败", err2)
+		}
 	} else {
 		resJson.Success = false
-		resJson.Msg = fmt.Sprintf("会议录音上传失败::%s", err)
+		resJson.Msg = fmt.Sprintf("会议文件上传失败::%s", err)
 	}
 
 }
@@ -190,6 +191,7 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingFile() {
 		meetingFile.FileName = h.Filename
 		meetingFile.Creater = userId
 		meetingFile.CorpCode = corpCode
+		meetingFile.FileType = "word" //文档文件
 		err2 := models.AddMeetingFileInfo(meetingFile)
 		if err2 == nil {
 			fileStruct := new(meeting.MeetingFile_Result)

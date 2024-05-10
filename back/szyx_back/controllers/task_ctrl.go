@@ -280,6 +280,8 @@ func (TaskCtrl *TaskCtrl)  GiveUpTask() {
 
 	if paramerr != nil {
 		resJson.Success = false
+
+
 		resJson.Msg = "入参有误"
 		return
 	}
@@ -287,7 +289,7 @@ func (TaskCtrl *TaskCtrl)  GiveUpTask() {
 	err := models.GiveUpTask(task_param)
 	if err == nil {
 		resJson.Success = true
-		resJson.Msg = "放弃任务成功"
+		resJson.Msg = "删除任务成功"
 	} else {
 		resJson.Success = false
 		resJson.Msg = fmt.Sprintf("放弃任务失败::%s", err)

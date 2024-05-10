@@ -116,8 +116,6 @@ func GetMeetingDetails(meetingDto *meeting.Meeting) (res meeting.Meeting, err er
 上传文件，文件基础信息存表。用于选择业务内容关联展示
 */
 func AddMeetingFileInfo(meetingFile *meeting.MeetingFile) (err error) {
-	//上档文件的会议使用该方法 所以默认所有的文件类型都是文档类型 固定传word枚举
-	meetingFile.FileType = "word"
 	//创建会议
 	err = db.AddMeetingFileInfo(meetingFile)
 	return err
