@@ -142,7 +142,14 @@ func GetTaskList(info *task.MyTaskList_Param) (res task.MyTaskList_Result, msg e
 	startNum := (info.CurrentPage - 1) * info.PageSize
 	Param = append(Param, startNum)
 	Param = append(Param, info.PageSize)
-	selRes, err := dbHandler.SelectList(db_handler.GetTaskList_sql, Param...)
+	var sqlOrderBy = ""
+	//根据任务完成状态判断使用什么时间进行排序
+	if info.Flag == common.MY_TASK_FLAG_KEY_1 {
+	 	sqlOrderBy =  " ORDER BY mytask.finishTime DESC  limit ?,?"
+	}else{
+		sqlOrderBy =  " ORDER BY mytask.createTime DESC  limit ?,?"
+	}
+	selRes, err := dbHandler.SelectList(db_handler.GetTaskList_sql + sqlOrderBy, Param...)
 	myTaskList := []task.MyTask{}
 
 	if len(selRes) > 0 && err == nil {
@@ -271,4 +278,23 @@ func MyTaskDetails(info *task.MyTask) (res task.MyTask, msg error) {
 	}
 	res.MeetingList = myTaskMeeting
 	return res, err
+}
+
+//用户放弃未完成的任务
+func GiveUpTask(myTask_Param *task.Task) (msg error) {
+	defer common.RecoverHandler(func(rcErr error) {
+		msg = rcErr
+	})
+	dbHandler := db_handler.NewDbHandler()
+	var Param []interface{}
+	Param = append(Param, myTask_Param.CorpCode)
+	Param = append(Param, myTask_Param.Creater)
+	Param = append(Param, myTask_Param.TaskId)
+	_, err := dbHandler.Delete(db_handler.GiveUpTask_sql, Param...)
+	common.ErrorHandler(err, "未完成的任务删除操作记录发生错误")
+	var err1 error
+	if err != nil {
+		err1 = errors.New("未完成的任务删除失败")
+	}
+	return err1
 }

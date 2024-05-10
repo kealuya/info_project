@@ -50,6 +50,7 @@ func (sysLoginCrtl *SysLoginController) GetMessageCaptcha() {
 		key := origin + "-" + getMessageCaptcha.Mobile
 		err2 := redis.SetStr(key, validateCode, 5*time.Minute)
 		common.ErrorHandler(err2, "验证码缓存失败")
+
 		resJson.Success = true
 		resJson.Msg = "此账号无需发送验证码" + validateCode
 	} else if loginResp.Result == true && err == nil {
@@ -99,7 +100,7 @@ func (sysLoginCrtl *SysLoginController) MessageLogin() {
 	value := redis.GetStrs(key)
 	dataJson := new(system.ResultInfo)
 	if value == "" {
-		resJson.Msg = "验证码过期"
+		resJson.Msg = "验证码不正确或已过期"
 	} else {
 		if messageLogin.ValidateCode == value || messageLogin.Mobile == "13131535887" {
 			loginResp, err := models.MessageLogin(messageLogin.Mobile)

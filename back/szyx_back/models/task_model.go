@@ -60,3 +60,11 @@ func MyTaskDetails(myTask_Param *task.MyTask) (res task.MyTask, err error) {
 	res, err = db.MyTaskDetails(myTask_Param)
 	return res, err
 }
+
+/**
+用户放弃未完成的任务
+*/
+func GiveUpTask(myTask_Param *task.Task) (err error) {
+	err = db.GiveUpTask(myTask_Param)
+	return err
+}

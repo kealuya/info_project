@@ -58,8 +58,7 @@ const (
 	GetTaskList_sql = `select mytask.*,kt.taskTitle ,kt.taskData ,kt.taskContent,kt.taskType,
 						kt.taskImg ,kt.taskStatus  from kdxf_mytask mytask 
 						left join kdxf_taskpool kt  ON mytask.taskId  = kt.taskId 
-                        where mytask.corpCode = ? and mytask.flag = ? and mytask.userId = ? 
-                        ORDER BY mytask.createTime DESC  limit ?,?`
+                        where mytask.corpCode = ? and mytask.flag = ? and mytask.userId = ?  `
 
 	GetTaskListCount_sql = `select mytask.*,kt.taskTitle ,kt.taskData ,kt.taskContent,kt.taskType,
 						kt.taskImg ,kt.taskStatus  from kdxf_mytask mytask 
@@ -78,4 +77,6 @@ const (
 	//更新会议表所关联的任务ID，一个任务对应多个会议
 	UpDateMeetingInTackId_sql = `update kdxf_meeting  set  taskId  = ?,meetingFlag  = ? 
 						where meetingId  = ? and creater  = ? and corpCode = ? `
+
+	GiveUpTask_sql = ` delete from kdxf_mytask where corpCode = ? and userId = ? and taskId = ? `
 )

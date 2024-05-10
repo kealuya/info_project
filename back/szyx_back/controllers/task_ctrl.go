@@ -258,3 +258,38 @@ func (TaskCtrl *TaskCtrl) MyTaskDetails() {
 		resJson.Msg = fmt.Sprintf("用户任务详情查询失败::%s", err)
 	}
 }
+
+// @Title 用户放弃未完成的任务
+// @Tags GiveUpTask
+// @Summary 用户放弃未完成的任务
+// @accept application/json
+// @Produce application/json
+// @Param data body task.Task true "Task struct"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"操作成功"}"
+// @router /giveUpTask [post]
+func (TaskCtrl *TaskCtrl)  GiveUpTask() {
+	resJson := NewJsonStruct(nil)
+	defer func() {
+		TaskCtrl.Data["json"] = resJson
+		TaskCtrl.ServeJSON()
+	}()
+	task_param := new(task.Task)
+	var jsonByte = TaskCtrl.Ctx.Input.RequestBody
+	logs.Info("放弃未完成的任务入参：" + string(jsonByte))
+	paramerr := jsoniter.Unmarshal(jsonByte, &task_param)
+
+	if paramerr != nil {
+		resJson.Success = false
+		resJson.Msg = "入参有误"
+		return
+	}
+	//业务处理
+	err := models.GiveUpTask(task_param)
+	if err == nil {
+		resJson.Success = true
+		resJson.Msg = "放弃任务成功"
+	} else {
+		resJson.Success = false
+		resJson.Msg = fmt.Sprintf("放弃任务失败::%s", err)
+	}
+}
