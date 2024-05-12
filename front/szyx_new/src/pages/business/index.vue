@@ -1,106 +1,113 @@
 <template>
- <div class="container">
-   <!-- 上半部分的header -->
-   <van-nav-bar
-       title="业务列表"
-       left-text="返回"
-       left-arrow
-   />
-   <div class="header">
-     <van-dropdown-menu class="menuItems">
-       <!--    <van-dropdown-item v-model="value1" :options="option1" />-->
-       <van-dropdown-item v-model="value2" :options="option2" @change="dropdownChange"/>
-     </van-dropdown-menu>
-     <div class="menuItems" @click="open">{{ timer ? timer : '时间范围' }}</div>
-       <van-calendar v-model:show="showDate" :max-date="maxDate" :min-date="minDate" type="range"  ref="calendarRef" @select="checkedConfirm">
-           <template  #footer>
-               <div class="mb10 mt10">
-                   <van-row style="display: flex;align-items: center;">
-                       <van-col span="6">
-                           <van-button type="default" @click="resetHandle" >重置</van-button>
-                       </van-col>
-                       <van-col span="18">
-                           <van-button type="primary" block @click="onConfirm">确定</van-button>
-                       </van-col>
-                   </van-row>
-               </div>
-           </template>
-       </van-calendar>
-<!--     <div class="menuItems1" @click="resetHandel">-->
-<!--       重置时间-->
-<!--     </div>-->
-   </div>
-   <van-pull-refresh v-model="isLoading" success-text="刷新成功" @refresh="onRefresh" :disabled="isShowImg || pullRefreshDisabled">
-     <div v-if="searchLoading && ywList.length==0&&!isPull" class="h-67">
-       <van-loading type="spinner" color="#1989fa" :vertical="true">加载中...</van-loading>
-     </div>
-   <van-list
-       @scroll="divScroll"
-       v-if="!isShowImg"
-       class="list"
-       v-model:loading="loading"
-       :finished="finished"
-       :immediate-check="false"
-       :offset="30"
-       finished-text="没有更多了"
-       loading-text="正在加载中请稍后"
-       @load="getListLoad"
-   >
-       <div v-for="(item,index) in ywList" class="list_card" @click="businessDetailHandle(item.meetingType,item.meetingId)">
-         <div class="flex-space m-b-10">
-           <div class="list_title">
-             <van-tag v-if="item.meetingType=='audio'" type="primary">音频会议</van-tag>
-             <van-tag v-else type="success">文档记录</van-tag>
-             {{ item.meetingTitle }}{{index+1}}
-           </div>
-         </div>
-         <van-divider/>
-<!--         <div class="f-z-12 m-b-10">会议时长：{{ item.time }}</div>-->
-         <div class="f-z-12 m-b-10">会议地址：{{ item.meetingCity }}{{item.meetingAddress}}</div>
-         <div class="f-z-12 m-b-10">创建时间：{{ item.createTime }}</div>
-<!--         <div class="f-z-12 m-b-10">-->
-<!--           <span v-if="item.hyType" style="color: #0080FF">已关联任务：RW202404080001</span>-->
-<!--         </div>-->
+    <div class="container">
+        <!-- 上半部分的header -->
+        <van-nav-bar
+                title="业务列表"
+                left-text="返回"
+                left-arrow
+        />
+        <div class="header">
+            <van-dropdown-menu class="menuItems">
+                <!--    <van-dropdown-item v-model="value1" :options="option1" />-->
+                <van-dropdown-item v-model="value1" :options="option1" @change="dropdownChange1"/>
+            </van-dropdown-menu>
+            <van-dropdown-menu class="menuItems">
+                <!--    <van-dropdown-item v-model="value1" :options="option1" />-->
+                <van-dropdown-item v-model="value2" :options="option2" @change="dropdownChange"/>
+            </van-dropdown-menu>
+            <div class="menuItems" @click="open">{{ timer ? timer : '时间范围' }}</div>
+            <van-calendar v-model:show="showDate" :max-date="maxDate" :min-date="minDate" type="range" ref="calendarRef"
+                          @select="checkedConfirm">
+                <template #footer>
+                    <div class="mb10 mt10">
+                        <van-row style="display: flex;align-items: center;">
+                            <van-col span="6">
+                                <van-button type="default" @click="resetHandle">重置</van-button>
+                            </van-col>
+                            <van-col span="18">
+                                <van-button type="primary" block @click="onConfirm">确定</van-button>
+                            </van-col>
+                        </van-row>
+                    </div>
+                </template>
+            </van-calendar>
+            <!--     <div class="menuItems1" @click="resetHandel">-->
+            <!--       重置时间-->
+            <!--     </div>-->
+        </div>
+        <van-pull-refresh v-model="isLoading" success-text="刷新成功" @refresh="onRefresh"
+                          :disabled="isShowImg || pullRefreshDisabled">
+            <div v-if="searchLoading && ywList.length==0&&!isPull" class="h-67">
+                <van-loading type="spinner" color="#1989fa" :vertical="true">加载中...</van-loading>
+            </div>
+            <van-list
+                    @scroll="divScroll"
+                    v-if="!isShowImg"
+                    class="list"
+                    v-model:loading="loading"
+                    :finished="finished"
+                    :immediate-check="false"
+                    :offset="30"
+                    finished-text="没有更多了"
+                    loading-text="正在加载中请稍后"
+                    @load="getListLoad"
+            >
+                <div v-for="(item,index) in ywList" class="list_card"
+                     @click="businessDetailHandle(item.meetingType,item.meetingId)">
+                    <div class="flex-space m-b-10">
+                        <div class="list_title">
+                            <van-tag v-if="item.meetingType=='audio'" type="primary">音频会议</van-tag>
+                            <van-tag v-else type="success">文档记录</van-tag>
+                            {{ item.meetingTitle }}{{ index + 1 }}
+                        </div>
+                    </div>
+                    <van-divider/>
+                    <!--         <div class="f-z-12 m-b-10">会议时长：{{ item.time }}</div>-->
+                    <div class="f-z-12 m-b-10">会议地址：{{ item.meetingCity }}{{ item.meetingAddress }}</div>
+                    <div class="f-z-12 m-b-10">创建时间：{{ item.createTime }}</div>
+                    <!--         <div class="f-z-12 m-b-10">-->
+                    <!--           <span v-if="item.hyType" style="color: #0080FF">已关联任务：RW202404080001</span>-->
+                    <!--         </div>-->
 
-       </div>
-   </van-list>
-     <van-row v-else-if="isShowImg" align="center" class="tc" justify="center">
-       <div class="list">
-         <img src="../../assets/img/zanwupiaoju.png" style="height:50vw;width:80vw;object-fit: contain"/>
-         <div class="banner">暂无数据</div>
-       </div>
-     </van-row>
-   </van-pull-refresh>
-<!--   <div v-if="searchLoading && ywList.length==0&&loading==false" class="h-67">-->
-<!--     <van-loading :vertical="true" color="#1989fa" type="spinner">加载中...</van-loading>-->
-<!--   </div>-->
-   <van-row :getter="24" align="center" justify="space-around" class="btn-footer">
-     <van-col span="11">
-       <div class="mainButton f_white" @click="speechHandle">
-         <div>
-           <van-row align="center" justify="space-between">
-             <van-col>
-               <p class="f16">音频记录</p>
-               <p class="f12">会议录制 准确还原</p>
-             </van-col>
-           </van-row>
-         </div>
-       </div>
-     </van-col>
-     <van-col span="11">
-       <div class="mainButton_sec  f_white" @click="documentUpload">
-         <div>
-           <van-row align="center" justify="space-between">
-             <van-col>
-               <p class="f16">文档上传</p>
-               <p class="f12">集中存储 轻松共享</p>
-             </van-col>
-           </van-row>
-         </div>
-       </div>
-     </van-col>
-   </van-row>
- </div>
+                </div>
+            </van-list>
+            <van-row v-else-if="isShowImg" align="center" class="tc" justify="center">
+                <div class="list">
+                    <img src="../../assets/img/zanwupiaoju.png" style="height:50vw;width:80vw;object-fit: contain"/>
+                    <div class="banner">暂无数据</div>
+                </div>
+            </van-row>
+        </van-pull-refresh>
+        <!--   <div v-if="searchLoading && ywList.length==0&&loading==false" class="h-67">-->
+        <!--     <van-loading :vertical="true" color="#1989fa" type="spinner">加载中...</van-loading>-->
+        <!--   </div>-->
+        <van-row :getter="24" align="center" justify="space-around" class="btn-footer">
+            <van-col span="11">
+                <div class="mainButton f_white" @click="speechHandle">
+                    <div>
+                        <van-row align="center" justify="space-between">
+                            <van-col>
+                                <p class="f16">音频记录</p>
+                                <p class="f12">会议录制 准确还原</p>
+                            </van-col>
+                        </van-row>
+                    </div>
+                </div>
+            </van-col>
+            <van-col span="11">
+                <div class="mainButton_sec  f_white" @click="documentUpload">
+                    <div>
+                        <van-row align="center" justify="space-between">
+                            <van-col>
+                                <p class="f16">文档上传</p>
+                                <p class="f12">集中存储 轻松共享</p>
+                            </van-col>
+                        </van-row>
+                    </div>
+                </div>
+            </van-col>
+        </van-row>
+    </div>
   <!--  <div class="mb10"></div>-->
 </template>
 <script lang="ts" setup>
@@ -110,9 +117,11 @@ import {ref, computed, onMounted, inject} from 'vue';
 import {useRouter} from "vue-router";
 import {getMeetingList} from '../../services/task-processing/index'
 import empty from '../../assets/img/zanwupiaoju.png'
-import {showSuccessToast,showFailToast} from "vant";
+import {showSuccessToast, showFailToast} from "vant";
 import Calendar from "echarts/types/src/coord/calendar/Calendar";
+
 const router = useRouter()
+const value1 = ref('meetAll');
 const value2 = ref('meet');
 const timer = ref<string>()
 const showDate = ref<boolean>(false)
@@ -128,45 +137,47 @@ const pullRefreshDisabled = ref(false)
 const calendarRef = ref<Calendar | null>(); // 创建一个 ref 用于存储 calendar 实例
 
 const divScroll = (e: any) => {
-  if (e.target.scrollTop == 0) {
-    pullRefreshDisabled.value = false
-  } else {
-    pullRefreshDisabled.value = true
-  }
+    if (e.target.scrollTop == 0) {
+        pullRefreshDisabled.value = false
+    } else {
+        pullRefreshDisabled.value = true
+    }
 }
-interface  paramsType{
-  currentPage: number, //当前页
-  pageSize: number, //每页显示条数
-  // searchKey: "", //筛选条件，暂时未用
-  corpCode: string | null, //企业code
-  startTime: string, //初始时间
-  endTime: string, //末端时间
-  meetingType: string, //会议类型
-  userId: string, //人员ID
-  meetingFlag: string //会议是否使用 0：未使用   1：已使用
+
+interface paramsType {
+    currentPage: number, //当前页
+    pageSize: number, //每页显示条数
+    // searchKey: "", //筛选条件，暂时未用
+    corpCode: string | null, //企业code
+    startTime: string, //初始时间
+    endTime: string, //末端时间
+    meetingType: string, //会议类型
+    userId: string, //人员ID
+    meetingFlag: string //会议是否使用 0：未使用   1：已使用
 }
+
 let params = ref<paramsType>({
-  currentPage: 1, //当前页
-  pageSize: 10, //每页显示条数
-  // searchKey: "", //筛选条件，暂时未用
-  corpCode: '', //企业code
-  startTime: '', //初始时间
-  endTime: '', //末端时间
-  meetingType: '', //会议类型
-  userId: '', //人员ID
-  meetingFlag: '0' //会议是否使用 0：未使用   1：已使用
+    currentPage: 1, //当前页
+    pageSize: 10, //每页显示条数
+    // searchKey: "", //筛选条件，暂时未用
+    corpCode: '', //企业code
+    startTime: '', //初始时间
+    endTime: '', //末端时间
+    meetingType: '', //会议类型
+    userId: '', //人员ID
+    meetingFlag: '' //会议是否使用 0：未使用   1：已使用
 })
-const  resetHandel = ()=>{
-  showDate.value = false;
-  params.value.startTime = ''
-  params.value.endTime = ''
-  getList()
+const resetHandel = () => {
+    showDate.value = false;
+    params.value.startTime = ''
+    params.value.endTime = ''
+    getList()
 }
-const open =()=>{
-  showDate.value = true
+const open = () => {
+    showDate.value = true
 }
 //重置时间
-const resetHandle = async()=>{
+const resetHandle = async () => {
     calendarRef.value?.reset();
     params.value.endTime = ''
     params.value.startTime = ''
@@ -177,37 +188,60 @@ const resetHandle = async()=>{
 }
 //业务数据列表
 const ywList = ref([])
+const option1 = [
+    {text: '全部会议', value: 'meetAll'},
+    {text: '已使用', value: '1'},
+    {text: '未使用', value: '0'},
+]
 const option2 = [
-  {text: '全部会议', value: 'meet'},
-  {text: '音频记录', value: 'audio'},
-  {text: '文档记录', value: 'document'},
+    {text: '会议类型', value: 'meet'},
+    {text: '音频记录', value: 'audio'},
+    {text: '文档记录', value: 'document'},
 ];
 //切换了会议类型
-const dropdownChange = async(value:string)=>{
-  console.log('value',value)
-  if(value !=='meet'){
-    params.value.meetingType = value
-    params.value.currentPage = 1
-    ywList.value.length = 0
-    loading.value = false
-    finished.value = false
-    await getList()
-  }else{
-    params.value.meetingType = ''
-    params.value.currentPage = 1
-    ywList.value.length = 0
-    loading.value = false
-    finished.value = false
-    await getList()
-  }
+const dropdownChange = async (value: string) => {
+    console.log('value', value)
+    if (value !== 'meet') {
+        params.value.meetingType = value
+        params.value.currentPage = 1
+        ywList.value.length = 0
+        loading.value = false
+        finished.value = false
+        await getList()
+    } else {
+        params.value.meetingType = ''
+        params.value.currentPage = 1
+        ywList.value.length = 0
+        loading.value = false
+        finished.value = false
+        await getList()
+    }
+}
+const dropdownChange1 = async (value: string) => {
+    console.log('value', value)
+    if (value !== 'meetAll') {
+        params.value.meetingFlag = value
+        params.value.currentPage = 1
+        ywList.value.length = 0
+        loading.value = false
+        finished.value = false
+        await getList()
+    } else {
+        params.value.meetingFlag = ''
+        params.value.currentPage = 1
+        ywList.value.length = 0
+        loading.value = false
+        finished.value = false
+        await getList()
+    }
 }
 //下拉刷新
-const onRefresh = async()=>{
-  isPull.value = true
-  isLoading.value = true   //打开下拉刷新的 loading
-  params.value.currentPage = 1 //重置页码
-  ywList.value = []//清空表单
-  await getList() //重新加载数据
+const onRefresh = async () => {
+    isPull.value = true
+    isLoading.value = true   //打开下拉刷新的 loading
+    params.value.currentPage = 1 //重置页码
+    ywList.value = []//清空表单
+    await getList() //重新加载数据
 }
 // const onRefresh = async () => {
 //   const currentTime = Date.now();
@@ -227,11 +261,11 @@ const onRefresh = async()=>{
 const thisYear = new Date().getFullYear();
 
 const minDate = computed(() => {
-  return new Date(thisYear, 0); // 今年一月
+    return new Date(thisYear, 0); // 今年一月
 });
 
 const maxDate = computed(() => {
-  return new Date(thisYear + 1, 0); // 明年一月
+    return new Date(thisYear + 1, 0); // 明年一月
 });
 const formatDate = (date) => {
     const year = date.getFullYear();
@@ -240,14 +274,14 @@ const formatDate = (date) => {
 
     return `${year}-${month}-${day}`;
 };
-const onConfirm=async()=>{
-   console.log(params.value,'jkvcjdsjkvjdvbjh')
+const onConfirm = async () => {
+    console.log(params.value, 'jkvcjdsjkvjdvbjh')
     params.value.currentPage = 1
     ywList.value.length = 0
     await getList()
 }
-const checkedConfirm = (value)=>{
-    console.log('value',value)
+const checkedConfirm = (value) => {
+    console.log('value', value)
     if (value.length === 2) {
         const [startDate, endDate] = value;
         console.log('开始日期:', startDate);
@@ -256,104 +290,106 @@ const checkedConfirm = (value)=>{
         params.value.endTime = formatDate(endDate)
     }
 }
-  // const onConfirm=()=>{
-  //       // 使用保存的日期范围
-  //       if (this.selectedRange) {
-  //           const [startDate, endDate] = this.selectedRange;
-  //           console.log('已确认的开始和结束日期:', startDate, endDate);
-  //       } else {
-  //           console.log('没有选择任何日期范围');
-  //       }
-  //       this.showDate = false; // 隐藏日历
-  //   }
-  // // console.log(values,'zheli')
-  // showDate.value = false;
-  // let beginTime = formatDate(start);
-  // let endTime = formatDate(end);
-  // params.value.startTime = beginTime
-  // params.value.endTime = endTime
-  // params.value.currentPage = 1
-  // ywList.value.length = 0
-  // await getList()
-const businessDetailHandle = (type: string,meetingId:string) => {
-  console.log('type', type)
-    router.replace({path:'/businessDetail',query:{meetingId}})
+// const onConfirm=()=>{
+//       // 使用保存的日期范围
+//       if (this.selectedRange) {
+//           const [startDate, endDate] = this.selectedRange;
+//           console.log('已确认的开始和结束日期:', startDate, endDate);
+//       } else {
+//           console.log('没有选择任何日期范围');
+//       }
+//       this.showDate = false; // 隐藏日历
+//   }
+// // console.log(values,'zheli')
+// showDate.value = false;
+// let beginTime = formatDate(start);
+// let endTime = formatDate(end);
+// params.value.startTime = beginTime
+// params.value.endTime = endTime
+// params.value.currentPage = 1
+// ywList.value.length = 0
+// await getList()
+const businessDetailHandle = (type: string, meetingId: string) => {
+    console.log('type', type)
+    router.replace({path: '/businessDetail', query: {meetingId}})
 }
 const speechHandle = () => {
-  router.replace('/speech')
+    router.replace('/speech')
 
 }
 const documentUpload = () => {
-  router.replace('/documentUpload')
+    router.replace('/documentUpload')
 }
 const pageCount = ref<number>(0)
 const totalCount = ref<number>(0)
-const getList =()=>{
-  searchLoading.value = true
+const getList = () => {
+    searchLoading.value = true
 
-  // if(loading.value==true){
-  //   searchLoading.value = true
-  // }
-  getMeetingList(params.value).then((res:any)=>{
-   if(res.success){
-       showDate.value = false
-       ywList.value =  ywList.value.concat(res.data.MeetingList)
-       isLoading.value =false   //关闭下拉刷新的加载
-       totalCount.value = res.data.totalCount
-       pageCount.value = res.data.pageCount
-       if (res.data.totalCount == 0) {
-           isShowImg.value = true
-       } else {
-           isShowImg.value = false
-       }
-       if (ywList.value.length == totalCount.value) {
-           loading.value = false   //关闭下拉刷新的加载
-           finished.value = true
-       }else{
-           loading.value = false
-           finished.value = false
-       }
-   }else {
-       //请求失败的处理
-   }
+    // if(loading.value==true){
+    //   searchLoading.value = true
+    // }
+    getMeetingList(params.value).then((res: any) => {
+        if (res.success) {
+            showDate.value = false
+            ywList.value = ywList.value.concat(res.data.MeetingList)
+            isLoading.value = false   //关闭下拉刷新的加载
+            totalCount.value = res.data.totalCount
+            pageCount.value = res.data.pageCount
+            if (res.data.totalCount == 0) {
+                isShowImg.value = true
+            } else {
+                isShowImg.value = false
+            }
+            if (ywList.value.length == totalCount.value) {
+                loading.value = false   //关闭下拉刷新的加载
+                finished.value = true
+            } else {
+                loading.value = false
+                finished.value = false
+            }
+        } else {
+            //请求失败的处理
+        }
 
-  }).finally(()=>{
-    searchLoading.value = false
-  })
+    }).finally(() => {
+        searchLoading.value = false
+    })
 }
 //触底事件
-const getListLoad = async ()=>{
-  if (ywList.value.length < totalCount.value && params.value.currentPage < pageCount.value) {
-    params.value.currentPage = params.value.currentPage + 1
-    loading.value = true
-    //显示 触底的 loading 动画
-    setTimeout(() => {
-      getList()
-    },500)
-    // await getList()
-  }else{
-    loading.value = false
-    finished.value = false
-  }
+const getListLoad = async () => {
+    if (ywList.value.length < totalCount.value && params.value.currentPage < pageCount.value) {
+        params.value.currentPage = params.value.currentPage + 1
+        loading.value = true
+        //显示 触底的 loading 动画
+        setTimeout(() => {
+            getList()
+        }, 500)
+        // await getList()
+    } else {
+        loading.value = false
+        finished.value = false
+    }
 }
-onMounted(async()=>{
-  let userInfoData: any = inject("userInfo"); // 取出用户信息用于调用接口
-  params.value.corpCode = localStorage.getItem('corpCode') //从本地获取corpCode
-  //从本地获取corpCode
-  params.value.userId = userInfoData.userInfo.userId
- await getList()
+onMounted(async () => {
+    let userInfoData: any = inject("userInfo"); // 取出用户信息用于调用接口
+    params.value.corpCode = localStorage.getItem('corpCode') //从本地获取corpCode
+    //从本地获取corpCode
+    params.value.userId = userInfoData.userInfo.userId
+    await getList()
 })
 </script>
 <style lang="less" scoped>
-.container{
-  height:100vh;
+.container {
+  height: 100vh;
 }
+
 .h-67 {
   height: 20vh;
   align-items: center;
   display: flex;
   justify-content: center;
 }
+
 .header {
   width: 100%;
   background-color: #fff;
@@ -373,7 +409,8 @@ onMounted(async()=>{
     align-items: center;
     // border: 1px solid red;
   }
-  .menuItems1{
+
+  .menuItems1 {
     font-size: 14px;
     width: 20%;
     display: flex;
@@ -384,12 +421,12 @@ onMounted(async()=>{
   }
 }
 
-.btn-footer{
-  height:10vh;
+.btn-footer {
+  height: 10vh;
 }
 
 .list {
-  height:calc(100vh - var(--van-nav-bar-height) - var(--van-tabs-line-height) - 50px - 10vh);
+  height: calc(100vh - var(--van-nav-bar-height) - var(--van-tabs-line-height) - 50px - 10vh);
   overflow-y: auto;
 
   .list_card {
@@ -451,10 +488,12 @@ onMounted(async()=>{
 :deep(.van-divider) {
   margin: 2vw;
 }
+
 :deep(.van-nav-bar__content) {
-    background-color: #0088ff;
+  background-color: #0088ff;
 }
-:deep(.van-nav-bar__title){
+
+:deep(.van-nav-bar__title) {
   color: #FFFFFF;
 }
 </style>

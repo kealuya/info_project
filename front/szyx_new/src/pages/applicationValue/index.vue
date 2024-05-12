@@ -63,7 +63,7 @@
           </van-row>
         </van-pull-refresh>
       </div>
-      <div class="footer_btn">
+      <div class="footer_btn" v-if="list.length>0">
         <van-button block type="primary" @click="handleSubmit">
           提交申请
         </van-button>

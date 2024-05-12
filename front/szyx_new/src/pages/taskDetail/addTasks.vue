@@ -15,23 +15,41 @@
                      class="mt10 mb10"
                      label-width="7.5em"
                      maxlength="20"
+                     readonly
                      label-align="top"/>
-          <van-field
-              v-model="fieldValue"
-              is-link
-              readonly
-              label="任务类型"
-              placeholder="临床推广"
-              @click="showPicker = true"
-          />
+            <van-field v-model="taskId"
+                       label="任务Id"
+                       class="mt10 mb10"
+                       label-width="7.5em"
+                       maxlength="20"
+                       readonly
+                       label-align="top"/>
+            <van-field v-model="taskTime"
+                       label="创建时间"
+                       class="mt10 mb10"
+                       label-width="7.5em"
+                       maxlength="20"
+                       readonly
+                       label-align="top"/>
+<!--          <van-field-->
+<!--              v-model="fieldValue"-->
+<!--              is-link-->
+<!--              readonly-->
+<!--              label="任务类型"-->
+<!--              placeholder="临床推广"-->
+<!--              @click="showPicker = true"-->
+<!--          />-->
           <van-notice-bar color="#1989fa" :scrollable="false" wrapable background="#ecf9ff" class="f10">
-            任务目标：
+            任务内容：
            <p>{{contentTask}}</p>
           </van-notice-bar>
 
-          <div class="yw_content" @click="taskList">
-            业务内容<van-icon name="arrow" />
-          </div>
+            <van-cell title="业务内容" is-link value="请选择任务的业务内容" @click="taskList"/>
+
+
+<!--          <div class="yw_content" @click="taskList">-->
+<!--            业务内容<van-icon name="arrow" />-->
+<!--          </div>-->
           <div class="list_card" v-for="item in meetingList" :key="item.id">
             <div class="flex-space m-b-10">
               <div style="display: flex;align-items: center">
@@ -103,6 +121,8 @@ const taskStore = taskData()
 const meetingStore = meetingData()
 const contentTask = ref<string>()
 const isCollapse = ref<boolean>(true)
+const taskId = ref<string>('')
+const taskTime = ref<string>('')
 const meetingList = ref<any>([])
 const columns = [
   { text: '临床推广', value: '临床推广' },
@@ -164,6 +184,8 @@ onMounted(()=>{
   console.log(taskStore.getTaskTitle())
   reasonForBorrowing.value = taskStore.getTaskTitle()
   contentTask.value = taskStore.getTaskContent()
+    taskId.value = taskStore.getTaskId()
+    taskTime.value = taskStore.getTaskTime()
   meetingList.value =meetingStore.getMeetingData()  //从本地缓存中取 业务数据  勾选的
   if(meetingList.value){
     let arr =  meetingList.value.map((item:any)=>{

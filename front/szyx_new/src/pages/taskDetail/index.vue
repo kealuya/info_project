@@ -24,7 +24,7 @@ interface paramsType{
 const isComplete = ref<Boolean>(false)
 const title = ref<string>('任务详情')
 let taskTitle = ref<string>('')
-const picSrc = ref<string>(bgc)
+const picSrc = ref<string>()
 const target = ref<string>()
 const content = ref<string>()
 let params = ref<paramsType>({
@@ -52,6 +52,8 @@ onMounted(async ()=>{
   taskTitle.value = route.query.taskTitle as string
   target.value = route.query.taskData as string
   content.value = route.query.taskContent as string
+    picSrc.value = route.query.taskImg as string
+    // console.log(' picSrc.value', picSrc.value)
   params.value.taskId = route.query.taskId as string
   params.value.taskTitle = route.query.taskTitle as string
   params.value.corpName = route.query.corpName as string

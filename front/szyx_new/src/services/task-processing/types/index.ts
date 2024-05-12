@@ -31,3 +31,26 @@ export interface finishTaskType{
     userMobile:string |undefined,	//	用户手机号
     meetingId:string	//	是	关联的会议ID，用于完成任务关联会议下的会议文件，多个会议用；割开
 }
+export interface meetingListType{
+    createTime:string,
+    creater:string,
+    meetingAddress:string,
+    meetingAudioFileUrl:string,
+    meetingAudioMinutes:string,
+    meetingAudioSummary:string,
+    meetingBrainMapFileUrl:string,
+    meetingCity:string,
+    meetingDocumentMinutes:string,
+    meetingDocumentSummary:string,
+    meetingFile:string,
+    meetingFileUrl:string,
+    meetingFlag:string,
+    meetingId:string,
+    meetingMminutesFileUrl:string,
+    meetingPeople:string,
+    meetingTime:string,
+    meetingTitle:string,
+    meetingType:string,
+    taskId:string,
+    useStatus:string,
+}

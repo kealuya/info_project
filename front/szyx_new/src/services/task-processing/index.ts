@@ -250,3 +250,17 @@ export function createMeeting(query :object){
         })
     })
 }
+
+export function giveUpTask(query :object){
+    // console.log('query',query)
+    return new Promise(function (resolve, reject) {
+        request({
+            url:'/v4/task/giveUpTask',
+            data: query
+        }).then((response: object) => {
+            resolve(response)
+        }).catch((error :string) => {
+            resolve({})
+        })
+    })
+}

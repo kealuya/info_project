@@ -73,7 +73,8 @@ export const taskData = defineStore("taskData", {
     state: () => ({
         taskId: {},
         taskTitle: {},
-        taskContent:{}
+        taskContent:{},
+        taskTime:{}
 
     }),
     getters: {},
@@ -87,6 +88,9 @@ export const taskData = defineStore("taskData", {
         setTaskContent(data: string) {
             this.taskContent = data
         },
+        setTaskTime(data: string){
+            this.taskTime = data
+        },
         getTaskId() {
             return this.taskId
         },
@@ -96,6 +100,10 @@ export const taskData = defineStore("taskData", {
         getTaskContent(){
             return this.taskContent
         },
+        getTaskTime(){
+            return this.taskTime
+        }
+
     },
 })
 //会议的数据  勾选的数据（业务内容）

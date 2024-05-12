@@ -17,7 +17,7 @@ const active = ref('homeMetting');
 const route = useRoute();
 const router = useRouter();
 const isShowTabBar=ref<boolean>(false)
-const noSHowTabBarPathList=['']    //在这里面加 你要隐藏哪一页 的 路径
+const noSHowTabBarPathList=['/finishDetail','/speech']    //在这里面加 你要隐藏哪一页 的 路径
 watch(() => route.path, (value) => {
   isShowTabBar.value=!noSHowTabBarPathList.includes(value)
 },{

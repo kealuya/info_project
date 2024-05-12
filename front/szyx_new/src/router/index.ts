@@ -120,6 +120,12 @@ const router = createRouter({
           name: 'documentUpload',
           component: () => import('../pages/documentUpload/index.vue'),
         },
+          //我的任务 已完成状态的 详情页面
+        {
+          path: '/finishDetail',
+          name: 'finishDetail',
+          component: () => import('../pages/finishDetailPage/index.vue'),
+        },
         {
           path: '/personal',
           name: 'personal',
@@ -526,7 +532,11 @@ const router = createRouter({
     }
   ]
 })
-
+function checkLogin() {
+  // 这里应该是检查登录状态的逻辑，比如检查本地存储的token或cookie
+  // 返回 true 表示登录有效，返回 false 表示登录过期
+  return localStorage.getItem('token') !== null
+}
 router.beforeEach((to,from,next)=>{
   // 模拟url登陆地址导航栏截取
   // const url='http://122.9.41.215/fk_move/MapprList?userid=1815&school=szht6666'
@@ -537,6 +547,13 @@ router.beforeEach((to,from,next)=>{
   const userInfoState: any = userInfoData();
   // console.log(userInfoState)
   const store = userInfoData()
+  if (to.path !== '/login' && !checkLogin()) {
+    // 如果不是登录页面且用户未登录，则重定向到登录页面
+    next('/login')
+  } else {
+    // 否则，继续正常的导航
+    next();
+  }
   if (to.path === '/login' || to.path === '/404') {
     next();
   } else {
@@ -548,6 +565,4 @@ router.beforeEach((to,from,next)=>{
   }
 
 })
-
-
 export default router

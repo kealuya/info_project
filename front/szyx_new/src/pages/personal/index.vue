@@ -72,11 +72,11 @@
         <van-image :src="meIcon2" class="cellImage"/>
       </template>
     </van-cell>
-    <van-cell title="帮助反馈" is-link to="helpFeedback">
-      <template #icon>
-        <van-image :src="meIcon5" class="cellImage"/>
-      </template>
-    </van-cell>
+<!--    <van-cell title="帮助反馈" is-link to="helpFeedback">-->
+<!--      <template #icon>-->
+<!--        <van-image :src="meIcon5" class="cellImage"/>-->
+<!--      </template>-->
+<!--    </van-cell>-->
     <van-cell title="退出登录" is-link @click="escUser">
       <template #icon>
         <van-image :src="meIcon6" class="cellImage"/>

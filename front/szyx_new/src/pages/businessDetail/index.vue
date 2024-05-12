@@ -64,7 +64,12 @@
     <div class="title_two f-z-14 f-w-550  m-b-10">
       <span>{{meetingType=='document'?'文档':'会议'}}信息</span>
     </div>
-    <div class="f-z-12">会议地址：{{meetingCity}}{{meetingAddress}}</div>
+    <div class="f-z-12 m-b-5">会议城市：{{meetingCity?meetingCity:'--'}}</div>
+      <div class="f-z-12 m-b-5">会议详细地址：{{meetingAddress?meetingAddress:'--'}}</div>
+      <div class="f-z-12 m-b-5">参会人员：{{meetingPeople?meetingPeople:'--'}}</div>
+      <div class="f-z-12">会议时间：{{meetingTime?meetingTime:'--'}}</div>
+
+
 <!--    <div class="f-z-12">会议时长：1小时53分钟</div>-->
   </div>
   <div class="box"></div>
@@ -87,6 +92,8 @@ let wordFiles = ref()
 let xmindFiles = ref()
 let meetingTitle = ref()
 let meetingType = ref()
+const meetingPeople = ref()
+const meetingTime = ref()
 const onClickLeft = () => {
   router.push('/business')
 }
@@ -100,6 +107,7 @@ const aiHandle = ()=>{
 }
 onMounted(()=>{
   const id = route.query.meetingId
+
   getMeetingDetails({MeetingId:id}).then(res=>{
     if(res.success){
       meetingAudioMinutes.value = res.data.meetingAudioMinutes
@@ -108,6 +116,8 @@ onMounted(()=>{
       meetingAddress.value = res.data.meetingAddress
       meetingTitle.value = res.data.meetingTitle
       meetingType.value = res.data.meetingType
+        meetingPeople.value = res.data.meetingPeople
+        meetingTime.value = res.data.meetingTime
       wordFiles.value = res.data.meetingFile.filter(file => file.fileType === 'word');
       xmindFiles.value = res.data.meetingFile.filter(file => file.fileType === 'xmind');
     }
@@ -265,6 +275,9 @@ export default {
 }
 .f-z-14{
   font-size: 0.875em;
+}
+.m-b-5{
+  margin-bottom: 2vw;
 }
 
 </style>

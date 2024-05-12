@@ -15,8 +15,8 @@
         <!--    <div style="display:flex;justify-content: space-between;align-items: center">-->
         <div>
             <div class="item">
-                <div class="f-z-14-c m-t-10">会议标题</div>
-                <van-field v-model="reasonForBorrowing" name="reasonForBorrowing"  clearable placeholder="请输入会议标题"/>
+                <div class="f-z-14-c m-t-10"><span style="color: red">*</span>会议标题</div>
+                <van-field v-model="reasonForBorrowing" name="reasonForBorrowing"  clearable placeholder="请输入会议标题" :rules="[{ required: true, message: '请填写会议标题' }]"/>
             </div>
             <!--         //会议类型-->
 <!--            <div class="item">-->
@@ -26,15 +26,22 @@
 
             <div class="item">
             <div class="f-z-14-c m-t-10">会议时间</div>
-                <van-cell title="选择单个日期" :value="date" @click="show1 = true" />
-                <van-calendar v-model:show="show1" @confirm="onConfirm" />
-<!--                <van-date-picker-->
-<!--                    v-model="currentDate"-->
-<!--                    title="选择日期"-->
-<!--                    :min-date="minDate"-->
-<!--                    :max-date="maxDate"-->
-<!--                />-->
-<!--            <van-field v-model="createMeetingParams.meetingTime" name="meetingType" placeholder="请输入会议时间"/>-->
+                <van-field
+                    v-model="openCardDate"
+                    name="openCardDate"
+                    placeholder="请选择开始时间"
+                    is-link
+                    required
+                    @click="showDatePicker = true"
+                    readonly
+                    :rules="[{ required: true, message: '请选择开始时间' }]"
+                />
+                <van-popup v-model:show="showDatePicker" position="bottom">
+                    <van-calendar  v-model:show="showDatePicker"
+                                   @confirm="onConfirm"/>
+                </van-popup>
+<!--                <van-cell :title="title" :value="date" @click="show1 = true" />-->
+<!--                <van-calendar v-model:show="show1" @confirm="onConfirm" />-->
             </div>
 <!--            省市区-->
          <div class="item">
@@ -59,7 +66,7 @@
 <!--            //详细地址-->
             <div class="item">
                 <div class="f-z-14-c m-t-10">会议详细地址</div>
-                <van-field v-model="meetingType" name="meetingType" placeholder="请输入会议详细地址"/>
+                <van-field v-model="createMeetingParams.meetingAddress" name="meetingType" placeholder="请输入会议详细地址"/>
             </div>
 <!--            //meetingPeople-->
             <div class="item">
@@ -67,9 +74,9 @@
                 <van-field v-model="createMeetingParams.meetingPeople" name="meetingType" placeholder="请输入会议参会人"/>
             </div>
             <!--     </div>-->
-            <div class="f-z-14-c m-t-10">附件上传 <span class="f-z-12-c">(文件格式仅限.doc, .docx, .txt, .xls, .xlsx, .pdf)</span></div>
+            <div class="f-z-14-c m-t-10"><span style="color: red">*</span>附件上传 <span class="f-z-12-c">(文件格式仅限.doc, .docx, .txt, .xls, .xlsx, .pdf)</span></div>
             <div class="f-z-16">
-                <van-uploader v-model="fileList" :before-read="beforeRead" :after-read="afterRead" :max-count="1">
+                <van-uploader v-model="fileList" :before-read="beforeRead" :after-read="afterRead" :max-count="1" accept=".doc,.docx,.pdf,.ppt,.pptx,.xlsx,.xls">
                     <van-button icon="plus" type="primary" size="small">上传文件</van-button>
                 </van-uploader>
             </div>
@@ -77,37 +84,37 @@
     </div>
 
 
-    <div class="cardTable" @click="handelMetting">
-        <van-button type="primary" block style="width: 92%; margin: 20px"
+    <div class="cardTable">
+        <van-button type="primary" block style="width: 92%; margin: 20px" :loading="isLoading" @click="handelMetting"  loading-text="文档记录"
         >文档记录
         </van-button
         >
     </div>
-    <van-dialog
-            v-model:show="show"
-            :show-cancel-button="false"
-            :showConfirmButton="false"
-    >
-        <van-form @submit="onSubmit" style="padding: 10px" ref="formRef">
-            <van-cell-group inset>
-                <van-field
-                        v-model="reasonForBorrowing"
-                        name="会议标题"
-                        label="会议标题"
-                        placeholder="会议标题"
-                        :rules="[{ required: true, message: '请填写会议标题' }]"
-                />
-            </van-cell-group>
-            <div style="margin: 16px 0;display:flex">
-                <van-button block style="margin-right: 10px" @click="cancel" size="small">
-                    取消
-                </van-button>
-                <van-button block type="primary" native-type="submit" size="small">
-                    提交
-                </van-button>
-            </div>
-        </van-form>
-    </van-dialog>
+<!--    <van-dialog-->
+<!--            v-model:show="show"-->
+<!--            :show-cancel-button="false"-->
+<!--            :showConfirmButton="false"-->
+<!--    >-->
+<!--        <van-form @submit="onSubmit" style="padding: 10px" ref="formRef">-->
+<!--            <van-cell-group inset>-->
+<!--                <van-field-->
+<!--                        v-model="reasonForBorrowing"-->
+<!--                        name="会议标题"-->
+<!--                        label="会议标题"-->
+<!--                        placeholder="会议标题"-->
+<!--                        :rules="[{ required: true, message: '请填写会议标题' }]"-->
+<!--                />-->
+<!--            </van-cell-group>-->
+<!--            <div style="margin: 16px 0;display:flex">-->
+<!--                <van-button block style="margin-right: 10px" @click="cancel" size="small">-->
+<!--                    取消-->
+<!--                </van-button>-->
+<!--                <van-button block type="primary" native-type="submit" size="small">-->
+<!--                    提交-->
+<!--                </van-button>-->
+<!--            </div>-->
+<!--        </van-form>-->
+<!--    </van-dialog>-->
 </template>
 
 <script setup lang="ts">
@@ -138,10 +145,10 @@ const indexValue = ref()
 const fileList = ref<never[]>([]);
 const formRef = ref<any>(null); // 定义表单引用
 const applyId = ref<number | undefined>()
-
+const openCardDate = ref<string>('')
 const date = ref('');
-const show1 = ref(false);
-
+const showDatePicker = ref(false);
+const isLoading = ref<boolean>(false)
 const formatDate = (date) => {
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
@@ -154,8 +161,9 @@ const formatDate = (date) => {
     return `${year}/${formattedMonth}/${formattedDay}`;
 };
 const onConfirm = (value) => {
-    show1.value = false;
+    showDatePicker.value = false;
     date.value = formatDate(value);
+    openCardDate.value = date.value
 };
 // const meetingPeople = ref<string|undefined>()  //参会人
 // const currentDate = ref<string>();
@@ -230,33 +238,34 @@ const deleteItem = (index: any) => {
         });
 }
 const reasonForBorrowing = ref<string>()
-const onSubmit = (values: any) => {
-    const valid = formRef.value.validate();
-    if (valid) {
-        //掉 会议上传的接口 未成功给提示 成功跳转到 会议列表页面
-        params.value.meetingTitle = reasonForBorrowing.value
-        uploadMeetingFile(params.value).then((res: any) => {
-            if (res.success) {
-                createMeetingParams.value.meetingId = applyId.value
-                createMeetingParams.value.meetingTitle = reasonForBorrowing.value
-                createMeetingParams.value.meetingCity = fieldValue.value
-                console.log('createMeetingParams',createMeetingParams)
-                //调取会议创建的接口
-                createMeeting(createMeetingParams.value).then((res:any)=>{
-                    if(res.success){
-                        showSuccessToast(res.msg)
-                        router.replace('/business');
-                    }else{
-                        showFailToast(res.msg)
-                    }
-                })
-            }else {
-                showFailToast(res.msg)
-            }
-        })
-
-    }
-};
+// const onSubmit = (values: any) => {
+//     const valid = formRef.value.validate();
+//     if (valid) {
+//         //掉 会议上传的接口 未成功给提示 成功跳转到 会议列表页面
+//         params.value.meetingTitle = reasonForBorrowing.value
+//         uploadMeetingFile(params.value).then((res: any) => {
+//             if (res.success) {
+//                 createMeetingParams.value.meetingId = applyId.value
+//                 createMeetingParams.value.meetingTitle = reasonForBorrowing.value
+//                 createMeetingParams.value.meetingCity = fieldValue.value
+//                 createMeetingParams.value.meetingTime = date.value
+//                 console.log('createMeetingParams',createMeetingParams)
+//                 //调取会议创建的接口
+//                 createMeeting(createMeetingParams.value).then((res:any)=>{
+//                     if(res.success){
+//                         showSuccessToast(res.msg)
+//                         router.replace('/business');
+//                     }else{
+//                         showFailToast(res.msg)
+//                     }
+//                 })
+//             }else {
+//                 showFailToast(res.msg)
+//             }
+//         })
+//
+//     }
+// };
 const cancel = () => {
     show.value = false
 }
@@ -270,11 +279,41 @@ const onClickLeft = () => {
 }
 //点击跳转到会议列表页面
 const handelMetting = () => {
-    show.value = true;
-    // console.log("点击了");
-    // router.push({
-    //   name: "metting",
-    // });
+    if(!reasonForBorrowing.value){
+        showFailToast('请填写会议标题！')
+    }else if(fileList.value.length ==0 ) {
+        showFailToast('请先上传附件！')
+    }else{
+        params.value.meetingTitle = reasonForBorrowing.value
+        isLoading.value = true
+        // const uploadMeetingFileHandle = ()=>{
+        //     uploadMeetingFile(params.value).then((res: any) => {
+        //
+        //     })
+        // }
+        uploadMeetingFile(params.value).then((res: any) => {
+            if (res.success) {
+                createMeetingParams.value.meetingId = applyId.value
+                createMeetingParams.value.meetingTitle = reasonForBorrowing.value
+                createMeetingParams.value.meetingCity = fieldValue.value
+                createMeetingParams.value.meetingTime = date.value
+                console.log('createMeetingParams',createMeetingParams)
+                //调取会议创建的接口
+                createMeeting(createMeetingParams.value).then((res:any)=>{
+                    if(res.success){
+                        isLoading.value = false
+                        showSuccessToast(res.msg)
+                        router.replace('/business');
+                    }else{
+                        showFailToast(res.msg)
+                    }
+                })
+            }else {
+                showFailToast(res.msg)
+            }
+        })
+    }
+
 };
 onMounted(async () => {
     const currentDate = new Date();
@@ -302,8 +341,8 @@ onMounted(async () => {
   width: 100%;
   // margin-top: 20px;
   text-align: center;
-  position: fixed;
-  bottom: 60px;
+  //position: fixed;
+  //bottom: 60px;
 }
 
 .uploader {
@@ -311,13 +350,13 @@ onMounted(async () => {
   margin-left: 10px;
 }
 
-.cardTable {
-  width: 100%;
-  // margin-top: 20px;
-  text-align: center;
-  position: fixed;
-  bottom: 60px;
-}
+//.cardTable {
+//  width: 100%;
+//  // margin-top: 20px;
+//  text-align: center;
+//  position: fixed;
+//  bottom: 60px;
+//}
 
 .touxiangimg {
   width: 20px;

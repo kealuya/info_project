@@ -43,8 +43,12 @@
     </van-col>
   </van-row>
   <div class="mt5">
-    <van-row class="mt10 card_padding" align="center">
-      <span class="title">任务发布</span> <span class="banner">更多海量任务、为营销提供清晰的方向</span>
+    <van-row class="mt10 card_padding" align="center" style="display: flex;justify-content: space-between">
+     <div>
+         <span class="title">任务发布</span>
+         <span class="banner">海量任务、为营销提供方向</span>
+     </div>
+        <span class="more" @click="moreTasks">查看更多></span>
     </van-row>
     <div>
     </div>
@@ -200,6 +204,10 @@ onMounted(async () => {
 }
 .card_padding{
   padding:2vw;
+}
+.more{
+  color:#0080FF;
+  font-size: 0.875em;
 }
 .title{
   color:#000000;
