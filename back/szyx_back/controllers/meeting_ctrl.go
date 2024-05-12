@@ -73,9 +73,10 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingAudioFile() {
 
 	file, h, _ := MeetingCtrl.GetFile("file")       //获取上传的文件
 	meetingId := MeetingCtrl.GetString("meetingId") //获取会议ID
-	meetingTitle := MeetingCtrl.GetString("meetingTitle") //会议标题
+	//meetingTitle := MeetingCtrl.GetString("meetingTitle") //会议标题
 	userId := MeetingCtrl.GetString("userId")             //用户ID
 	corpCode := MeetingCtrl.GetString("corpCode")         //企业code
+	audioTime := MeetingCtrl.GetString("audioTime")         //音频时长
 
 	ext := path.Ext(h.Filename)
 	//验证后缀名是否符合要求   mp3/blob
@@ -104,12 +105,13 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingAudioFile() {
 		//上传的音频文件基础信息存表。用于选择业务内容关联展示
 		meetingFile := new(meeting.MeetingFile)
 		meetingFile.MeetingId = meetingId
-		meetingFile.MeetingTitle = meetingTitle
+		//meetingFile.MeetingTitle = meetingTitle
 		meetingFile.FileUrl = filePath //TODO 先取构造的上传路径 日后有了文件obs地址在改
 		meetingFile.FileName = h.Filename
 		meetingFile.Creater = userId
 		meetingFile.CorpCode = corpCode
 		meetingFile.FileType = "mp3" //音频文件
+		meetingFile.AudioTime = audioTime
 		err2 := models.AddMeetingFileInfo(meetingFile)
 		if err2 == nil {
 			fileStruct := new(meeting.MeetingFile_Result)
@@ -151,7 +153,6 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingFile() {
 
 	file, h, _ := MeetingCtrl.GetFile("file")             //获取上传的文件
 	meetingId := MeetingCtrl.GetString("meetingId")       //获取会议ID
-	meetingTitle := MeetingCtrl.GetString("meetingTitle") //会议标题
 	userId := MeetingCtrl.GetString("userId")             //用户ID
 	corpCode := MeetingCtrl.GetString("corpCode")         //企业code
 
@@ -186,7 +187,6 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingFile() {
 		//上传文件的基础信息存表。用于选择业务内容关联展示
 		meetingFile := new(meeting.MeetingFile)
 		meetingFile.MeetingId = meetingId
-		meetingFile.MeetingTitle = meetingTitle
 		meetingFile.FileUrl = filePath //TODO 先取构造的上传路径 日后有了文件obs地址在改
 		meetingFile.FileName = h.Filename
 		meetingFile.Creater = userId

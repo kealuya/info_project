@@ -10,10 +10,19 @@ const (
 
 	SelectTaskPoolById_sql = `select * from  kdxf_taskpool where taskId = ?`
 
-	GetTaskPoolList_sql = `select * from  kdxf_taskpool where corpCode = ? and taskStatus = ? ORDER BY 
-						createTime DESC  limit ?,? `
+	GetTaskPoolList_sql = `SELECT taskpool.*,  
+                           CASE WHEN mytask.userId IS NULL THEN 'No' ELSE 'Yes' END AS userJoinState 
+                           FROM kdxf_taskpool taskpool LEFT JOIN kdxf_mytask mytask ON 
+                           taskpool.taskId = mytask.taskId  AND mytask.userId = ? 
+                           AND taskpool.corpCode = ? AND taskpool.taskStatus = ? ORDER BY 
+						   taskpool.createTime DESC limit ?,?`
 
-	GetTaskPoolListCount_sql = `select * from  kdxf_taskpool where corpCode = ?  and taskStatus = ? ORDER BY createTime DESC `
+	GetTaskPoolListCount_sql = `SELECT taskpool.*,  
+                           CASE WHEN mytask.userId IS NULL THEN 'No' ELSE 'Yes' END AS userJoinState 
+                           FROM kdxf_taskpool taskpool LEFT JOIN kdxf_mytask mytask ON 
+                           taskpool.taskId = mytask.taskId  AND mytask.userId = ? 
+                           AND taskpool.corpCode = ? AND taskpool.taskStatus = ? ORDER BY 
+						   taskpool.createTime DESC `
 
 	CheckIsJoinTask_sql = `select * from kdxf_mytask where corpCode = ? and userId  = ?  and taskId = ?`
 	//ApplyJoinTask_sql = `insert into kdxf_mytask(

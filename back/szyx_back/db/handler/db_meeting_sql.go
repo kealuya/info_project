@@ -43,7 +43,7 @@ const (
 	GetMeetingFileList_sql = `select * from  kdxf_meetingFile where meetingId = ? `
 
 	AddMeetingFileInfo_sql = `INSERT INTO kdxf_meetingFile ( 
-							  meetingId,meetingTitle,fileType,
+							  meetingId,fileType,audioTime,
 							  fileName,fileUrl,creater,corpName,
 							  corpCode,createTime) VALUE  (?,?,?,?,?,?,?,?,?)`
 )

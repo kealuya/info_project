@@ -43,6 +43,7 @@ func GetTaskPoolList(info *task.TaskList_Param) (res task.TaskList_Result, msg e
 	dbHandler := db_handler.NewDbHandler()
 	//任务池信息
 	var Param []interface{}
+	Param = append(Param, info.UserId)
 	Param = append(Param, info.CorpCode)
 	Param = append(Param, info.Status)
 
@@ -50,19 +51,17 @@ func GetTaskPoolList(info *task.TaskList_Param) (res task.TaskList_Result, msg e
 	startNum := (info.CurrentPage - 1) * info.PageSize
 	Param = append(Param, startNum)
 	Param = append(Param, info.PageSize)
-
 	selRes, err := dbHandler.SelectList(db_handler.GetTaskPoolList_sql, Param...)
 
 	taskList := []task.Task{}
-
 	if len(selRes) > 0 && err == nil {
 		decoder := ObtainDecoderConfig(&taskList)
 		err1 := decoder.Decode(selRes)
 		common.ErrorHandler(err1, "任务池列表信息转换发生错误!")
 	}
-
 	taskListCount := []task.Task{}
 	var ParamCount []interface{}
+	ParamCount = append(ParamCount, info.UserId)
 	ParamCount = append(ParamCount, info.CorpCode)
 	ParamCount = append(ParamCount, info.Status)
 	selCountRes, err2 := dbHandler.SelectList(db_handler.GetTaskPoolListCount_sql, ParamCount...)

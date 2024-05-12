@@ -36,10 +36,10 @@ type Meeting struct {
 type MeetingFile struct {
 	Id           string `json:"id" description:"id,主键" `
 	MeetingId    string `json:"meetingId" description:"关联的会议id" `
-	MeetingTitle string `json:"meetingTitle" description:"会议标题" `
 	FileType     string `json:"fileType" description:"文件类型" ` //文件类型   音频：mp3   文档：word  脑图：xmind
 	FileName     string `json:"fileName" description:"文件名称" `
 	FileUrl      string `json:"fileUrl" description:"文件云地址" `
+	AudioTime    string `json:"audioTime" description:"音频时长  只在fileType值为mp3 有作用" `
 	CorpName     string `json:"corpName" description:"企业名称" `
 	CorpCode     string `json:"corpCode" description:"企业code"`
 	CreateTime   string `json:"createTime" description:"创建时间"`

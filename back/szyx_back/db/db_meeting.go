@@ -200,8 +200,9 @@ func AddMeetingFileInfo(meetingFile *meeting.MeetingFile) (msg error) {
 	currentTime := time.Now().Format("2006-01-02 15:04:05")
 	var Param []interface{}
 	Param = append(Param, meetingFile.MeetingId)
-	Param = append(Param, meetingFile.MeetingTitle)
+	//Param = append(Param, meetingFile.MeetingTitle)
 	Param = append(Param, meetingFile.FileType)
+	Param = append(Param, meetingFile.AudioTime)
 	Param = append(Param, meetingFile.FileName)
 	Param = append(Param, meetingFile.FileUrl)
 	Param = append(Param, meetingFile.Creater)
