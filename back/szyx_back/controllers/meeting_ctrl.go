@@ -74,9 +74,9 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingAudioFile() {
 	file, h, _ := MeetingCtrl.GetFile("file")       //获取上传的文件
 	meetingId := MeetingCtrl.GetString("meetingId") //获取会议ID
 	//meetingTitle := MeetingCtrl.GetString("meetingTitle") //会议标题
-	userId := MeetingCtrl.GetString("userId")             //用户ID
-	corpCode := MeetingCtrl.GetString("corpCode")         //企业code
-	audioTime := MeetingCtrl.GetString("audioTime")         //音频时长
+	userId := MeetingCtrl.GetString("userId")       //用户ID
+	corpCode := MeetingCtrl.GetString("corpCode")   //企业code
+	audioTime := MeetingCtrl.GetString("audioTime") //音频时长
 
 	ext := path.Ext(h.Filename)
 	//验证后缀名是否符合要求   mp3/blob
@@ -151,10 +151,10 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingFile() {
 		MeetingCtrl.ServeJSON()
 	}()
 
-	file, h, _ := MeetingCtrl.GetFile("file")             //获取上传的文件
-	meetingId := MeetingCtrl.GetString("meetingId")       //获取会议ID
-	userId := MeetingCtrl.GetString("userId")             //用户ID
-	corpCode := MeetingCtrl.GetString("corpCode")         //企业code
+	file, h, _ := MeetingCtrl.GetFile("file")       //获取上传的文件
+	meetingId := MeetingCtrl.GetString("meetingId") //获取会议ID
+	userId := MeetingCtrl.GetString("userId")       //用户ID
+	corpCode := MeetingCtrl.GetString("corpCode")   //企业code
 
 	ext := path.Ext(h.Filename)
 	//验证后缀名是否符合要求   doc/txt
@@ -318,15 +318,51 @@ func (MeetingCtrl *MeetingCtrl) CreateMeetingTranslation() {
 	}
 }
 
-// @Title 会议纪要生成
-// @Tags CreateMeetingMminutes
+// @Title 语音会议 摘要 生成
+// @Tags CreateAudioMeetingSummary
+// @Summary 语音 会议摘要
+// @accept application/json
+// @Produce application/json
+// @Param data body kdxf.Kdxf_audio_param true "Kdxf_audio_param struct"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"会议摘要生成成功"}"
+// @router /createAudioMeetingSummary [post]
+func (MeetingCtrl *MeetingCtrl) CreateAudioMeetingSummary() {
+	resJson := NewJsonStruct(nil)
+	defer func() {
+		MeetingCtrl.Data["json"] = resJson
+		MeetingCtrl.ServeJSON()
+	}()
+	speech := new(kdxf.Kdxf_audio_param)
+	var jsonByte = MeetingCtrl.Ctx.Input.RequestBody
+	logs.Info("生成会议摘要入参：" + string(jsonByte))
+	paramerr := jsoniter.Unmarshal(jsonByte, &speech)
+	if paramerr != nil {
+		resJson.Success = false
+		resJson.Msg = "入参有误"
+		return
+	}
+	//业务处理
+	res, err := models.CreateAudioMeetingSummary(speech)
+
+	if err == nil {
+		resJson.Success = true
+		resJson.Msg = "操作成功"
+		resJson.Data = res
+	} else {
+		resJson.Success = false
+		resJson.Msg = fmt.Sprintf("会议摘要生成失败::%s", err)
+	}
+}
+
+// @Title 语音会议纪要生成
+// @Tags CreateAudioMeetingMminutes
 // @Summary 会议纪要
 // @accept application/json
 // @Produce application/json
 // @Param data body kdxf.Kdxf_audio_param true "Kdxf_audio_param struct"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"会议纪要生成成功"}"
-// @router /createMeetingMminutes [post]
-func (MeetingCtrl *MeetingCtrl) CreateMeetingMminutes() {
+// @router /createAudioMeetingMinutes [post]
+func (MeetingCtrl *MeetingCtrl) CreateAudioMeetingMinutes() {
 	resJson := NewJsonStruct(nil)
 	defer func() {
 		MeetingCtrl.Data["json"] = resJson
@@ -342,7 +378,7 @@ func (MeetingCtrl *MeetingCtrl) CreateMeetingMminutes() {
 		return
 	}
 	//业务处理
-	res, err := models.CreateMeetingMminutes(speech)
+	res, err := models.CreateAudioMeetingMinutes(speech)
 
 	if err == nil {
 		resJson.Success = true
@@ -354,7 +390,7 @@ func (MeetingCtrl *MeetingCtrl) CreateMeetingMminutes() {
 	}
 }
 
-// @Title 会议脑图，用于根据会议纪要得到会议脑图
+// @Title 语音 会议脑图，用于根据会议纪要得到会议脑图
 // @Tags CreateMeetingBrainMap
 // @Summary 会议脑图
 // @accept application/json
@@ -421,5 +457,43 @@ func (MeetingCtrl *MeetingCtrl) GetMeetingDetails() {
 	} else {
 		resJson.Success = false
 		resJson.Msg = fmt.Sprintf("会议详情获取失败::%s", err)
+	}
+}
+
+//===================================================文档会议操作=====================
+
+// @Title 文档会议纪要生成
+// @Tags CreateDocumentMeetingMinutes
+// @Summary 会议纪要
+// @accept application/json
+// @Produce application/json
+// @Param data body kdxf.Kdxf_audio_param true "Kdxf_audio_param struct"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"会议纪要生成成功"}"
+// @router /createDocumentMeetingMinutes [post]
+func (MeetingCtrl *MeetingCtrl) CreateDocumentMeetingMinutes() {
+	resJson := NewJsonStruct(nil)
+	defer func() {
+		MeetingCtrl.Data["json"] = resJson
+		MeetingCtrl.ServeJSON()
+	}()
+	speech := new(kdxf.Kdxf_audio_param)
+	var jsonByte = MeetingCtrl.Ctx.Input.RequestBody
+	logs.Info("生成会议纪要入参：" + string(jsonByte))
+	paramerr := jsoniter.Unmarshal(jsonByte, &speech)
+	if paramerr != nil {
+		resJson.Success = false
+		resJson.Msg = "入参有误"
+		return
+	}
+	//业务处理
+	res, err := models.CreateDocumentMeetingMinutes(speech)
+
+	if err == nil {
+		resJson.Success = true
+		resJson.Msg = "操作成功"
+		resJson.Data = res
+	} else {
+		resJson.Success = false
+		resJson.Msg = fmt.Sprintf("会议纪要生成失败::%s", err)
 	}
 }

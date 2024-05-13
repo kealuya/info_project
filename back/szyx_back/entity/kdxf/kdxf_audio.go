@@ -10,6 +10,7 @@ type Kdxf_audio_param struct {
 	FileId    string `json:"fileId" description:"文件ID" `
 	FileUrl   string `json:"fileUrl" description:"文件地址" `
 	FileName  string `json:"fileName" description:"文件名称" `
+	OrderId   string `json:"orderId" description:"订单ID" `
 }
 
 //语音识别返回值
@@ -17,7 +18,7 @@ type Kdxf_audio_result struct {
 	Msg      string `json:"msg" description:"msg" `
 	FileName string `json:"fileName" description:"文件名" `
 	OrderId  string `json:"orderId" description:"ID" `
-	Success  string `json:"success" description:"" `
+	Success  bool   `json:"success" description:"" `
 }
 
 //文档信息  文档概要  返回值
@@ -28,7 +29,15 @@ type Kdxf_document_result struct {
 
 //录音文件
 type Kdxf_speech struct {
-	entity.Base         //预留多公司模式
+	//多公司模式预留
+	CorpName   string `json:"corpName" description:"企业名称" `
+	CorpCode   string `json:"corpCode" description:"企业code"`
+	CreateTime string `json:"createTime" description:"创建时间"`
+	Creater    string `json:"creater" description:"创建人"`
+	Bz1        string `json:"bz1" description:"备注1"`
+	Bz2        string `json:"bz2" description:"备注2"`
+	Bz3        string `json:"bz3" description:"备注3"`
+	//真实字段
 	OrderId      string `json:"orderId" description:"语音订单唯一编号" `
 	No           string `json:"no" description:"用来处理多语言归属同一会议的情况" `
 	FileName     string `json:"fileName" description:"存储文件的文件名称" `
@@ -45,6 +54,7 @@ type Kdxf_speech struct {
 	UseFlag      string `json:"useFlag" description:"使用状态" `
 	TaskId       string `json:"taskId" description:"任务ID" `
 	FileUrl      string `json:"fileUrl" description:"文件存放路径" `
+	FileId       string `json:"fileId" description:"文件ID" `
 }
 
 //FIXME 考虑文件跟语音分开存储，方便后面ai识别使用

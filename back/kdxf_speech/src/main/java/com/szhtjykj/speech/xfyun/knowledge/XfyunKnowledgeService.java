@@ -1,27 +1,19 @@
 package com.szhtjykj.speech.xfyun.knowledge;
 
-import com.google.gson.Gson;
 import com.szhtjykj.speech.dao.KdxfKnowledgeDao;
 import com.szhtjykj.speech.dao.KdxfSpeechDao;
 import com.szhtjykj.speech.model.KdxfKnowledge;
 import com.szhtjykj.speech.model.KdxfSpeech;
 import com.szhtjykj.speech.xfyun.knowledge.dto.UploadResp;
 import com.szhtjykj.speech.xfyun.knowledge.util.ChatDocUtil;
-import com.szhtjykj.speech.xfyun.speech.XfyunSpeechService;
-
-import org.beetl.sql.core.SQLReady;
 import org.beetl.sql.solon.annotation.Db;
 import org.noear.solon.Solon;
 import org.noear.solon.annotation.Component;
-import org.noear.solon.data.annotation.Tran;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.datatype.Duration;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Arrays;
+import java.io.*;
+import java.net.URL;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -29,7 +21,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 @Component
 public class XfyunKnowledgeService {
@@ -172,6 +163,73 @@ public class XfyunKnowledgeService {
             }
         }
     }
+
+
+    /**
+     * 文件信息 上传
+     * @param fileUrl
+     * @return
+     * @throws Exception
+     */
+    public String uploadDocumentFile(String fileUrl,String meetingId) throws Exception {
+
+            // 创建一个指向网络资源的URL
+            URL url = new URL(fileUrl);
+            // 打开到此 URL 引用的资源的连接
+            InputStream inputStream = url.openStream();
+
+            // 创建临时文件
+            File tempFile = null;
+            try {
+                tempFile = File.createTempFile("tempfile" + System.currentTimeMillis(), ".txt");
+                copyInputStreamToFile(inputStream,tempFile);
+
+                UploadResp uploadResp = chatDocUtil.upload(tempFile.getAbsolutePath(), uploadUrl, appId, secret);
+
+                if (uploadResp.isFlag() && uploadResp.getCode() == 0) {
+
+
+                    KdxfKnowledge knowledge = new KdxfKnowledge();
+                    knowledge.setFile_id(uploadResp.getData().getFileId());
+                    knowledge.setDatetime(new Date());
+                    knowledge.setOrder_id(meetingId);
+                    knowledge.setState(0);
+                    kdxfKnowledgeDao.insert(knowledge);
+
+                    return uploadResp.getData().getFileId();
+                } else {
+                    throw new Exception("请求接口错误::" + uploadResp.getCode() + "::" + uploadResp.getDesc());
+                }
+
+            } catch (Exception e) {
+                throw new Exception(e);
+            } finally {
+                // 删除临时文件
+                if (tempFile.exists()) {
+                    tempFile.delete();
+                }
+                inputStream.close();
+            }
+    }
+
+
+    // 流转文件   InputStream -> File
+    private static void copyInputStreamToFile(InputStream inputStream, File file) throws IOException {
+
+        try (FileOutputStream outputStream = new FileOutputStream(file)) {
+
+            int read;
+            byte[] bytes = new byte[1024];
+
+            while ((read = inputStream.read(bytes)) != -1) {
+                outputStream.write(bytes, 0, read);
+            }
+
+        }
+
+    }
+
+
 
 
     public String makeMeetingMinuteByOrderId(String orderId, String question) {

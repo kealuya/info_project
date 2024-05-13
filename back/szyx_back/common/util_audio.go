@@ -18,7 +18,7 @@ var kdxf_audio = "http://localhost:7003/uploadAudio"
 var kdxf_CreateMeetingSummary = "http://localhost:7003/convertAudioToSummary"
 
 //kdxf音频会议纪要
-var kdxf_CreateMeetingMminutes = "http://localhost:7003/convertAudioToMminutes"
+var kdxf_CreateMeetingMinutes = "http://localhost:7003/convertAudioToMeetingMinute"
 
 //kdxf音频会议脑图
 var kdxf_CreateMeetingBrainMap = "http://localhost:7003/convertAudioToBrainMap"
@@ -26,7 +26,7 @@ var kdxf_CreateMeetingBrainMap = "http://localhost:7003/convertAudioToBrainMap"
 //==================================文档操作=====================
 
 //kdxf 文档  会议纪要生成
-var kdxf_CreateMeetingMminutes_document = "http://localhost:7003/convertDocumentToSummary"
+var kdxf_CreateMeetingMinutes_document = "http://localhost:7003/convertDocumentToSummary"
 
 //kdxf音频转换项目，测试地址
 var test_audio = "http://localhost:7003/hello"
@@ -107,18 +107,18 @@ func DoHttpPost_kdxf_audio_summary(orderId string, options ...map[string]string)
 	req.Param("orderId", orderId)
 	respBody, err := req.String()
 	ErrorHandler(err)
-	logs.Warn(respBody)
+	logs.Debug(respBody)
 	return respBody
 }
 
 //kdxf 语音翻译后  生成会议纪要
-func DoHttpPost_kdxf_audio_mminutes(orderId string, options ...map[string]string) (respBody string) {
-	req := httplib.Post(kdxf_CreateMeetingMminutes)
+func DoHttpPost_kdxf_audio_minutes(orderId string, options ...map[string]string) (respBody string) {
+	req := httplib.Post(kdxf_CreateMeetingMinutes)
 	req.Header("Content-Type", "application/json")
 	req.Param("orderId", orderId)
 	respBody, err := req.String()
 	ErrorHandler(err)
-	logs.Warn(respBody)
+	logs.Warn("Java系统的返回值：" + respBody)
 	return respBody
 }
 
@@ -136,8 +136,8 @@ func DoHttpPost_kdxf_audio_brainMap(orderId string, options ...map[string]string
 //==========================================文档操作=======================
 
 //kdxf 文档生成会议记录
-func DoHttpPost_kdxf(meetingId string, fileUrl string, options ...map[string]string) (respBody string) {
-	req := httplib.Post(kdxf_CreateMeetingMminutes_document)
+func DoHttpPost_kdxf_document_minutes(meetingId string, fileUrl string, options ...map[string]string) (respBody string) {
+	req := httplib.Post(kdxf_CreateMeetingMinutes_document)
 	req.Header("Content-Type", "application/json")
 	//req.Body(param)
 	req.Param("meetingId", meetingId)

@@ -1,22 +1,14 @@
 package com.szhtjykj.speech.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.szhtjykj.speech.xfyun.knowledge.XfyunKnowledgeService;
-import com.szhtjykj.speech.xfyun.speech.XfyunSpeechService;
 import org.noear.solon.annotation.Controller;
 import org.noear.solon.annotation.Inject;
 import org.noear.solon.annotation.Mapping;
 import org.noear.solon.annotation.Post;
 import org.noear.solon.core.handle.Context;
-import org.noear.solon.core.handle.UploadedFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
