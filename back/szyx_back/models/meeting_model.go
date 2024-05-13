@@ -120,7 +120,31 @@ func CreateAudioMeetingMinutes(speechDto *kdxf.Kdxf_audio_param) (res kdxf.Kdxf_
 }
 
 /**
-文件  生成会议纪要
+语音  会议脑图
+*/
+func CreateAudioMeetingBrainMap(speechDto *kdxf.Kdxf_audio_param) (res kdxf.Kdxf_speech, err error) {
+	defer common.RecoverHandler(func(err error) {
+		err = err
+	})
+
+	//FIXME 根据文件ID，得到orderId
+	kdxfSpeech, err := db.GetOrderIdByFileId(speechDto.FileId)
+	responseStr := common.DoHttpPost_kdxf_audio_brainMap(kdxfSpeech.OrderId)
+
+	Kdxf_audio_result := new(kdxf.Kdxf_audio_result)
+	common.Unmarshal([]byte(responseStr), &Kdxf_audio_result)
+	if Kdxf_audio_result.Success == true {
+		res.MeetingId = speechDto.MeetingId
+	} else {
+		err = errors.New(fmt.Sprintf("会议纪要生成失败::%s", Kdxf_audio_result.Msg))
+	}
+	return res, err
+}
+
+//==========================================文档会议 相关操作 ============================
+
+/**
+文档会议   生成会议纪要
 */
 func CreateDocumentMeetingMinutes(speechDto *kdxf.Kdxf_audio_param) (res kdxf.Kdxf_speech, err error) {
 	defer common.RecoverHandler(func(err error) {
@@ -141,13 +165,24 @@ func CreateDocumentMeetingMinutes(speechDto *kdxf.Kdxf_audio_param) (res kdxf.Kd
 }
 
 /**
-会议脑图
+文档  会议 会议脑图
 */
-func CreateMeetingBrainMap(meetingDto *meeting.Meeting) (res meeting.Meeting, err error) {
+func CreateDocumentMeetingBrainMap(speechDto *kdxf.Kdxf_audio_param) (res kdxf.Kdxf_speech, err error) {
 	defer common.RecoverHandler(func(err error) {
 		err = err
 	})
 
+	//FIXME 根据文件ID，得到orderId
+	kdxfSpeech, err := db.GetOrderIdByFileId(speechDto.FileId)
+	responseStr := common.DoHttpPost_kdxf_audio_minutes(kdxfSpeech.OrderId)
+
+	Kdxf_audio_result := new(kdxf.Kdxf_audio_result)
+	common.Unmarshal([]byte(responseStr), &Kdxf_audio_result)
+	if Kdxf_audio_result.Success == true {
+		res.MeetingId = speechDto.MeetingId
+	} else {
+		err = errors.New(fmt.Sprintf("会议纪要生成失败::%s", Kdxf_audio_result.Msg))
+	}
 	return res, err
 }
 

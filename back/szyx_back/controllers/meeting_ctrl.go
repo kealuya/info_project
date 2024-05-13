@@ -391,37 +391,38 @@ func (MeetingCtrl *MeetingCtrl) CreateAudioMeetingMinutes() {
 }
 
 // @Title 语音 会议脑图，用于根据会议纪要得到会议脑图
-// @Tags CreateMeetingBrainMap
-// @Summary 会议脑图
+// @Tags CreateAudioMeetingBrainMap
+// @Summary 语音 会议脑图
 // @accept application/json
 // @Produce application/json
-// @Param data body meeting.Meeting true "Meeting struct"
+// @Param data body kdxf.Kdxf_audio_param true "Kdxf_audio_param struct"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"会议脑图生成成功"}"
-// @router /createMeetingBrainMap [post]
-func (MeetingCtrl *MeetingCtrl) CreateMeetingBrainMap() {
+// @router /createAudioMeetingBrainMap [post]
+func (MeetingCtrl *MeetingCtrl) CreateAudioMeetingBrainMap() {
 	resJson := NewJsonStruct(nil)
 	defer func() {
 		MeetingCtrl.Data["json"] = resJson
 		MeetingCtrl.ServeJSON()
 	}()
-	metting := new(meeting.Meeting)
+	speech := new(kdxf.Kdxf_audio_param)
 	var jsonByte = MeetingCtrl.Ctx.Input.RequestBody
-	logs.Info("生成会议脑图入参：" + string(jsonByte))
-	paramerr := jsoniter.Unmarshal(jsonByte, &metting)
+	logs.Info("生成语音会议脑图 入参：" + string(jsonByte))
+	paramerr := jsoniter.Unmarshal(jsonByte, &speech)
 	if paramerr != nil {
 		resJson.Success = false
 		resJson.Msg = "入参有误"
 		return
 	}
 	//业务处理
-	res, err := models.CreateMeetingBrainMap(metting)
+	res, err := models.CreateAudioMeetingBrainMap(speech)
+
 	if err == nil {
 		resJson.Success = true
 		resJson.Msg = "操作成功"
 		resJson.Data = res
 	} else {
 		resJson.Success = false
-		resJson.Msg = fmt.Sprintf("会议脑图生成失败::%s", err)
+		resJson.Msg = fmt.Sprintf("语音会议脑图生成失败::%s", err)
 	}
 }
 
