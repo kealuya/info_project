@@ -46,4 +46,7 @@ const (
 							  meetingId,fileType,audioTime,
 							  fileName,fileUrl,creater,corpName,
 							  corpCode,createTime) VALUE  (?,?,?,?,?,?,?,?,?)`
+
+	DeleteAudioMeetingFile_sql = ` delete from kdxf_meetingFile where meetingId = ? and fileName = ? 
+                                 and creater = ? and corpCode = ? `
 )

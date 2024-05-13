@@ -26,9 +26,9 @@ type TaskList_Param struct {
 	entity.Paging        //分页信息
 	SearchKey     string `json:"searchKey" description:"搜索关键字" `
 	CorpCode      string `json:"corpCode" description:"企业ID" `
-	Status        string `json:"status" description:"状态" `
+	Status        string `json:"status" description:"任务状态" `
 	UserId        string `json:"userId" description:"用户ID" `
-	Flag          string `json:"flag" description:"完成状态" `
+	UserJoinState    string `json:"userJoinState" description:"用户是否参与过任务 Yes:已参与  No:未参与" `
 }
 
 //获取任务池列表-返回值

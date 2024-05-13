@@ -117,7 +117,7 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingAudioFile() {
 			fileStruct := new(meeting.MeetingFile_Result)
 			fileStruct.FileUrl = filePath
 			resJson.Success = true
-			resJson.Msg = "上传成功"
+			resJson.Msg = "上传录音成功"
 			resJson.Data = fileStruct
 		} else {
 			resJson.Success = false
@@ -496,5 +496,39 @@ func (MeetingCtrl *MeetingCtrl) CreateDocumentMeetingMinutes() {
 	} else {
 		resJson.Success = false
 		resJson.Msg = fmt.Sprintf("会议纪要生成失败::%s", err)
+	}
+}
+
+// @Title 删除音频会议上传的 音频文件
+// @Tags DeleteAudioMeetingFile
+// @Summary 删除音频 
+// @accept application/json
+// @Produce application/json
+// @Param data body meeting.Meeting true "Meeting struct"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"删除成功"}"
+// @router /deleteAudioMeetingFile [post]
+func (MeetingCtrl *MeetingCtrl) DeleteAudioMeetingFile() {
+	resJson := NewJsonStruct(nil)
+	defer func() {
+		MeetingCtrl.Data["json"] = resJson
+		MeetingCtrl.ServeJSON()
+	}()
+	meetingFile := new(meeting.MeetingFile)
+	var jsonByte = MeetingCtrl.Ctx.Input.RequestBody
+	logs.Info("删除音频文件入参：" + string(jsonByte))
+	paramerr := jsoniter.Unmarshal(jsonByte, &meetingFile)
+	if paramerr != nil {
+		resJson.Success = false
+		resJson.Msg = "入参有误"
+		return
+	}
+	//业务处理
+	err := models.DeleteAudioMeetingFile(meetingFile)
+	if err == nil {
+		resJson.Success = true
+		resJson.Msg = "删除成功"
+	} else {
+		resJson.Success = false
+		resJson.Msg = fmt.Sprintf("删除音频文件失败::%s", err)
 	}
 }

@@ -1,6 +1,7 @@
 package db
 
 import (
+	"errors"
 	"fmt"
 	"szyx_back/common"
 	db_handler "szyx_back/db/handler"
@@ -214,4 +215,24 @@ func AddMeetingFileInfo(meetingFile *meeting.MeetingFile) (msg error) {
 		common.ErrorHandler(err, "保存文件基础信息存表发生错误!")
 	}
 	return err
+}
+
+//删除音频会议上传的 音频文件
+func DeleteAudioMeetingFile (meetingFile *meeting.MeetingFile) (msg error) {
+	defer common.RecoverHandler(func(rcErr error) {
+		msg = rcErr
+	})
+	dbHandler := db_handler.NewDbHandler()
+	var Param []interface{}
+	Param = append(Param, meetingFile.MeetingId)
+	Param = append(Param, meetingFile.FileName)
+	Param = append(Param, meetingFile.Creater)
+	Param = append(Param, meetingFile.CorpCode)
+	_, err := dbHandler.Delete(db_handler.DeleteAudioMeetingFile_sql, Param...)
+	common.ErrorHandler(err, "删除音频文件操作记录发生错误")
+	var err1 error
+	if err != nil {
+		err1 = errors.New("删除音频文件删除失败")
+	}
+	return err1
 }

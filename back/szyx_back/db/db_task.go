@@ -46,12 +46,20 @@ func GetTaskPoolList(info *task.TaskList_Param) (res task.TaskList_Result, msg e
 	Param = append(Param, info.UserId)
 	Param = append(Param, info.CorpCode)
 	Param = append(Param, info.Status)
+	//根据用户是否参与过任务进行筛选
+	sqlType := ""
+	if info.UserJoinState != "" {
+		Param = append(Param, info.UserJoinState)
+		sqlType = sqlType + " WHERE userJoinState = ?  ORDER BY  taskpool.createTime DESC  limit ?,? "
+	}else{
+		sqlType = sqlType + " ORDER BY  taskpool.createTime DESC  limit ?,? "
+	}
 
 	//计算limit起始值
 	startNum := (info.CurrentPage - 1) * info.PageSize
 	Param = append(Param, startNum)
 	Param = append(Param, info.PageSize)
-	selRes, err := dbHandler.SelectList(db_handler.GetTaskPoolList_sql, Param...)
+	selRes, err := dbHandler.SelectList(db_handler.GetTaskPoolList_sql + sqlType, Param...)
 
 	taskList := []task.Task{}
 	if len(selRes) > 0 && err == nil {
@@ -64,7 +72,15 @@ func GetTaskPoolList(info *task.TaskList_Param) (res task.TaskList_Result, msg e
 	ParamCount = append(ParamCount, info.UserId)
 	ParamCount = append(ParamCount, info.CorpCode)
 	ParamCount = append(ParamCount, info.Status)
-	selCountRes, err2 := dbHandler.SelectList(db_handler.GetTaskPoolListCount_sql, ParamCount...)
+	//根据用户是否参与过任务进行筛选
+	sqlCountType := ""
+	if info.UserJoinState != "" {
+		ParamCount = append(ParamCount, info.UserJoinState)
+		sqlCountType = sqlCountType + " WHERE userJoinState = ?  ORDER BY  taskpool.createTime DESC "
+	}else{
+		sqlCountType = sqlCountType + " ORDER BY  taskpool.createTime DESC "
+	}
+	selCountRes, err2 := dbHandler.SelectList(db_handler.GetTaskPoolList_sql + sqlCountType, ParamCount...)
 	if err2 == nil {
 		decoder := ObtainDecoderConfig(&taskListCount)
 		err1 := decoder.Decode(selCountRes)

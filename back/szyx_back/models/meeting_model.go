@@ -52,7 +52,6 @@ func CreateMeetingTranslation(speechDto *kdxf.Kdxf_audio_param) (res kdxf.Kdxf_s
 	defer common.RecoverHandler(func(err error) {
 		err = err
 	})
-
 	//FIXME 语音转文字
 	//拼接路径
 	//audioFullPath := "/Users/zhanbaohua/webStorm_work/github.com/info_project/back/szyx_back/" + fpath
@@ -200,5 +199,13 @@ func GetMeetingDetails(meetingDto *meeting.Meeting) (res meeting.Meeting, err er
 func AddMeetingFileInfo(meetingFile *meeting.MeetingFile) (err error) {
 	//创建会议
 	err = db.AddMeetingFileInfo(meetingFile)
+	return err
+}
+
+/**
+删除音频会议上传的 音频文件
+*/
+func DeleteAudioMeetingFile(meetingFile *meeting.MeetingFile) (err error) {
+	err = db.DeleteAudioMeetingFile(meetingFile)
 	return err
 }
