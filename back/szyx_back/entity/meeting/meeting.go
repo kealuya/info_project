@@ -11,11 +11,7 @@ type Meeting struct {
 	MeetingCity            string        `json:"meetingCity" description:"会议城市" `
 	MeetingAddress         string        `json:"meetingAddress" description:"会议地址" `
 	MeetingPeople          string        `json:"meetingPeople" description:"参会人" `
-	MeetingAudioFileUrl    string        `json:"meetingAudioFileUrl" description:"音频文件地址'；'分隔" `
-	MeetingMminutesFileUrl string        `json:"meetingMminutesFileUrl" description:"会议纪要地址" ` //ai生成用
-	MeetingBrainMapFileUrl string        `json:"meetingBrainMapFileUrl" description:"会议脑图地址" ` //ai生成用
 	MeetingFileUrl         string        `json:"meetingFileUrl" description:"会议文件地址" `         //完成任务是选择会议，添加会议文件。手动上传用
-	UseStatus              string        `json:"useStatus" description:"是否使用" `                //使用过的会议，不显示
 	TaskId                 string        `json:"taskId" description:"任务id，任务与会议为 1对多的关系，故而在此添加关联字段" `
 	MeetingFlag            string        `json:"meetingFlag" description:"会议是否使用" ` //0：未使用   1：已使用   完成任务需要选择会议， 要区分会议是否被使用
 	MeetingFile            []MeetingFile `json:"meetingFile" description:"会议文件list" `
@@ -26,10 +22,10 @@ type Meeting struct {
 	Bz1                    string        `json:"bz1" description:"备注1"`
 	Bz2                    string        `json:"bz2" description:"备注2"`
 	Bz3                    string        `json:"bz3" description:"备注3"`
-	MeetingAudioSummary    string        `json:"meetingAudioSummary" description:"音频会议摘要"`    //通过关联关系获取
-	MeetingAudioMinutes    string        `json:"meetingAudioMinutes" description:"音频会议纪要"`    //通过关联关系获取
-	MeetingDocumentSummary string        `json:"meetingDocumentSummary" description:"文档会议摘要"` //通过关联关系获取
-	MeetingDocumentMinutes string        `json:"meetingDocumentMinutes" description:"文档会议纪要"` //通过关联关系获取
+	MeetingAudioText       string        `json:"meetingAudioText" description:"会议录音转译的文本内容"`    //通过关联关系获取
+	MeetingSummary         string        `json:"meetingSummary" description:"会议摘要"`    //通过关联关系获取
+	MeetingMinutes         string        `json:"meetingMinutes" description:"会议纪要"`    //通过关联关系获取
+	MeetingBrainMap        string         `json:"meetingBrainMap" description:"会议脑图字符"` //通过关联关系获取
 }
 
 //会议文件

@@ -280,11 +280,45 @@ func (MeetingCtrl *MeetingCtrl) ModifyMeeting() {
 	}
 }
 
-//FIXME 开始联调
+// @Title 会议录音生成 会议摘要、会议纪要、会议脑图结构化字符串
+// @Tags AudioMeeting_Ai_Abstract_Summary_BrainMap
+// @Summary 会议录音生成 会议摘要、会议纪要、会议脑图结构化字符串
+// @accept application/json
+// @Produce application/json
+// @Param data body kdxf.Kdxf_audio_param true "Kdxf_audio_param struct"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"Ai生成成功"}"
+// @router /audioMeeting_Ai_Abstract_Summary_BrainMap [post]
+func (MeetingCtrl *MeetingCtrl) AudioMeeting_Ai_Abstract_Summary_BrainMap() {
+	resJson := NewJsonStruct(nil)
+	defer func() {
+		MeetingCtrl.Data["json"] = resJson
+		MeetingCtrl.ServeJSON()
+	}()
+	speech := new(kdxf.Kdxf_audio_param)
+	var jsonByte = MeetingCtrl.Ctx.Input.RequestBody
+	logs.Info("生成会议摘要入参：" + string(jsonByte))
+	paramerr := jsoniter.Unmarshal(jsonByte, &speech)
+	if paramerr != nil {
+		resJson.Success = false
+		resJson.Msg = "入参有误"
+		return
+	}
+	//业务处理
+	err := models.AudioMeeting_Ai_Abstract_Summary_BrainMap(speech.MeetingId)
+	if err == nil {
+		resJson.Success = true
+		resJson.Msg = "Ai生成内容申请成功"
+	} else {
+		resJson.Success = false
+		resJson.Msg = fmt.Sprintf("Ai生成内容报错:%s", err)
+	}
+}
 
-// @Title 语音会议翻译成文字
+
+// TODO 【暂时没调用这个接口，把这块逻辑写在了 创建会议 CreateMeeting接口中】
+// @Title 音频会议 录音文件转译文字 【暂时没调用这个接口，把这块逻辑写在了 创建会议接口中】
 // @Tags CreateMeetingTranslation
-// @Summary 语音会议翻译成文字
+// @Summary 音频会议 录音文件转译文字 【暂时没调用这个接口，把这块逻辑写在了 创建会议接口中】
 // @accept application/json
 // @Produce application/json
 // @Param data body kdxf.Kdxf_audio_param true "Kdxf_audio_param struct"
@@ -318,6 +352,7 @@ func (MeetingCtrl *MeetingCtrl) CreateMeetingTranslation() {
 	}
 }
 
+// TODO 暂时没调用这个接口，把这块逻辑写在了同一个接口AudioMeeting_Ai_Abstract_Summary_BrainMap方法中
 // @Title 语音会议 摘要 生成
 // @Tags CreateAudioMeetingSummary
 // @Summary 语音 会议摘要
@@ -354,6 +389,7 @@ func (MeetingCtrl *MeetingCtrl) CreateAudioMeetingSummary() {
 	}
 }
 
+// TODO 暂时没调用这个接口，把这块逻辑写在了同一个接口AudioMeeting_Ai_Abstract_Summary_BrainMap方法中
 // @Title 语音会议纪要生成
 // @Tags CreateAudioMeetingMminutes
 // @Summary 会议纪要
@@ -390,6 +426,7 @@ func (MeetingCtrl *MeetingCtrl) CreateAudioMeetingMinutes() {
 	}
 }
 
+// TODO 暂时没调用这个接口，把这块逻辑写在了同一个接口AudioMeeting_Ai_Abstract_Summary_BrainMap方法中
 // @Title 语音 会议脑图，用于根据会议纪要得到会议脑图
 // @Tags CreateAudioMeetingBrainMap
 // @Summary 语音 会议脑图

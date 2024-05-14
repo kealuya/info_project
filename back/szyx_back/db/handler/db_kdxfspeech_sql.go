@@ -6,5 +6,5 @@ const (
 							meetingId,
 							no,
 							file_name as fileName
-							from  kdxf_speech where fileId = ?  `
+							from  kdxf_speech where meetingId = ?  `
 )

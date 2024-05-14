@@ -140,7 +140,7 @@ func ModifyMeeting(info *meeting.Meeting) (res meeting.Meeting, msg error) {
 	//会议信息
 	//currentTime := time.Now().Format("2006-01-02 15:04:05")
 	var Param []interface{}
-	Param = append(Param, info.MeetingAudioFileUrl)
+	Param = append(Param, "")
 	Param = append(Param, info.MeetingId)
 
 	num, err := dbHandler.Update(db_handler.ModifyMeetingAudioFileUrl_sql, Param...)
@@ -167,6 +167,7 @@ func GetMeetingDetails(info *meeting.Meeting) (res meeting.Meeting, msg error) {
 	//会议信息
 	var Param []interface{}
 	Param = append(Param, info.MeetingId)
+	Param = append(Param, info.Creater)
 
 	//查询会议主表
 	num, err := dbHandler.SelectOne(db_handler.GetMeetingById_sql, Param...)
@@ -177,7 +178,6 @@ func GetMeetingDetails(info *meeting.Meeting) (res meeting.Meeting, msg error) {
 		decoder := ObtainDecoderConfig(&res)
 		err := decoder.Decode(num)
 		common.ErrorHandler(err, "会议详情转换发生错误!")
-
 		meetingFileList := []meeting.MeetingFile{}
 		num2, err2 := dbHandler.SelectList(db_handler.GetMeetingFileList_sql, Param...)
 		if err2 != nil {
