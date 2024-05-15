@@ -44,7 +44,7 @@ public class XfyunSpeechService {
 //        getResult(orderId);
 //    }
 
-    public String upload(File audio, String orderId2) throws SignatureException, IOException {
+    public String upload(File audio, String orderId2,String meetingId) throws SignatureException, IOException {
         HashMap<String, Object> map = new HashMap<>(16);
 
         String fileName = audio.getName();
@@ -74,7 +74,7 @@ public class XfyunSpeechService {
         executor.submit(() -> {
             // 处理文件的逻辑
             try {
-                getResult(orderId, fileName, orderId2);
+                getResult(orderId, fileName, orderId2,meetingId);
             } catch (Exception e) {
                 log.error("获取音频翻译发生错误::", e);
 
@@ -82,6 +82,7 @@ public class XfyunSpeechService {
                 KdxfSpeech ksForUpdate = new KdxfSpeech();
                 ksForUpdate.setOrder_id(orderId);
                 ksForUpdate.setState(2); // 错误
+                ksForUpdate.setMeetingId(meetingId);
                 ksForUpdate.setComment(e.getMessage());
                 kdxfSpeechDao.updateById(ksForUpdate);
             }
@@ -91,7 +92,7 @@ public class XfyunSpeechService {
         return orderId;
     }
 
-    public void getResult(String orderId, String fileName, String orderId2) throws Exception {
+    public void getResult(String orderId, String fileName, String orderId2,String meetingId) throws Exception {
         HashMap<String, Object> map = new HashMap<>(16);
         // 此处的orderid 是 实际请求音频的订单，需要通过该订单获取新上传音频的翻译
         map.put("orderId", orderId);
@@ -128,6 +129,7 @@ public class XfyunSpeechService {
         ks.setDatetime(new Date());
         ks.setFile_name(fileName);
         ks.setState(0); // 进行中
+        ks.setMeetingId(meetingId);
         kdxfSpeechDao.insert(ks);
 
         while (true) {

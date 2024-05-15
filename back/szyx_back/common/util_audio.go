@@ -32,7 +32,7 @@ var kdxf_CreateMeetingMinutes_document = "http://localhost:7003/convertDocumentT
 var test_audio = "http://localhost:7003/hello"
 
 //kdxf音频转换
-func DoHttpPost_Audio(fileUrl string, filename string, options ...map[string]string) (respBody string) {
+func DoHttpPost_Audio(fileUrl string, filename string, meetingId string, orderId string, options ...map[string]string) (respBody string) {
 
 	errMsg := `{"msg":"文件上传失败","success":"false"}`
 
@@ -74,6 +74,8 @@ func DoHttpPost_Audio(fileUrl string, filename string, options ...map[string]str
 
 	// 设置请求头，包括内容类型
 	request.Header.Set("Content-Type", multipartWriter.FormDataContentType())
+	request.Form.Set("meetingId", meetingId)
+	request.Form.Set("orderId", orderId)
 
 	// 发送请求
 	client := &http.Client{}

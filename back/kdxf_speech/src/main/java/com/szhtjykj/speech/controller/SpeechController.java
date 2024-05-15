@@ -44,6 +44,10 @@ public class SpeechController {
 
         // 在传orderId的场合，视为多语音属于共同会议
         String orderId2 = ctx.param("orderId");
+        String meetingId = ctx.param("meetingId");
+
+        log.warn("接收到的orderId", orderId2);
+        log.warn("接收到的meetingId", meetingId);
 
         Map<String, Object> returnMap = new HashMap<>();
         // 设置时间戳格式
@@ -57,7 +61,7 @@ public class SpeechController {
             File newFile = new File(AUDIO_FILE_PATH + tempFileName);
             // todo 后续提供obs上传，然后通过url识别
             file.transferTo(newFile); //把它转为本地文件
-            orderId = xfyunService.upload(newFile, orderId2);
+            orderId = xfyunService.upload(newFile, orderId2,meetingId);
 
         } catch (Exception e) {
             log.error("音频上传发生错误::", e);

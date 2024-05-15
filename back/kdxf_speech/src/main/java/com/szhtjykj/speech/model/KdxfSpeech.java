@@ -19,4 +19,7 @@ public class KdxfSpeech {
     private String content;
     private String comment;
     private Long real_duration;
+    //添加字段
+    private String meetingId; //会议ID
+    private String fileId;  //文件ID
 }
