@@ -26,6 +26,9 @@ type Meeting struct {
 	MeetingSummary         string        `json:"meetingSummary" description:"会议摘要"`    //通过关联关系获取
 	MeetingMinutes         string        `json:"meetingMinutes" description:"会议纪要"`    //通过关联关系获取
 	MeetingBrainMap        string         `json:"meetingBrainMap" description:"会议脑图字符"` //通过关联关系获取
+	TranslationState        string         `json:"translationState" description:"录音转译状态 0：进行中；1：完成；2：错误"` //通过关联关系获取
+	MeetingSummaryState        string         `json:"meetingSummaryState" description:"摘要生成状态  0：进行中；1：完成；2：错误"` //通过关联关系获取
+
 }
 
 //会议文件

@@ -121,10 +121,11 @@ func GetMeetingList(info *meeting.MeetingList_Param) (res meeting.MeetingList_Re
 }
 
 //根据会议id 查询会议文件list
-func GetMeetingFileList(meetingId string) (res []meeting.MeetingFile, msg error) {
+func GetMeetingFileList(meetingId string,userId string) (res []meeting.MeetingFile, msg error) {
 	dbHandler := db_handler.NewDbHandler()
 	var Param []interface{}
 	Param = append(Param, meetingId)
+	Param = append(Param, userId)
 	selRes, err := dbHandler.SelectList(db_handler.GetMeetingFileList_sql, Param...)
 	if len(selRes) > 0 && err == nil {
 		decoder := ObtainDecoderConfig(&res)

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/astaxie/beego/logs"
@@ -21,7 +22,7 @@ func GetMeetingList(meetingDto *meeting.MeetingList_Param) (res meeting.MeetingL
 	for k, v := range res.MeetingList {
 		// 创建目标集合
 		var meetingListNew []meeting.MeetingFile
-		fileList, _ := db.GetMeetingFileList(v.MeetingId)
+		fileList, _ := db.GetMeetingFileList(v.MeetingId,v.Creater)
 		meetingListNew = append(meetingListNew, fileList...)
 		res.MeetingList[k].MeetingFile = meetingListNew
 	}
@@ -37,26 +38,36 @@ func CreateMeeting(meetingDto *meeting.Meeting) (err error) {
 	//调用语音转译接口 把录音转成文字
 	if err == nil || meetingDto.MeetingType == "audio" {
 		//遍历音频会议 上传的所有录音文件
-		fileList, _ := db.GetMeetingFileList(meetingDto.MeetingId)
+		fileList, _ := db.GetMeetingFileList(meetingDto.MeetingId,meetingDto.Creater)
+		//多段录音传同一个orderId，转译接口会合并录音内容生成转译文本
 		orderId := ""
 		for _, v := range fileList {
+			fmt.Println("请求参数：" + v.FileUrl +  v.FileName + v.MeetingId + orderId)
 			//调用语音识别接口
 			responseStr := common.DoHttpPost_Audio(v.FileUrl, v.FileName,v.MeetingId,orderId)
-			fmt.Println(responseStr)
-			//TODO 这块逻需要调用java在联调
-			//TODO 目前传了MeetingId和获取的orderId。 需要确认java那边同一orderId的录音，返回转译的问题
-			orderId = "假装是获取到的orderId"
+			logs.Info("录音转译接口返回:" + responseStr)
+			//转译接口返回结构取值
+			jsonData := []byte(responseStr)
+			var data map[string]interface{}
+			err1 := json.Unmarshal(jsonData, &data)
+			if err1 != nil {
+				fmt.Println("转换json失败:", err)
+				return err1
+			}
+			orderId = data["orderId"].(string)
 		}
 	}
 	return err
 }
 
 /**
+生成会议摘要
+
 1.音频会议通过转译接口【创建会议】把录音文件转成文字。
-2.用户调用此接口对会议内容进行生成 会议摘要、会议纪要、会议脑图结构化字符串
+2.用户调用此接口对会议内容进行生成 会议摘要
 3.调用顺序必须是  会议摘要 - 会议纪要 - 会议脑图
 */
-func AudioMeeting_Ai_Abstract_Summary_BrainMap(meetingId string) (err error) {
+func AudioMeeting_Ai_Abstract(meetingId string) (err error) {
 
 	defer common.RecoverHandler(func(err error) {
 		err = err
@@ -69,28 +80,46 @@ func AudioMeeting_Ai_Abstract_Summary_BrainMap(meetingId string) (err error) {
 	ZY_result := new(kdxf.Kdxf_audio_result)
 	common.Unmarshal([]byte(responseZY), &ZY_result)
 	//判断获取摘要成功
-	if ZY_result.Success == true {
-		//2.会议纪要
-		responseJY := common.DoHttpPost_kdxf_audio_minutes(kdxfSpeech.OrderId)
-		logs.Info("Ai生成纪要返回：" + responseJY)
-		JY_result := new(kdxf.Kdxf_audio_result)
-		common.Unmarshal([]byte(responseJY), &JY_result)
-		//判断获取纪要成功
-		if JY_result.Success == true {
-			//3.会议脑图
-			responseNT := common.DoHttpPost_kdxf_audio_brainMap(kdxfSpeech.OrderId)
-			logs.Info("Ai生成脑图返回：" + responseNT)
-			NT_result := new(kdxf.Kdxf_audio_result)
-			common.Unmarshal([]byte(responseNT), &NT_result)
-			//判断获取脑图成功
-			if NT_result.Success != true {
-				err = errors.New(fmt.Sprintf("会议脑图生成失败:%s", NT_result.Msg))
-			}
-		} else {
-			err = errors.New(fmt.Sprintf("会议纪要生成失败:%s", JY_result.Msg))
+	if ZY_result.Success != true {
+		err = errors.New(fmt.Sprintf("会议摘要生成申请失败:%s", ZY_result.Msg))
+	}
+	return err
+}
+
+
+/**
+生成会议纪要 + 脑图
+
+1.音频会议通过转译接口【创建会议】把录音文件转成文字。
+2.用户调用此接口对会议内容进行生成 会议摘要、会议纪要、会议脑图结构化字符串
+3.调用顺序必须是  会议摘要 - 会议纪要 - 会议脑图
+*/
+func AudioMeeting_Ai_Summary_BrainMap(meetingId string) (err error) {
+
+	defer common.RecoverHandler(func(err error) {
+		err = err
+	})
+	//根据会议ID，得到orderId
+	kdxfSpeech, err := db.GetOrderIdByMeetingId(meetingId)
+
+	//2.会议纪要
+	responseJY := common.DoHttpPost_kdxf_audio_minutes(kdxfSpeech.OrderId)
+	logs.Info("Ai生成纪要返回：" + responseJY)
+	JY_result := new(kdxf.Kdxf_audio_result)
+	common.Unmarshal([]byte(responseJY), &JY_result)
+	//判断获取纪要成功
+	if JY_result.Success == true {
+		//3.会议脑图
+		responseNT := common.DoHttpPost_kdxf_audio_brainMap(kdxfSpeech.OrderId)
+		logs.Info("Ai生成脑图返回：" + responseNT)
+		NT_result := new(kdxf.Kdxf_audio_result)
+		common.Unmarshal([]byte(responseNT), &NT_result)
+		//判断获取脑图成功
+		if NT_result.Success != true {
+			err = errors.New(fmt.Sprintf("会议脑图生成失败:%s", NT_result.Msg))
 		}
 	} else {
-		err = errors.New(fmt.Sprintf("会议摘要生成失败:%s", ZY_result.Msg))
+		err = errors.New(fmt.Sprintf("会议纪要生成失败:%s", JY_result.Msg))
 	}
 	return err
 }

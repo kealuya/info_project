@@ -86,6 +86,42 @@ func (TaskCtrl *TaskCtrl) GetTaskPoolList() {
 	}
 }
 
+// @Title 任务池 任务详情
+// @Tags TaskPoolDetails
+// @Summary 用户完成任务详情
+// @accept application/json
+// @Produce application/json
+// @Param data body task.MyTask true "MyTask struct"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"查询成功"}"
+// @router /taskPoolDetails [post]
+func (TaskCtrl *TaskCtrl) TaskPoolDetails() {
+	resJson := NewJsonStruct(nil)
+	defer func() {
+		TaskCtrl.Data["json"] = resJson
+		TaskCtrl.ServeJSON()
+	}()
+	myTask_Param := new(task.MyTask)
+	var jsonByte = TaskCtrl.Ctx.Input.RequestBody
+	logs.Info(" 任务池详情入参：" + string(jsonByte))
+	paramerr := jsoniter.Unmarshal(jsonByte, &myTask_Param)
+	if paramerr != nil {
+		resJson.Success = false
+		resJson.Msg = "入参有误"
+		return
+	}
+	//业务处理
+	res, err := models.TaskPoolDetails(myTask_Param.TaskId)
+	if err == nil {
+		resJson.Success = true
+		resJson.Msg = "用户任务详情查询成功"
+		resJson.Data = res
+	} else {
+		resJson.Success = false
+		resJson.Msg = fmt.Sprintf("用户任务详情查询失败::%s", err)
+	}
+}
+
+
 // @Title 用户个人任务列表
 // @Tags GetTaskList
 // @Summary 用户任务列表

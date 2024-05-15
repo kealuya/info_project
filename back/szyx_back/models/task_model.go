@@ -62,6 +62,14 @@ func MyTaskDetails(myTask_Param *task.MyTask) (res task.MyTask, err error) {
 }
 
 /**
+任务池 任务详情
+*/
+func TaskPoolDetails(taskId string) (res task.Task, err error) {
+	res, err = db.TaskPoolDetails(taskId)
+	return res, err
+}
+
+/**
 用户放弃未完成的任务
 */
 func GiveUpTask(myTask_Param *task.Task) (err error) {

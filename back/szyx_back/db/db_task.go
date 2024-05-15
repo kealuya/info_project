@@ -96,6 +96,21 @@ func GetTaskPoolList(info *task.TaskList_Param) (res task.TaskList_Result, msg e
 	return res, err
 }
 
+// 任务池 任务详情
+func TaskPoolDetails(taskId string) (res task.Task, msg error) {
+	dbHandler := db_handler.NewDbHandler()
+	//我的任务信息
+	var Param []interface{}
+	Param = append(Param, taskId)
+	selRes, err := dbHandler.SelectOne(db_handler.TaskPoolDetails_sql, Param...)
+	if len(selRes) > 0 && err == nil {
+		decoder := ObtainDecoderConfig(&res)
+		err1 := decoder.Decode(selRes)
+		common.ErrorHandler(err1, "查询单条我的任务转换发生错误!")
+	}
+	return res, err
+}
+
 //校验是否能参加任务，一个任务只能参加一次
 func CheckIsJoinTask(myTask_Param *task.MyTask) (result string, msg string, err error) {
 	dbHandler := db_handler.NewDbHandler()

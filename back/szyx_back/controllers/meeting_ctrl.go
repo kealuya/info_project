@@ -280,15 +280,15 @@ func (MeetingCtrl *MeetingCtrl) ModifyMeeting() {
 	}
 }
 
-// @Title 会议录音生成 会议摘要、会议纪要、会议脑图结构化字符串
-// @Tags AudioMeeting_Ai_Abstract_Summary_BrainMap
-// @Summary 会议录音生成 会议摘要、会议纪要、会议脑图结构化字符串
+// @Title 会议录音生成 会议摘要
+// @Tags AudioMeeting_Ai_Abstract
+// @Summary 会议录音生成 会议摘要
 // @accept application/json
 // @Produce application/json
 // @Param data body kdxf.Kdxf_audio_param true "Kdxf_audio_param struct"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"Ai生成成功"}"
-// @router /audioMeeting_Ai_Abstract_Summary_BrainMap [post]
-func (MeetingCtrl *MeetingCtrl) AudioMeeting_Ai_Abstract_Summary_BrainMap() {
+// @router /audioMeeting_Ai_Abstract [post]
+func (MeetingCtrl *MeetingCtrl) AudioMeeting_Ai_Abstract() {
 	resJson := NewJsonStruct(nil)
 	defer func() {
 		MeetingCtrl.Data["json"] = resJson
@@ -304,10 +304,44 @@ func (MeetingCtrl *MeetingCtrl) AudioMeeting_Ai_Abstract_Summary_BrainMap() {
 		return
 	}
 	//业务处理
-	err := models.AudioMeeting_Ai_Abstract_Summary_BrainMap(speech.MeetingId)
+	err := models.AudioMeeting_Ai_Abstract(speech.MeetingId)
 	if err == nil {
 		resJson.Success = true
-		resJson.Msg = "Ai生成内容申请成功"
+		resJson.Msg = "生成会议摘要申请成功"
+	} else {
+		resJson.Success = false
+		resJson.Msg = fmt.Sprintf("Ai生成内容报错:%s", err)
+	}
+}
+
+// @Title 会议录音生成 会议纪要 + 会议脑图
+// @Tags AudioMeeting_Ai_Summary_BrainMap
+// @Summary 会议录音生成 会议纪要 + 会议脑图
+// @accept application/json
+// @Produce application/json
+// @Param data body kdxf.Kdxf_audio_param true "Kdxf_audio_param struct"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"Ai生成成功"}"
+// @router /audioMeeting_Ai_Summary_BrainMap [post]
+func (MeetingCtrl *MeetingCtrl) AudioMeeting_Ai_Summary_BrainMap() {
+	resJson := NewJsonStruct(nil)
+	defer func() {
+		MeetingCtrl.Data["json"] = resJson
+		MeetingCtrl.ServeJSON()
+	}()
+	speech := new(kdxf.Kdxf_audio_param)
+	var jsonByte = MeetingCtrl.Ctx.Input.RequestBody
+	logs.Info("生成会议纪要、脑图入参：" + string(jsonByte))
+	paramerr := jsoniter.Unmarshal(jsonByte, &speech)
+	if paramerr != nil {
+		resJson.Success = false
+		resJson.Msg = "入参有误"
+		return
+	}
+	//业务处理
+	err := models.AudioMeeting_Ai_Summary_BrainMap(speech.MeetingId)
+	if err == nil {
+		resJson.Success = true
+		resJson.Msg = "生成会议纪要、脑图申请成功"
 	} else {
 		resJson.Success = false
 		resJson.Msg = fmt.Sprintf("Ai生成内容报错:%s", err)

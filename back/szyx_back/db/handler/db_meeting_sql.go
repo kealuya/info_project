@@ -29,7 +29,9 @@ const (
 								`
 
 	GetMeetingById_sql =   `select meeting.*,
+						    speech.state as translationState,
 							speech.content as meetingAudioText,
+							knowledge.state as meetingSummaryState,
 							knowledge.summary as meetingSummary,
 							knowledge.meeting_minutes as meetingMinutes,
 							knowledge.brain  as meetingBrainMap

@@ -75,6 +75,8 @@ const (
 						left join kdxf_taskpool kt  ON mytask.taskId  = kt.taskId  
 						where  mytask.taskId = ? and mytask.userId = ?  and mytask.corpCode = ? `
 
+	TaskPoolDetails_sql = `select * from kdxf_taskpool where taskId = ?  `
+
 	//更新会议表所关联的任务ID，一个任务对应多个会议
 	UpDateMeetingInTackId_sql = `update kdxf_meeting  set  taskId  = ?,meetingFlag  = ? 
 						where meetingId  = ? and creater  = ? and corpCode = ? `
