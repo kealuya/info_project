@@ -62,6 +62,13 @@ func DoHttpPost_Audio(fileUrl string, filename string, meetingId string, orderId
 		return errMsg
 	}
 
+	// 添加表单字段
+	fileWriter, err = multipartWriter.CreateFormField("meetingId")
+	fileWriter.Write([]byte(meetingId))
+
+	fileWriter, err = multipartWriter.CreateFormField("orderId")
+	fileWriter.Write([]byte(orderId))
+
 	// 关闭 multipart writer
 	multipartWriter.Close()
 
@@ -74,8 +81,6 @@ func DoHttpPost_Audio(fileUrl string, filename string, meetingId string, orderId
 
 	// 设置请求头，包括内容类型
 	request.Header.Set("Content-Type", multipartWriter.FormDataContentType())
-	request.Form.Set("meetingId", meetingId)
-	request.Form.Set("orderId", orderId)
 
 	// 发送请求
 	client := &http.Client{}
