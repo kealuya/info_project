@@ -32,31 +32,29 @@ func GetMeetingList(meetingDto *meeting.MeetingList_Param) (res meeting.MeetingL
 /**
 创建会议，保存到数据库中。 调用语音转译接口 把录音转成文字
 */
+//func CreateMeeting(meetingDto *meeting.Meeting) (err error) {
+//	//创建会议
+//	err = db.CreateMeeting(meetingDto)
+//	//调用语音转译接口 把录音转成文字
+//	if err == nil || meetingDto.MeetingType == "audio" {
+//		//遍历音频会议 上传的所有录音文件
+//		fileList, _ := db.GetMeetingFileList(meetingDto.MeetingId)
+//		orderId := ""
+//		for _, v := range fileList {
+//			//调用语音识别接口
+//			responseStr := common.DoHttpPost_Audio(v.FileUrl, v.FileName, v.MeetingId, orderId)
+//			fmt.Println(responseStr)
+//			//TODO 这块逻需要调用java在联调
+//			//TODO 目前传了MeetingId和获取的orderId。 需要确认java那边同一orderId的录音，返回转译的问题
+//			orderId = "假装是获取到的orderId"
+//		}
+//	}
+//	return err
+//}
 func CreateMeeting(meetingDto *meeting.Meeting) (err error) {
 	//创建会议
 	err = db.CreateMeeting(meetingDto)
-	//调用语音转译接口 把录音转成文字
-	if err == nil || meetingDto.MeetingType == "audio" {
-		//遍历音频会议 上传的所有录音文件
-		fileList, _ := db.GetMeetingFileList(meetingDto.MeetingId,meetingDto.Creater)
-		//多段录音传同一个orderId，转译接口会合并录音内容生成转译文本
-		orderId := ""
-		for _, v := range fileList {
-			fmt.Println("请求参数：" + v.FileUrl +  v.FileName + v.MeetingId + orderId)
-			//调用语音识别接口
-			responseStr := common.DoHttpPost_Audio(v.FileUrl, v.FileName,v.MeetingId,orderId)
-			logs.Info("录音转译接口返回:" + responseStr)
-			//转译接口返回结构取值
-			jsonData := []byte(responseStr)
-			var data map[string]interface{}
-			err1 := json.Unmarshal(jsonData, &data)
-			if err1 != nil {
-				fmt.Println("转换json失败:", err)
-				return err1
-			}
-			orderId = data["orderId"].(string)
-		}
-	}
+	common.DoHttpPost_kdxf_audio_translation_meeting(meetingDto.MeetingId)
 	return err
 }
 
@@ -124,8 +122,6 @@ func AudioMeeting_Ai_Summary_BrainMap(meetingId string) (err error) {
 	return err
 }
 
-
-
 /**
 //TODO 【暂时没调用这个接口，把这块逻辑写在了 创建会议 CreateMeeting接口中】
 音频会议 录音文件转译文字
@@ -141,7 +137,7 @@ func CreateMeetingTranslation(speechDto *kdxf.Kdxf_audio_param) (res kdxf.Kdxf_s
 	//调用的路径
 	logs.Info("调用路径" + audioFullPath)
 	////调用语音识别
-	responseStr := common.DoHttpPost_Audio(audioFullPath, speechDto.FileName,"","")
+	responseStr := common.DoHttpPost_Audio(audioFullPath, speechDto.FileName, "", "")
 
 	kdxf_audio_result := new(kdxf.Kdxf_audio_result)
 	common.Unmarshal([]byte(responseStr), &kdxf_audio_result)
@@ -152,8 +148,6 @@ func CreateMeetingTranslation(speechDto *kdxf.Kdxf_audio_param) (res kdxf.Kdxf_s
 	}
 	return res, err
 }
-
-
 
 /**
 语音转译后  生成会议摘要
@@ -220,7 +214,7 @@ func CreateAudioMeetingBrainMap(speechDto *kdxf.Kdxf_audio_param) (res kdxf.Kdxf
 	if Kdxf_audio_result.Success == true {
 		res.MeetingId = speechDto.MeetingId
 	} else {
-		err = errors.New(fmt.Sprintf("会议纪要生成失败::%s", Kdxf_audio_result.Msg))
+		err = errors.New(fmt.Sprintf("语音会议脑图生成失败::%s", Kdxf_audio_result.Msg))
 	}
 	return res, err
 }
