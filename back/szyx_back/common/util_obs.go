@@ -12,11 +12,11 @@ import (
 
 //华为obs基础配置信息
 const (
-	AccessBaseUrl = "https://jbkj.obs.cn-east-3.myhuaweicloud.com/"
-	Endpoint      = "obs.cn-east-3.myhuaweicloud.com"
-	Ak            = "9O6QEHVJRXZDXBQ0IKTZ"
-	Sk            = "HhUkyO89XLiXwt3tyJlm0uCiP36zzqn4EvuG6GRU"
-	BucketName    = "jbkj"
+	AccessBaseUrl = "xxxx"
+	Endpoint      = "xxx"
+	Ak            = "xxx"
+	Sk            = "xxx"
+	BucketName    = "xxx"
 )
 
 //返回响应参数组装类
