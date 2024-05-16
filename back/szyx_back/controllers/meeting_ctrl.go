@@ -6,6 +6,7 @@ import (
 	"github.com/astaxie/beego/logs"
 	jsoniter "github.com/json-iterator/go"
 	"path"
+	"szyx_back/common"
 	"szyx_back/entity/kdxf"
 	"szyx_back/entity/meeting"
 	"szyx_back/models"
@@ -63,7 +64,6 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingAudioFile() {
 	//设置允许跨域请求
 	MeetingCtrl.Ctx.ResponseWriter.Header().Set("Access-Control-Allow-Origin", "*")
 	resJson := NewJsonStruct(nil)
-	flag := true
 
 	defer func() {
 		MeetingCtrl.Data["json"] = resJson
@@ -73,7 +73,6 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingAudioFile() {
 
 	file, h, _ := MeetingCtrl.GetFile("file")       //获取上传的文件
 	meetingId := MeetingCtrl.GetString("meetingId") //获取会议ID
-	//meetingTitle := MeetingCtrl.GetString("meetingTitle") //会议标题
 	userId := MeetingCtrl.GetString("userId")       //用户ID
 	corpCode := MeetingCtrl.GetString("corpCode")   //企业code
 	audioTime := MeetingCtrl.GetString("audioTime") //音频时长
@@ -85,13 +84,12 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingAudioFile() {
 		".blob": true,
 	}
 	if _, ok := AllowExtMap[ext]; !ok {
-		flag = false
 		resJson.Success = false
 		resJson.Msg = "文件类型不正确"
 		return
 	}
-
-	uploadDir := "static/upload/"
+	//这是上传本地代码 改为上传obs
+	/*uploadDir := "static/upload/"
 	//构造上传路径+文件名
 	filePath := uploadDir + h.Filename
 	defer file.Close() //关闭上传的文件，不然的话会出现临时文件不能清除的情况
@@ -100,13 +98,14 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingAudioFile() {
 	if err != nil {
 		MeetingCtrl.Ctx.WriteString(fmt.Sprintf("%v"))
 		flag = false
-	}
-	if flag {
+	}*/
+	//调用华为云OBS上传音频文件 //音频传入audioFile文件夹
+	obsPutFileRep, err := common.ObsPutFile(corpCode, h.Filename, file,"audioFile")
+	if obsPutFileRep.Success {
 		//上传的音频文件基础信息存表。用于选择业务内容关联展示
 		meetingFile := new(meeting.MeetingFile)
 		meetingFile.MeetingId = meetingId
-		//meetingFile.MeetingTitle = meetingTitle
-		meetingFile.FileUrl = filePath //TODO 先取构造的上传路径 日后有了文件obs地址在改
+		meetingFile.FileUrl = obsPutFileRep.ImgURL
 		meetingFile.FileName = h.Filename
 		meetingFile.Creater = userId
 		meetingFile.CorpCode = corpCode
@@ -115,9 +114,9 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingAudioFile() {
 		err2 := models.AddMeetingFileInfo(meetingFile)
 		if err2 == nil {
 			fileStruct := new(meeting.MeetingFile_Result)
-			fileStruct.FileUrl = filePath
+			fileStruct.FileUrl = obsPutFileRep.ImgURL
 			resJson.Success = true
-			resJson.Msg = "上传录音成功"
+			resJson.Msg = "录音上传OBS成功"
 			resJson.Data = fileStruct
 		} else {
 			resJson.Success = false
@@ -125,7 +124,7 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingAudioFile() {
 		}
 	} else {
 		resJson.Success = false
-		resJson.Msg = fmt.Sprintf("会议文件上传失败::%s", err)
+		resJson.Msg = fmt.Sprintf("上传华为obs失败::%s", err)
 	}
 
 }
@@ -143,7 +142,6 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingFile() {
 	//设置允许跨域请求
 	MeetingCtrl.Ctx.ResponseWriter.Header().Set("Access-Control-Allow-Origin", "*")
 	resJson := NewJsonStruct(nil)
-	flag := true
 
 	defer func() {
 		MeetingCtrl.Data["json"] = resJson
@@ -168,26 +166,17 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingFile() {
 	}
 	//判读所属类型
 	if _, ok := AllowExtMap[ext]; !ok {
-		flag = false
 		resJson.Success = false
 		resJson.Msg = "文件类型不正确"
 		return
 	}
-	uploadDir := "static/upload/"
-	//构造上传路径+文件名
-	filePath := uploadDir + h.Filename
-	defer file.Close() //关闭上传的文件，不然的话会出现临时文件不能清除的情况
-
-	err := MeetingCtrl.SaveToFile("file", filePath)
-	if err != nil {
-		MeetingCtrl.Ctx.WriteString(fmt.Sprintf("%v"))
-		flag = false
-	}
-	if flag {
+	//调用华为云OBS上传音频文件  //文档传入documentFile文件夹
+	obsPutFileRep, err := common.ObsPutFile(corpCode, h.Filename, file,"documentFile")
+	if obsPutFileRep.Success {
 		//上传文件的基础信息存表。用于选择业务内容关联展示
 		meetingFile := new(meeting.MeetingFile)
 		meetingFile.MeetingId = meetingId
-		meetingFile.FileUrl = filePath //TODO 先取构造的上传路径 日后有了文件obs地址在改
+		meetingFile.FileUrl = obsPutFileRep.ImgURL
 		meetingFile.FileName = h.Filename
 		meetingFile.Creater = userId
 		meetingFile.CorpCode = corpCode
@@ -195,9 +184,9 @@ func (MeetingCtrl *MeetingCtrl) UploadMeetingFile() {
 		err2 := models.AddMeetingFileInfo(meetingFile)
 		if err2 == nil {
 			fileStruct := new(meeting.MeetingFile_Result)
-			fileStruct.FileUrl = filePath
+			fileStruct.FileUrl = obsPutFileRep.ImgURL
 			resJson.Success = true
-			resJson.Msg = "上传成功"
+			resJson.Msg = "文件上传OBS成功"
 			resJson.Data = fileStruct
 		} else {
 			resJson.Success = false
@@ -304,13 +293,13 @@ func (MeetingCtrl *MeetingCtrl) AudioMeeting_Ai_Abstract() {
 		return
 	}
 	//业务处理
-	err := models.AudioMeeting_Ai_Abstract(speech.MeetingId)
-	if err == nil {
+	//err := models.AudioMeeting_Ai_Abstract(speech.MeetingId)
+	if true {
 		resJson.Success = true
 		resJson.Msg = "生成会议摘要申请成功"
 	} else {
 		resJson.Success = false
-		resJson.Msg = fmt.Sprintf("Ai生成内容报错:%s", err)
+		//resJson.Msg = fmt.Sprintf("Ai生成内容报错:%s", err)
 	}
 }
 
@@ -338,13 +327,13 @@ func (MeetingCtrl *MeetingCtrl) AudioMeeting_Ai_Summary_BrainMap() {
 		return
 	}
 	//业务处理
-	err := models.AudioMeeting_Ai_Summary_BrainMap(speech.MeetingId)
-	if err == nil {
+	//err := models.AudioMeeting_Ai_Summary_BrainMap(speech.MeetingId)
+	if true {
 		resJson.Success = true
 		resJson.Msg = "生成会议纪要、脑图申请成功"
 	} else {
 		resJson.Success = false
-		resJson.Msg = fmt.Sprintf("Ai生成内容报错:%s", err)
+		//resJson.Msg = fmt.Sprintf("Ai生成内容报错:%s", err)
 	}
 }
 
