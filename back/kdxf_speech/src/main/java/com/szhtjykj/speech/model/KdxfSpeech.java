@@ -21,5 +21,5 @@ public class KdxfSpeech {
     private Long real_duration;
     //添加字段
     private String meetingId; //会议ID
-    private String fileId;  //文件ID
+    private int fileId;  //文件ID
 }

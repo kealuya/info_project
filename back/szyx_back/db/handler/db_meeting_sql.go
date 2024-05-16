@@ -28,7 +28,7 @@ const (
 									MeetingId = ?
 								`
 
-	GetMeetingById_sql =   `select meeting.*,
+	GetMeetingById_sql = `select meeting.*,
 						    speech.state as translationState,
 							speech.content as meetingAudioText,
 							knowledge.state as meetingSummaryState,
@@ -53,4 +53,6 @@ const (
 
 	DeleteAudioMeetingFile_sql = ` delete from kdxf_meetingFile where meetingId = ? and fileName = ? 
                                  and creater = ? and corpCode = ? `
+
+	GetMeetingListTranslation = `select * from  kdxf_meeting where translationState = ? and createTime between ? and ?  `
 )

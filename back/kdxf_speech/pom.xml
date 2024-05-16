@@ -24,6 +24,12 @@
     </properties>
 
     <dependencies>
+        <!-- 添加 Solon 框架核心依赖 -->
+        <dependency>
+            <groupId>org.noear</groupId>
+            <artifactId>cron4j-solon-plugin</artifactId>
+            <version>1.0.9</version>
+        </dependency>
         <dependency>
             <groupId>org.noear</groupId>
             <artifactId>solon-api</artifactId>

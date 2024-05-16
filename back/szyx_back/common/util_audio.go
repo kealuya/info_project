@@ -17,6 +17,9 @@ var kdxf_audio = "http://localhost:7003/uploadAudio"
 //kdxf音频转换地址---入参meetingId
 var kdxf_audio_translation_meeting = "http://localhost:7003/audioMeetingTranslation"
 
+//kdxf 获取音频转译结果
+var kdxf_audio_translation_getResult = "http://localhost:7003/getResultByMeetingId"
+
 //kdxf音频会议总结
 var kdxf_CreateMeetingSummary = "http://localhost:7003/convertAudioToSummary"
 
@@ -146,6 +149,17 @@ func DoHttpPost_kdxf_audio_brainMap(orderId string, options ...map[string]string
 //kdxf 语音转译 meetingId 入参
 func DoHttpPost_kdxf_audio_translation_meeting(meetingId string, options ...map[string]string) (respBody string) {
 	req := httplib.Post(kdxf_audio_translation_meeting)
+	req.Header("Content-Type", "application/json")
+	req.Param("meetingId", meetingId)
+	respBody, err := req.String()
+	ErrorHandler(err)
+	logs.Warn(respBody)
+	return respBody
+}
+
+//kdxf 获取转译结果
+func DoHttpPost_kdxf_audio_translation_getResult(meetingId string, options ...map[string]string) (respBody string) {
+	req := httplib.Post(kdxf_audio_translation_getResult)
 	req.Header("Content-Type", "application/json")
 	req.Param("meetingId", meetingId)
 	respBody, err := req.String()

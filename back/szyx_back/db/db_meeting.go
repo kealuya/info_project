@@ -121,7 +121,7 @@ func GetMeetingList(info *meeting.MeetingList_Param) (res meeting.MeetingList_Re
 }
 
 //根据会议id 查询会议文件list
-func GetMeetingFileList(meetingId string,userId string) (res []meeting.MeetingFile, msg error) {
+func GetMeetingFileList(meetingId string, userId string) (res []meeting.MeetingFile, msg error) {
 	dbHandler := db_handler.NewDbHandler()
 	var Param []interface{}
 	Param = append(Param, meetingId)
@@ -219,7 +219,7 @@ func AddMeetingFileInfo(meetingFile *meeting.MeetingFile) (msg error) {
 }
 
 //删除音频会议上传的 音频文件
-func DeleteAudioMeetingFile (meetingFile *meeting.MeetingFile) (msg error) {
+func DeleteAudioMeetingFile(meetingFile *meeting.MeetingFile) (msg error) {
 	defer common.RecoverHandler(func(rcErr error) {
 		msg = rcErr
 	})
@@ -236,4 +236,29 @@ func DeleteAudioMeetingFile (meetingFile *meeting.MeetingFile) (msg error) {
 		err1 = errors.New("删除音频文件删除失败")
 	}
 	return err1
+}
+
+//获取3天内，待转译的会议
+func GetMeetingListTranslation() (res []meeting.Meeting, msg error) {
+	dbHandler := db_handler.NewDbHandler()
+	var Param []interface{}
+
+	// 获取当前时间
+	now := time.Now()
+	// 计算三天前的时间
+	threeDaysAgo := now.AddDate(0, 0, -3)
+
+	startDate := now.Format("2006-01-02 15:04:05")
+	endDate := threeDaysAgo.Format("2006-01-02 15:04:05")
+
+	Param = append(Param, "1") //1 代表转译中
+	Param = append(Param, startDate)
+	Param = append(Param, endDate)
+	selRes, err := dbHandler.SelectList(db_handler.GetMeetingListTranslation, Param...)
+	if len(selRes) > 0 && err == nil {
+		decoder := ObtainDecoderConfig(&res)
+		err1 := decoder.Decode(selRes)
+		common.ErrorHandler(err1, "会议list信息转换发生错误!")
+	}
+	return res, err
 }

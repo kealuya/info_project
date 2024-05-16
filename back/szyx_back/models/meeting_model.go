@@ -21,7 +21,7 @@ func GetMeetingList(meetingDto *meeting.MeetingList_Param) (res meeting.MeetingL
 	for k, v := range res.MeetingList {
 		// 创建目标集合
 		var meetingListNew []meeting.MeetingFile
-		fileList, _ := db.GetMeetingFileList(v.MeetingId,v.Creater)
+		fileList, _ := db.GetMeetingFileList(v.MeetingId, v.Creater)
 		meetingListNew = append(meetingListNew, fileList...)
 		res.MeetingList[k].MeetingFile = meetingListNew
 	}
@@ -82,7 +82,6 @@ func AudioMeeting_Ai_Abstract(meetingId string) (err error) {
 	}
 	return err
 }
-
 
 /**
 生成会议纪要 + 脑图
