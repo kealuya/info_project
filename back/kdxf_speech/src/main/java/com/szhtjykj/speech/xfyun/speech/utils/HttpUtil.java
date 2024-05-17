@@ -77,6 +77,33 @@ public class HttpUtil {
         return doExecute(httpPost, null);
     }
 
+
+    /**
+     * 请求的upload接口, 发送音频创建转写订单
+     *
+     * @param url       请求地址
+     * @return 返回结果
+     */
+    public static String xfyUploadFileByObsUrl(String url,InputStream in) {
+        // 1、准备参数
+        HttpPost httpPost = new HttpPost(url);
+        // 设置超时时间, 防止504的时候会耗时30分钟
+        RequestConfig requestConfig = RequestConfig.custom()
+                //从连接池中获取连接的超时时间
+                .setConnectionRequestTimeout(5000)
+                //与服务器连接超时时间, 指的是连接一个url的连接等待时间
+                .setConnectTimeout(600000)
+                // 读取超时, 指的是连接上一个url，获取response的返回等待时间
+                .setSocketTimeout(600000).build();
+        httpPost.setConfig(requestConfig);
+        HttpEntity requestEntity = new InputStreamEntity(in ,ContentType.APPLICATION_JSON);
+        httpPost.setEntity(requestEntity);
+
+        // 2、执行请求
+        return doExecute(httpPost, null);
+    }
+
+
     /**
      * 请求听见的获取结果接口
      *

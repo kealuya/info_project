@@ -20,7 +20,7 @@ public interface MeetingFileDao extends BaseMapper<MeetingFile> {
     List<MeetingFile> getMeetingFileByMeetingId(String meetingId);
 
     @Update
-    @Template("update kdxf_meetingFile set translationStatus = '1' orderId = #{orderId} where id = #{id}")
+    @Template("update kdxf_meetingFile set translationStatus = '1',orderId = #{orderId} where id = #{id}")
     Integer updateMeetingFileTranslationStatus(String orderId, String status, int id);
 
 

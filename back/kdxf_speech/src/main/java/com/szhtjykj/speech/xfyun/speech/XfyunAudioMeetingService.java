@@ -9,6 +9,7 @@ import com.szhtjykj.speech.model.KdxfSpeech;
 import com.szhtjykj.speech.model.MeetingFile;
 import com.szhtjykj.speech.xfyun.speech.sign.LfasrSignature;
 import com.szhtjykj.speech.xfyun.speech.utils.HttpUtil;
+import com.szhtjykj.speech.xfyun.speech.utils.kdxfResult.kdxfAudioResult;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.beetl.sql.core.SQLReady;
 import org.beetl.sql.solon.annotation.Db;
@@ -38,9 +39,7 @@ import java.util.concurrent.Executors;
 @Component
 public class XfyunAudioMeetingService {
 
-    private static final String HOST = "";
-    private static final String appid = "";
-    private static final String keySecret = "";
+
 
     private static final Gson gson = new Gson();
     static Logger log = LoggerFactory.getLogger(XfyunSpeechService.class);
@@ -76,23 +75,36 @@ public class XfyunAudioMeetingService {
             String fileUrl = fileDto.getFileUrl();
 
             try {
+
                 URL file_Url = new URL(fileUrl);
                 URLConnection connection = file_Url.openConnection();
                 InputStream inputStream = connection.getInputStream();
-                long fileSize = inputStream.available();
+//                long fileSize = getInputStramSize(inputStream);
+//                //获取字节大小
+
                 map.put("appId", appid);
-                map.put("fileSize", fileSize);
+                map.put("fileSize", 100);
                 map.put("fileName", fileDto.getFileName());
                 map.put("duration", "200");// 音频真实时长.当前未验证，可随机传一个数字
                 LfasrSignature lfasrSignature = new LfasrSignature(appid, keySecret);
                 map.put("signa", lfasrSignature.getSigna());
                 map.put("ts", lfasrSignature.getTs());
+
+                //改为传递url
+                map.put("audioMode", "urlLink");
+                map.put("audioUrl", fileUrl);
+
 //          此处后续追加 mp3 判断，需要追加接口参数 lame ：：暂时不考虑，因为普通语音转写不需要格式区别。
                 String paramString = HttpUtil.parseMapToPathParam(map);
                 log.info("upload paramString__kdxf调用map参数:" + paramString);
                 String url = HOST + "/v2/api/upload" + "?" + paramString;
                 log.info("upload_url__kdxf调用地址:" + url);
-                String response = HttpUtil.iflyrecUpload(url, inputStream);
+//                //原文件流方式
+//                String response = HttpUtil.iflyrecUpload(url, inputStream);
+
+                //传递外部url的方式
+                String response = HttpUtil.xfyUploadFileByObsUrl(url, inputStream);
+
 
                 log.info("upload response__kdxf返回值:" + response);
                 String jsonStr = StringEscapeUtils.unescapeJavaScript(response);
@@ -112,27 +124,7 @@ public class XfyunAudioMeetingService {
                 ks.setFileId(fileDto.getId());
                 kdxfSpeechDao.insert(ks);
 
-//                // 提交任务给线程池执行
-//                executor.submit(() -> {
-//                    // 处理文件的逻辑
-//                    try {
-//                        //orderId 当前orderId  ,orderId2 第一个文件的orderId
-//                        getResult(orderId, fileDto.getFileName(), "", fileDto.getMeetingId());
-//                    } catch (Exception e) {
-//                        log.error("获取音频翻译发生错误::", e);
-//
-//                        // 将语音转换信息存入db
-//                        KdxfSpeech ksForUpdate = new KdxfSpeech();
-//                        ksForUpdate.setOrder_id(orderId);
-//                        ksForUpdate.setState(2); // 错误
-//                        ksForUpdate.setMeetingId(meetingId);
-//                        ksForUpdate.setComment(e.getMessage());
-//                        kdxfSpeechDao.updateById(ksForUpdate);
-//                    }
-//                });
-
-
-//                // 关闭inputStream
+                // 关闭inputStream
                 inputStream.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -143,6 +135,20 @@ public class XfyunAudioMeetingService {
     }
 
 
+    //获取文件，字节大小
+    private int getInputStramSize(InputStream inputStream) throws Exception{
+        // 使用ByteArrayOutputStream来暂时存储读取的数据
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = inputStream.read(buffer)) != -1) {
+            baos.write(buffer, 0, length);
+        }
+        // 获取字节数组的长度作为流的大小
+        return baos.toByteArray().length;
+    }
+
+
     /**
      * 根据会议ID，得到转译的返回值
      * @param meetingId
@@ -150,9 +156,7 @@ public class XfyunAudioMeetingService {
      */
     public void getResultByMeetingId(String meetingId) throws Exception {
 
-        //是否为最后一个文件，且转译已经完成
-        Boolean flag = false;
-
+        kdxfAudioResult kdxfre = new kdxfAudioResult();
         //根据会议ID，得到speech  list
         List<KdxfSpeech> kdxfSpeechList = kdxfSpeechDao.getSpeechByMeetingId(meetingId);
 
@@ -175,10 +179,12 @@ public class XfyunAudioMeetingService {
             try {
 //                Object j = jsonParse.content.orderInfo.status;
                 if (jsonParse.content.orderInfo.status == 4 || jsonParse.content.orderInfo.status == -1) {
-                    log.info("订单完成:" + kdxfSpeech.getOrder_id() + "::" + getContentForNormal(jsonParse.content.orderResult));
+                    //log.info("订单完成:" + kdxfSpeech.getOrder_id() + "::" + getContentForNormal(jsonParse.content.orderResult));
+                    log.info("订单完成:" + kdxfSpeech.getOrder_id() + "::" + kdxfre.getContentAudioMeeting(jsonParse.content.orderResult));
                     KdxfSpeech ksForUpdate = kdxfSpeech;
                     ksForUpdate.setState(1); // 完成
-                    ksForUpdate.setContent(getContentForNormal(jsonParse.content.orderResult));
+                    //ksForUpdate.setContent(getContentForNormal(jsonParse.content.orderResult));
+                    ksForUpdate.setContent(kdxfre.getContentAudioMeeting(jsonParse.content.orderResult));
                     ksForUpdate.setReal_duration(jsonParse.content.orderInfo.realDuration);
                     //更新数据
                     kdxfSpeechDao.updateTemplateById(ksForUpdate);

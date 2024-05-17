@@ -25,15 +25,7 @@ import java.util.regex.Pattern;
 @Component
 public class XfyunKnowledgeService {
 
-    private static final String uploadUrl = "https://chatdoc.xfyun.cn/openapi/fileUpload";
-    //    private static final String fileStatusUrl = "https://chatdoc.xfyun.cn/openapi/fileStatus";
-    private static final String chatUrl = "wss://chatdoc.xfyun.cn/openapi/chat";
-    private static final String startSummaryUrl = "https://chatdoc.xfyun.cn/openapi/startSummary";
-    private static final String fileSummaryUrl = "https://chatdoc.xfyun.cn/openapi/fileSummary";
 
-    private static final String appId = "60f7d982";
-    private static final String secret = "NGM3ZDYwMzdiNWRhMTIyMTg0OWZkNzUw";
-    private static final ChatDocUtil chatDocUtil = new ChatDocUtil();
 
     public static final String QUESTION_MEETING_MUNIT = "请按照会议纪要的格式返回详细的会议内容，并且不需要其他描述语言，只需要会议纪要";
     //    public static final String QUESTION_MEETING_MUNIT = "请按照会议纪要的格式返回详细的会议内容，并且不需要其他描述语言，只需要会议纪要，" +
@@ -54,7 +46,8 @@ public class XfyunKnowledgeService {
     private static final ExecutorService executor = Executors.newFixedThreadPool(10); // 创建一个固定大小为10的线程池
 
     public void makeSummaryAndMeeting(String orderId, String fileId) throws Exception {
-
+        List<KdxfSpeech> speechList =  kdxfSpeechDao.getSpeechDetailByOrderId(orderId);
+        String meetingId = speechList.get(0).getMeetingId();
         // 提交任务给线程池执行
         executor.submit(() -> {
             // 处理文件的逻辑
@@ -99,6 +92,7 @@ public class XfyunKnowledgeService {
                         knowledge.setFile_id(fileId);
                         knowledge.setState(1);
                         knowledge.setSummary(ur.getData().getSummary());
+                        knowledge.setMeetingId(meetingId);
                         kdxfKnowledgeDao.updateTemplateById(knowledge);
                         return;
                     }

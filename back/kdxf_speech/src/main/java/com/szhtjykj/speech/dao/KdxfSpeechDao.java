@@ -17,4 +17,7 @@ public interface KdxfSpeechDao extends BaseMapper<KdxfSpeech> {
     @Template("select * from kdxf_speech where meetingId = #{meetingId} order by fileId")
     List<KdxfSpeech> getSpeechByMeetingId(String meetingId);
 
+    @Template("select * from kdxf_speech where order_id = #{orderId}")
+    List<KdxfSpeech> getSpeechDetailByOrderId(String orderId);
+
 }
