@@ -54,5 +54,5 @@ const (
 	DeleteAudioMeetingFile_sql = ` delete from kdxf_meetingFile where meetingId = ? and fileName = ? 
                                  and creater = ? and corpCode = ? `
 
-	GetMeetingListTranslation = `select * from  kdxf_meeting where translationState = ? and createTime between ? and ?  `
+	GetMeetingListTranslation = `select * from  kdxf_meeting where translationStatus = ? and createTime between ? and ?  `
 )
