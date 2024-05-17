@@ -80,6 +80,7 @@ public class AudioMeetingController {
         Map<String, Object> returnMap = new HashMap<>();
         try {
             xfyunAudioMeetingService.getResultByMeetingId(meetingId);
+            xfyunAudioMeetingService.getLastFileByMeetingId(meetingId);
         } catch (Exception e) {
             log.error("定时方法执行::", e);
             returnMap.put("success", false);
