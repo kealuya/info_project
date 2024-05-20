@@ -330,7 +330,7 @@ func (MeetingCtrl *MeetingCtrl) AudioMeeting_Ai_Summary_BrainMap() {
 	err := models.AudioMeeting_Ai_Summary_BrainMap(speech.MeetingId)
 	if true {
 		resJson.Success = true
-		resJson.Msg = "生成会议纪要、脑图申请成功"
+		resJson.Msg = "纪要、脑图获取成功"
 	} else {
 		resJson.Success = false
 		resJson.Msg = fmt.Sprintf("Ai生成内容报错:%s", err)
