@@ -47,7 +47,7 @@ func ObsPutFile(corpCode string, fileName string, file io.Reader,folder string,)
 	defer obsClient.Close()
 	//取得上传文件的文件类型后缀
 	fileType := fileName[strings.LastIndexAny(fileName, ".")+1:]
-	if fileType != "pdf" && fileType != "jpeg" && fileType != "xls" && fileType != "xlsx" && fileType != "doc" && fileType != "docx" && fileType != "png" && fileType != "jpg" && fileType != "mp3" {
+	if fileType != "pdf" && fileType != "txt" && fileType != "jpeg" && fileType != "xls" && fileType != "xlsx" && fileType != "doc" && fileType != "docx" && fileType != "png" && fileType != "jpg" && fileType != "mp3" {
 		ErrorHandler(errors.New("错误文件类型"), "通过url获取对象类型发生错误:%+v")
 		obsPutFileRep.Success = false
 		obsPutFileRep.Msg = "对象化存储接口发生错误!- 错误文件类型"
