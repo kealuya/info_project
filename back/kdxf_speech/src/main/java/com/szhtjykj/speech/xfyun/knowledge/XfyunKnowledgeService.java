@@ -111,7 +111,7 @@ public class XfyunKnowledgeService {
     }
 
 
-    public String uploadFile(String orderId) throws Exception {
+    public String uploadFile(String orderId,String meetingId) throws Exception {
 
         List<KdxfSpeech> ksList = kdxfSpeechDao.getSpeechByOrderId(orderId);
         if (ksList.isEmpty()) {
@@ -141,6 +141,7 @@ public class XfyunKnowledgeService {
                 knowledge.setDatetime(new Date());
                 knowledge.setOrder_id(orderId);
                 knowledge.setState(0);
+                knowledge.setMeetingId(meetingId);
                 kdxfKnowledgeDao.insert(knowledge);
 
                 return uploadResp.getData().getFileId();

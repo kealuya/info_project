@@ -34,9 +34,10 @@ public class KnowledgeController {
     @Mapping("/convertAudioToSummary")
     public Map convertAudioToSummary(Context ctx) {
         String orderId = ctx.param("orderId");
+        String meetingId = ctx.param("meetingId");
         Map<String, Object> returnMap = new HashMap<>();
         try {
-            String fileId = xfyunKnowledgeService.uploadFile(orderId);
+            String fileId = xfyunKnowledgeService.uploadFile(orderId,meetingId);
             xfyunKnowledgeService.makeSummaryAndMeeting(orderId,fileId);
 
             returnMap.put("success", true);
