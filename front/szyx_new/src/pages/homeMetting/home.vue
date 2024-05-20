@@ -102,9 +102,10 @@ import danjuIcon from  '../../assets/img/danju.png';
 import tabbar from '../../Tabbar.vue'
 import {useRouter} from "vue-router";
   import ApplicationCard from "../home/component/applicationCard.vue";
-  import {onMounted, ref} from "vue";
+  import {onMounted, ref,inject} from "vue";
   import {getDocStateList} from "../../services/home";
   import {getTaskPoolList} from "../../services/task-processing/index";
+// import {inject} from "vue";
   //定义列表数据类型
   interface listType {
     currentPage:Number, //当前页
@@ -145,6 +146,8 @@ const params = ref<any>({
   pageSize:10,
   status:'0',
   corpCode: "",
+    userJoinState:'No',
+    userId:''
 })
   const getDocList=async(payload:any,code:any)=>{
   // console.log('payload',payload)
@@ -158,7 +161,7 @@ const params = ref<any>({
   });
   }
 const toDetail=(row:any)=>{
-  router.replace({name:'taskDetail',query:row})
+  router.replace({name:'taskPoolDetail',query:row})
 }
 // const toDetail2=()=>{
 //   router.replace('/taskDetail_two')
@@ -184,7 +187,14 @@ const moreTasks = ()=>{
   router.push('/taskPool')
 }
 onMounted(async () => {
+    let userInfoData: any = inject("userInfo"); // 取出用户信息用于调用接口
   params.value.corpCode = await localStorage.getItem('corpCode')
+
+    // console.log(userInfoData,'000000000000')
+    if (userInfoData) {
+        params.value.userId = userInfoData.userInfo.userId
+
+    }
   getDocList(params.value, '')
 })
 </script>

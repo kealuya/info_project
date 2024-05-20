@@ -1,5 +1,5 @@
 <template>
-    <taskCard :title="title" :taskTitle="taskTitle" :picSrc="picSrc" :target="target" :content="content"
+    <taskCard :title="title" :taskTitle="taskTitle" :picSrc="picSrc" :target="target" :content="content" :taskId="taskId"
               :isComplete="isComplete" :finished="finished"></taskCard>
 </template>
 <script lang="ts" setup>
@@ -20,6 +20,7 @@ const taskTitle = ref<string>('')
 const picSrc = ref<string>()
 const target = ref<string>()
 const content = ref<string>()
+const taskId = ref<string>()
 // const meetingList = ref<any>()
 // const taskId = ref<any>()
 let finished = ref<any>()
@@ -65,6 +66,7 @@ onMounted(() => {
             target.value = res.data.taskData
             content.value = res.data.taskContent
             picSrc.value = res.data.taskImg
+            taskId.value = res.data.taskId
             console.log(res.data.meetingList)
             // meetingList.value = res.data.meetingList
         }

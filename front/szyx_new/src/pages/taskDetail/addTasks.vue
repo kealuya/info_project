@@ -31,38 +31,24 @@
                        maxlength="20"
                        readonly
                        label-align="top"/>
-<!--          <van-field-->
-<!--              v-model="fieldValue"-->
-<!--              is-link-->
-<!--              readonly-->
-<!--              label="任务类型"-->
-<!--              placeholder="临床推广"-->
-<!--              @click="showPicker = true"-->
-<!--          />-->
           <van-notice-bar color="#1989fa" :scrollable="false" wrapable background="#ecf9ff" class="f10">
             任务内容：
            <p>{{contentTask}}</p>
           </van-notice-bar>
 
-            <van-cell title="业务内容" is-link value="请选择任务的业务内容" @click="taskList"/>
+            <van-cell title="业务内容" is-link value="请选择业务内容" @click="taskList"/>
 
 
 <!--          <div class="yw_content" @click="taskList">-->
 <!--            业务内容<van-icon name="arrow" />-->
 <!--          </div>-->
-          <div class="list_card" v-for="item in meetingList" :key="item.id">
+          <div class="list_card" v-for="item in meetingList" :key="item.meetingId">
             <div class="flex-space m-b-10">
               <div style="display: flex;align-items: center">
                 <van-tag type="primary" v-if="item.meetingType == 'audio'">音频会议</van-tag>
                 <van-tag type="success" v-else>文档记录</van-tag>
                 <div class="list_title">{{item.meetingTitle}}</div>
               </div>
-              <!--                <van-checkbox v-model="item.isCheck" @change="changeCheck"></van-checkbox>-->
-              <!--            <van-image-->
-              <!--                width="20"-->
-              <!--                height="20"-->
-              <!--                :src="businessIcon"-->
-              <!--            />-->
             </div>
             <van-divider />
             <!--          //display:flex;align-items: center;-->
@@ -81,15 +67,13 @@
 
             </div>
           </div>
-
-<!--          <businessCard :isCollapse="isCollapse" :meetingList="meetingList"></businessCard>-->
         </van-cell-group>
       </div>
     </van-form>
   </div>
 
   <div class="footer_btn">
-    <van-button block type="primary" @click="showLoanStatus">
+    <van-button block type="primary" @click="showLoanStatus" :loading="isLoading" loading-text="提交中">
       提交任务
     </van-button>
   </div>
@@ -104,17 +88,14 @@
 </template>
 <script lang="ts" setup>
 import {finishMyTask} from '../../services/task-processing/index'
-import {finishTaskType} from '../../services/task-processing/types/index'
 import {taskData,meetingData} from '../../store/index'
-// import businessCard from '../../components/businessCard/index.vue'
 import {inject, onMounted, ref} from 'vue'
-import { useRouter,useRoute } from "vue-router";
-// import { showSuccessToast, showFailToast } from 'vant';
-import {showSuccessToast} from "vant";
+import { useRouter,useRoute } from "vue-router"
+import {showConfirmDialog, showSuccessToast,showFailToast} from "vant"
+import {IMeetingDetailTypeResponse,finishTaskType} from '../../services/task-processing/types/index'
 import word from "../../assets/img/word.png";
 import xmind from "../../assets/img/xmind.png";
 import mp3 from "../../assets/img/mp3.png";
-import {showFailToast} from "vant/es";
 const router = useRouter()
 const route = useRoute()
 const taskStore = taskData()
@@ -123,7 +104,8 @@ const contentTask = ref<string>()
 const isCollapse = ref<boolean>(true)
 const taskId = ref<string>('')
 const taskTime = ref<string>('')
-const meetingList = ref<any>([])
+const meetingList = ref<IMeetingDetailTypeResponse[]>([])
+const isLoading = ref<boolean>(false)
 const columns = [
   { text: '临床推广', value: '临床推广' },
   { text: '科研成果', value: '科研成果' } ,
@@ -132,7 +114,7 @@ const columns = [
 const fieldValue = ref('');
 const showPicker = ref(false);
 
-const onConfirm = ({ selectedOptions }) => {
+const onConfirm = ({ selectedOptions}) => {
   showPicker.value = false;
   fieldValue.value = selectedOptions[0].text;
 };
@@ -164,16 +146,32 @@ let params = ref<finishTaskType>({
 
 //点击了提交 任务按钮
 const showLoanStatus=()=> {
-  console.log('参数',params.value)
-  //以上是准备接口参数
-  finishMyTask(params.value).then((res:any)=>{
-    if(res.success){
-      showSuccessToast(res.msg)
-      router.replace('/taskProcessing')
+    if(meetingList.value.length==0){
+        showFailToast('请选择业务内容！');
     }else{
-      showFailToast(res.msg)
+        showConfirmDialog({
+            title: '提交任务',
+            message:
+                '你确定要提交这几项任务吗？',
+        })
+            .then(() => {
+                isLoading.value = true
+
+                //以上是准备接口参数
+                finishMyTask(params.value).then((res:any)=>{
+                    if(res.success){
+                        showSuccessToast(res.msg)
+                        isLoading.value = false
+                        router.replace({path:'/taskProcessing',query:{finish:true}})
+                    }else{
+                        showFailToast(res.msg)
+                    }
+                })
+            })
+
     }
-  })
+  // console.log('参数',params.value)
+
 
 
 }
@@ -199,10 +197,8 @@ onMounted(()=>{
   params.value.userId = userInfoData.userInfo.userId
   params.value.userName = userInfoData.userInfo.userName
   params.value.userMobile = userInfoData.userInfo.userMobile
-
-
   router.beforeEach((to, from, next) => {
-    console.log('用户从哪个页面跳转到哪个页面');
+    // console.log('用户从哪个页面跳转到哪个页面');
     if(from.fullPath =='/addTasks'&&to.fullPath=='/taskList'){  //不清空
       next(); // 允许导航继续
     }else if(from.fullPath =='/taskList'&&to.fullPath=='/addTasks'){
@@ -211,11 +207,7 @@ onMounted(()=>{
       meetingStore.removeMeetingData()
       next(); // 允许导航继续
     }
-    console.log('从：', from.fullPath);
-    console.log('到：', to.fullPath);
-
   });
-  // console.log(route.query)
 })
 </script>
 <style lang="less" scoped>

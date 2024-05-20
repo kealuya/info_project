@@ -57,7 +57,7 @@
     </van-row>
   </div>
   <div>
-    <van-cell title="个人信息" is-link>
+    <van-cell title="个人信息" is-link @click="toPersonalInformation()">
       <template #icon>
         <van-image :src="meIcon1" class="cellImage"/>
       </template>
@@ -136,6 +136,9 @@ function wdrw() {
 }
 function wdjz() {
   router.replace('/applicationValue')
+}
+const toPersonalInformation = ()=>{
+    router.replace('/personalInformation')
 }
 
 // 退出登陆

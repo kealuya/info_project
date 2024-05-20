@@ -1,5 +1,5 @@
 <template>
-  <taskCard :title="title" :taskTitle="taskTitle" :picSrc="picSrc" :target="target" :content="content" :isComplete="isComplete" :params="params"></taskCard>
+  <taskCard :title="title" :taskTitle="taskTitle" :picSrc="picSrc" :target="target" :content="content" :isComplete="isComplete" :params="params" :taskId="taskId"></taskCard>
 </template>
 <script lang="ts" setup>
 import taskCard from '../../components/taskCard/index.vue'
@@ -10,6 +10,7 @@ import {inject, onMounted, ref} from "vue";
 import bgc from "../../assets/img/task_bgc_01.png";
 const router = useRouter();
 const route = useRoute();
+const taskId = ref<string>('')
 interface paramsType{
   taskId:string, //任务ID
   taskTitle:string,//任务标题
@@ -55,6 +56,7 @@ onMounted(async ()=>{
     picSrc.value = route.query.taskImg as string
     // console.log(' picSrc.value', picSrc.value)
   params.value.taskId = route.query.taskId as string
+    taskId.value = route.query.taskId as string
   params.value.taskTitle = route.query.taskTitle as string
   params.value.corpName = route.query.corpName as string
   // console.log('userInfoData',userInfoData.userInfo)

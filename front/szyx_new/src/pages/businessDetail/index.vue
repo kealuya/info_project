@@ -1,259 +1,524 @@
 <template>
-  <van-nav-bar
-      title="业务详情"
-      left-text="返回"
-      left-arrow
-      @click-left="onClickLeft"
-  />
-  <div class="content">
-    <div class="title_one m-b-10 f-z-14" >{{meetingTitle}}</div>
-    <div class="title_two f-z-14 f-w-550  m-b-10">
-      <span>{{meetingType=='document'?'文档':'会议'}}摘要</span>
-    </div>
-    <div class="f-z-12 m-b-10">
-     {{meetingAudioSummary}}
-    </div>
-    <div class="f-z-12 m-b-10">
-      &nbsp;
-    </div>
-<!--    <div class="f-z-12 m-b-10">-->
-<!--      &nbsp;&nbsp;症状采集：医生会询问患者当前的症状，比如疼痛、咳嗽、发热等。患者描述症状的特点和变化有助于医生判断疾病的可能性。-->
-<!--    </div>-->
-<!--    <div class="f-z-12 m-b-10">-->
-<!--      &nbsp;&nbsp;体征检查：医生会进行体格检查，包括测量体温、血压、心率、听诊心肺等。体征检查可以提供重要的诊断线索。-->
-<!--    </div>-->
-<!--    <div class="f-z-12 m-b-10">-->
-<!--      &nbsp;&nbsp; 实验室检查：医生可能会要求患者进行实验室检查，包括血液检查、尿液检查、影像学检查（如X光、CT、MRI等），以获取更多的诊断信息。-->
-<!--    </div>-->
-<!--    <div class="f-z-12 m-b-10">-->
-<!--      &nbsp;&nbsp;诊断过程：医生根据患者提供的信息、体征和检查结果，进行综合分析和判断，最终做出诊断并制定治疗方案。-->
-<!--    </div>-->
-    <div class="f-z-14  m-b-10 space">
-      <span class="f-w-550">{{meetingType=='document'?'文档':'会议'}}记录</span>
-      <div class="right" @click="aiHandle">
-        <van-image :src="Ai"  width="20" height="20">
-        </van-image>
-        <span class="c-blue">生成</span>
-      </div>
-    </div>
-    <van-text-ellipsis
-        rows="5"
-        :content="meetingAudioMinutes"
-        expand-text="展开纪要"
-        collapse-text="收起纪要"
+    <van-nav-bar
+            left-arrow
+            left-text="返回"
+            title="业务详情"
+            @click-left="onClickLeft"
     />
-    <div class="metting" v-for="item in wordFiles">
-      <van-image :src="Word"  width="23" height="23">
-      </van-image>
-      <div class="c-blue f-z-14">{{item.fileName}}<span @click="downloadFile(item.fileUrl)">&nbsp;下载附件</span></div>
-    </div>
-    <div class="f-z-14  m-b-10 space">
-      <span class="f-w-550">{{meetingType=='document'?'文档':'会议'}}脑图</span>
-      <div class="right" @click="aiHandle">
-        <van-image :src="Ai"  width="23" height="23">
-        </van-image>
-        <span class="c-blue">生成</span>
-      </div>
-    </div>
-    <svg class="flex-1" ref="svgRef" />
-    <div class="metting" v-for="item in xmindFiles">
-      <van-image :src="Xmind"  width="23" height="23">
-      </van-image>
-      <div class="c-blue f-z-14">{{item.fileName}}<span @click="downloadFile(item.fileUrl)">&nbsp;下载附件</span></div>
-    </div>
-    <div class="title_two f-z-14 f-w-550  m-b-10">
-      <span>{{meetingType=='document'?'文档':'会议'}}信息</span>
-    </div>
-    <div class="f-z-12 m-b-5">会议城市：{{meetingCity?meetingCity:'--'}}</div>
-      <div class="f-z-12 m-b-5">会议详细地址：{{meetingAddress?meetingAddress:'--'}}</div>
-      <div class="f-z-12 m-b-5">参会人员：{{meetingPeople?meetingPeople:'--'}}</div>
-      <div class="f-z-12">会议时间：{{meetingTime?meetingTime:'--'}}</div>
 
+    <div class="content">
+        <div class="card-item">
+            <div class="m-b-10" style="display:flex;align-items: center">
+                <van-image :src="meetingPic" class="m-r-2" fit="contain" height="30"
+                           width="30"></van-image>
+              <span class="f-z-16">会议详情内容</span>
+            </div>
+            <div class="item-card">
+                <span class="f-z-14-c">会议ID</span>
+                <div class="f-z-14-black">{{ detailInfo.meetingId ? detailInfo.meetingId : '--' }}</div>
+            </div>
+            <div class="item-card">
+                <span class="f-z-14-c">会议标题</span>
+                <div class="f-z-14-black">{{ detailInfo.meetingTitle ? detailInfo.meetingTitle : '--' }}</div>
+            </div>
+            <div class="item-card">
+                <span class="f-z-14-c">会议时间</span>
+                <div class="f-z-14-black">{{ detailInfo.createTime ? detailInfo.createTime : '--' }}</div>
+            </div>
+            <div class="item-card">
+                <span class="f-z-14-c">会议地址</span>
+                <div class="f-z-14-black">{{ detailInfo.meetingCity}}-{{detailInfo.meetingAddress}}</div>
+            </div>
+            <div class="item-card">
+                <span class="f-z-14-c">参会人员</span>
+                <div class="f-z-14-black">{{ detailInfo.meetingPeople ? detailInfo.meetingPeople : '--' }}</div>
+            </div>
+        </div>
+        <!--     //会议音频-->
+        <div class="card-item">
+            <div class="title_two m-b-10 space">
+                <span class="m-r-2 f-z-16">{{ detailInfo.meetingType == 'document' ? '文档' : '会议' }}音频</span>
+                <div class="file-box-right" v-if="detailInfo.translationState=='0'">
+                    <van-image :src="progress" width="25" fit="contain" class="audioPic"></van-image>
+                    <div class="f-z-12 f-w-550 textTag">音频转译中</div>
+                </div>
+                <div class="file-box-right" v-if="detailInfo.translationState=='1'">
+                    <van-image :src="progressSuccess" width="25" fit="contain" class="audioPic"></van-image>
+                    <div class="f-z-12 f-w-550 textTagSuccess">音频转译成功</div>
+                </div>
+                <div class="file-box-right" v-if="detailInfo.translationState=='2'">
+                    <van-image :src="progressFail" width="25" fit="contain" class="audioPic"></van-image>
+                    <div class="f-z-12 f-w-550 textTagFail">音频转译失败</div>
+                </div>
+            </div>
+<!--            //音频文件部分-->
 
-<!--    <div class="f-z-12">会议时长：1小时53分钟</div>-->
-  </div>
-  <div class="box"></div>
+                <div class="file-box-left">
+                    <div v-for="item in detailInfo.meetingFile" class="file">
+                        <div>
+                            <van-image :src="Mp3" height="23" width="23" v-if="item.fileType=='mp3'"></van-image>
+                            <van-image :src="Word" height="23" width="23" v-if="item.fileType=='word'"></van-image>
+                            <van-image :src="Xmind" height="23" width="23" v-if="item.fileType=='xmind'"></van-image>
+                            <span class="fileName">{{ item.fileName }}</span>
+
+                        </div>
+                        <div @click="downloadFile(item.fileUrl)" class="fileName f-z-14-c down"><van-image :src="downIcon" width="20"></van-image>下载附件</div>
+                    </div>
+
+            </div>
+        </div>
+        <!--      //摘要-->
+        <div class="card-item">
+            <div class="title_two m-b-10">
+              <div class="title-ai">
+                  <div class="f-z-16">{{ detailInfo.meetingType == 'document' ? '文档' : '会议' }}摘要</div>
+                  <div class="file-box-right" v-if="detailInfo.meetingSummaryState=='1'">
+                      <van-image :src="Abstract" width="25" fit="contain" height="25"></van-image>
+                      <div class="textTag f-w-550 f-z-12">该内容Ai生成</div>
+                  </div>
+              </div>
+                <!--                //音频转译完成之后 才显示 摘要以及 按钮-->
+                <div v-if="detailInfo.meetingSummaryState == '0'">
+                    <div class="center-content">
+                        <van-image :src="Generating" width="40"></van-image>
+                        <div class="text">会议摘要生成中...</div>
+                    </div>
+                    <div class="generating">
+                        <van-button type="primary" size="small" @click="refreshResults">刷新结果</van-button>
+                    </div>
+
+                </div>
+                <div v-if="detailInfo.translationState!='1'" class="generating">
+                    <div class="center-content">
+                        <van-image :src="zanwupiaoju" width="150"></van-image>
+                        <div class="text">暂无摘要</div>
+                    </div>
+                </div>
+                <!--                //音频转译成功 显示-->
+                <div class="generate" @click="aiHandle" v-if="detailInfo.translationState=='1'&& detailInfo.meetingSummaryState==''">
+                    <van-image :src="Ai" width="30"></van-image>
+                    生成会议摘要
+                </div>
+            </div>
+<!--            //显示会议摘要的内容-->
+            <div v-if="detailInfo.meetingSummaryState=='1'&&detailInfo.translationState=='1'" class="f-z-14 m-b-10">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ detailInfo.meetingSummary }}
+            </div>
+        </div>
+<!--        //此处是 生成会议纪要 和会议脑图的 按钮-->
+            <div class="generate" @click="mapHandle" v-if="detailInfo.meetingSummaryState=='1'&& detailInfo.meetingBrainMap ==''&& detailInfo.meetingBrainMap==''">
+                <van-image :src="Ai" width="30"></van-image>
+                生成纪要、脑图
+        </div>
+        <!--      //会议纪要-->
+        <div class="card-item">
+            <div class="m-b-10 space">
+                <div class="f-z-16">{{ detailInfo.meetingType == 'document' ? '文档' : '会议' }}纪要</div>
+                <div class="file-box-right" v-if="detailInfo.meetingSummaryState=='1'">
+                    <van-image :src="Abstract" width="25" fit="contain" height="25"></van-image>
+                    <div class="textTag f-w-550 f-z-12">该内容Ai生成</div>
+                </div>
+            </div>
+            <div v-if="searchLoading" class="h-67">
+                <van-loading type="spinner" color="#1989fa" :vertical="true">正在获取会议纪要、脑图...</van-loading>
+            </div>
+            <van-text-ellipsis
+                v-if="detailInfo.meetingMinutes"
+                   class="f-z-14"
+                    :content="detailInfo.meetingMinutes"
+                    collapse-text="收起纪要"
+                    expand-text="展开纪要"
+                    rows="10"
+            />
+            <div class="generating" v-else>
+                <div class="center-content">
+                    <van-image :src="zanwupiaoju" width="150"></van-image>
+                    <div class="text">暂无纪要</div>
+                </div>
+            </div>
+        </div>
+        <!--        会议脑图-->
+        <div  class="card-item">
+            <div class="m-b-10 space">
+                <div class="f-z-16">{{ meetingType == 'document' ? '文档' : '会议' }}脑图</div>
+                <div class="file-box-right" v-if="detailInfo.meetingSummaryState=='1'">
+                    <van-image :src="Abstract" width="25" fit="contain" height="25"></van-image>
+                    <div class="textTag f-w-550 f-z-12">该内容Ai生成</div>
+                </div>
+            </div>
+            <div v-if="detailInfo.meetingBrainMap==''" class="generating">
+                <div class="center-content">
+                    <van-image :src="zanwupiaoju" width="150"></van-image>
+                    <div class="text">暂无摘要</div>
+                </div>
+            </div>
+            <svg ref="mapRef" class="flex-1"/>
+        </div>
+    </div>
+    <div class="box"></div>
 </template>
-<script setup>
+<script lang="ts" setup>
+import meetingPic from '../../assets/img/meeting.png'
 import Ai from '../../assets/img/ai.png';
-
+import zanwupiaoju from '../../assets/img/zanwupiaoju.png'
+import Generating from '../../assets/img/generating.png'
 import Word from '../../assets/img/word.png'
 import Xmind from '../../assets/img/xmind.png'
-import {useRouter,useRoute} from "vue-router";
-import {getMeetingDetails} from '../../services/task-processing/index'
-import {onMounted,ref} from "vue";
+import Abstract from '../../assets/img/abstract-ai.png'
+import Mp3 from '../../assets/img/mp3.png'
+import progress from '../../assets/img/progress.png'
+import progressSuccess from '../../assets/img/progress-success.png'
+import progressFail from '../../assets/img/progress-fail.png'
+import downIcon from '../../assets/img/down-icon.png'
+import {useRouter, useRoute} from "vue-router";
+import {getMeetingDetails, audioMeeting, audioMeeting_Ai_Summary_BrainMap} from '../../services/task-processing/index'
+import {inject, onMounted, ref} from "vue";
+import finish from "../../assets/img/finish.png";
+import {Markmap} from "markmap-view";
+import {Transformer} from 'markmap-lib';
+import {IMeetingDetailTypeResponse, ResponseType} from "../../services/task-processing/types";
+import {closeToast, showFailToast, showLoadingToast, showSuccessToast} from "vant";
+const isMap = ref<boolean>(false)
+const isGenerating = ref<boolean>(false)
+const searchLoading = ref<boolean>(false)
+const detailInfo = ref<IMeetingDetailTypeResponse>({
+    bz1: "",
+    bz2: "",
+    bz3: "",
+    corpCode: "",
+    corpName: "",
+    createTime: "",
+    creater: "",
+    meetingAddress: "",
+    meetingAudioText: "",
+    meetingBrainMap: "",
+    meetingCity: "",
+    meetingFile: [],
+    meetingFileUrl: "",
+    meetingFlag: "",
+    meetingId: "",
+    meetingMinutes: "",
+    meetingPeople: "",
+    meetingSummary: "",
+    meetingSummaryState: "",
+    meetingTime: "",
+    meetingTitle: "",
+    meetingType: "",
+    taskId: "",
+    translationState: ""
+})
 const router = useRouter()
 const route = useRoute()
 let meetingAudioMinutes = ref()
 let meetingAudioSummary = ref()
-let meetingCity = ref()
-let meetingAddress = ref()
 let wordFiles = ref()
 let xmindFiles = ref()
-let meetingTitle = ref()
 let meetingType = ref()
-const meetingPeople = ref()
-const meetingTime = ref()
+const createTime = ref()
+const isShow = ref<boolean>(false)
+const isShowPic = ref<boolean>(false)
+const meetingId = ref<string | undefined>()
+const userId = ref<string | undefined>()
+const isShowAbstract = ref<boolean>(false)
+
 const onClickLeft = () => {
-  router.push('/business')
+    router.push('/business')
 }
-const downloadFile = async (value) => {
-  console.log(value)
-  window.location.href = value; //
-};
-//ai 生成的事件
-const aiHandle = ()=>{
 
+//调用生成的方法
+interface audioType {
+    data: any,
+    msg: string,
+    success: boolean
 }
-onMounted(()=>{
-  const id = route.query.meetingId
 
-  getMeetingDetails({MeetingId:id}).then(res=>{
-    if(res.success){
-      meetingAudioMinutes.value = res.data.meetingAudioMinutes
-      meetingAudioSummary.value = res.data.meetingAudioSummary
-      meetingCity.value = res.data.meetingCity
-      meetingAddress.value = res.data.meetingAddress
-      meetingTitle.value = res.data.meetingTitle
-      meetingType.value = res.data.meetingType
-        meetingPeople.value = res.data.meetingPeople
-        meetingTime.value = res.data.meetingTime
-      wordFiles.value = res.data.meetingFile.filter(file => file.fileType === 'word');
-      xmindFiles.value = res.data.meetingFile.filter(file => file.fileType === 'xmind');
+//点击了 摘要 生成 按钮
+const aiHandle = () => {
+    let audioParams = {
+        meetingId: meetingId.value
     }
-  })
+    showLoadingToast({
+        message: '加载中...',
+        forbidClick: true,
+    });
+    audioMeeting(audioParams).then(async res => {
+        const response: audioType = res as audioType; // 显式类型转换
+        if (response.success) {
+            closeToast()
+            isShowPic.value = true
+            showSuccessToast(response.msg)
+            await getMeetingDetailsList()
+            // location.reload()
+
+
+        } else {
+            isShowPic.value = false
+            showFailToast(response.msg)
+        }
+    })
+}
+const refreshResults = async()=>{
+    await getMeetingDetailsList()
+}
+//下载附件 功能
+const downloadFile = async (value:string) => {  //参数接受的是文件地址
+    // console.log(value)
+    window.location.href = value; //
+};
+//生成会议、脑图的函数
+const mapHandle = ()=>{
+    let params = {
+        meetingId:meetingId.value
+    }
+    searchLoading.value = true
+    audioMeeting_Ai_Summary_BrainMap(params).then(async res => {
+        const response: audioType = res as audioType; // 显式类型转换
+        if (response.success) {
+            searchLoading.value = false
+            // closeToast()
+            showSuccessToast(response.msg)
+            await getMeetingDetailsList()
+            // location.reload()
+        } else {
+            showFailToast(response.msg)
+        }
+    })
+}
+let initValue = ''
+const getMeetingDetailsList = async () => {
+    let params = {
+        meetingId: meetingId.value,
+        creater: userId.value
+    }
+    // const id = route.query.meetingId
+    await getMeetingDetails(params).then((res:any) => {
+
+        if (res.success) {
+            console.log(111)
+            detailInfo.value = {...res.data}
+            if(detailInfo.value.translationState =='1' && detailInfo.value.meetingSummaryState=='1'){
+                isShow.value = true
+                isMap.value = true
+                initValue = detailInfo.value.meetingBrainMap
+                mapValue.value = Markmap.create(mapRef.value) //有用
+                update()//有用
+            }
+            // initValue = ''
+
+            // if (detailInfo.value.meetingSummaryState == '0') {   //说明  正在 ai 转译中  显示 正在生成中  请稍后
+            //     // console.log(2)
+            //     isGenerating.value = true
+            //
+            //
+            // } else if (detailInfo.value.meetingSummaryState == '1') {
+            //     isMap.value = true   //脑图
+            // }else{
+            //     isGenerating.value = false
+            //
+            // }
+            // if(detailInfo.value.translationState =='0'){
+            //     isShowAbstract.value = true
+            //     isGenerating.value = false
+            // }else {
+            //     isShowAbstract.value = false
+            // }
+            //
+            // if(detailInfo.value.translationState =='1'){
+            //     isGenerating.value = false
+            // }else{
+            //     isGenerating.value = true
+            // }
+            // if(detailInfo.value.translationState =='1' && detailInfo.value.meetingSummaryState=='1'){
+            //     isShow.value = true
+            //     isMap.value = true
+            //     initValue = detailInfo.value.meetingBrainMap
+            //     mapValue.value = Markmap.create(mapRef.value) //有用
+            //     update()//有用
+            // }
+        }
+    })
+
+}
+const mapRef = ref()
+const mapValue = ref<any>()
+const transformer = new Transformer()
+//生成 脑图的方法
+const update = () => {
+    const {root} = transformer.transform(initValue);
+    mapValue.value.setData(root);
+    mapValue.value.fit();
+}
+
+onMounted(async () => {
+    // mapValue.value = Markmap.create(mapRef.value) //有用
+    // update()//有用
+    let userInfoData: any = inject("userInfo"); // 取出用户信息用于调用接口
+    userId.value = userInfoData.userInfo.userId
+    meetingId.value = route.query.meetingId as string
+    await getMeetingDetailsList()
 })
 </script>
-<script>
-import naotu from '../../assets/img/naotu.png'
-import {useRouter} from "vue-router";
 
-import { Transformer } from 'markmap-lib';
-import { Markmap } from 'markmap-view';
-const transformer = new Transformer();
-const initValue = `# 会议纪要：
-
-## 报销流程讨论：
-- 报销员指定报销项目提交审批。
-- 项目负责人审批后进行报销。
-- 团委部门结算其负担的费用部分。
-
-## 学生团队出行报销处理：
-- 存在院系层面的报销。
-- 需要按每个学生的明细检索并发起二次报销。
-- 二次报销选择院系所负担的项目，提交审批。
-- 记录第一次与第二次报销信息，进行第三次报销。
-- 所有报销层级需附上发票信息。
-
-## 报销流程复杂性讨论：
-- 当前流程复杂，考虑创建单独模块处理团委报销。
-- 对于团队出行的多个报销处理方式未确定。
-- 讨论是否应将团委报销单独处理。`;
-const text =
-    ' 1. 开场致辞：\n' +
-    '      - 欢迎词和会议介绍。\n' +
-    '      2. 上季度营销活动回顾和效果分析\n' +
-    '      - 讨论本季度目标和关键重点\n' +
-    '      - 制定本季度营销策略。\n' +
-    '      - 提出针对市场趋势的策略建议.\n' +
-    '\n' +
-    '      3. 各小组汇报本季度营销计划和执行方案\n' +
-    '      - 讨论营销预算及资源分配。\n' +
-    '      - 确定本季度预算分配及资源需求\n' +
-    '      - 推进销售与营销协同\n。\n' +
-    '\n' +
-    '      4. 报销明细表设计讨论\n' +
-    '      - 设计了一个差旅报销汇总表。\n' +
-    '      - 领队填写实际报销金额，计算应报和实报金额。\n' +
-    '      - 多次选择同一行程申请单的控制方法未确定。\n' +
-    '\n' +
-    '      5. 探讨如何提高销售与营销部门协同效能：\n' +
-    '      - 集成多项功能。\n' +
-    '      - 担心功能多而使用情况不佳，需做前评估。\n' +
-    '      - 先梳理逻辑框架和业务流程，确保易用性。\n' +
-    '\n' +
-    '      6. 后续步骤讨论\n' +
-    '      - 确定先后顺序，先开发效果显著的部分。\n' +
-    '      - 讨论整个逻辑框架的合理性和业务匹配度。\n' +
-    '      - 确保老师能按照流程完成任务。;'
-export default {
-  name: 'App',
-  data() {
-    return {
-      value: initValue,
-    };
-  },
-  watch: {
-    value: 'update',
-  },
-  methods: {
-    update() {
-      const { root } = transformer.transform(this.value);
-      this.mm.setData(root);
-      this.mm.fit();
-    },
-  },
-  mounted() {
-    this.mm = Markmap.create(this.$refs.svgRef);
-    this.update();
-  },
-};
-
-</script>
 <style lang="less" scoped>
-.content{
-  margin:2vw;
-  .title_one{
-    text-align:center;
+.content {
+  margin: 2vw;
+
+  .title_one {
+    text-align: center;
     font-weight: bold;
   }
-  .f-z-14{
+
+  .f-z-14 {
     font-size: 0.875em;
   }
+
   //.f-z-12{
   //  font-size: 0.75em;
   //}
-  .f-w-550{
+  .f-w-550 {
     font-weight: 550;
   }
-  .m-l{
+
+  .m-l {
     margin-left: 20vw;
   }
-  .m-b-10{
-    margin-bottom:20px;
+
+  .m-b-10 {
+    margin-bottom: 10px;
   }
-  .space{
-    display:flex;
+
+  .space {
+    display: flex;
     justify-content: space-between;
   }
-  .metting{
-    display:flex;
+
+  .metting {
+    display: flex;
     align-items: center;
     padding: 3vw 0;
   }
-  .right{
+
+  .right {
     display: flex;
     vertical-align: middle;
   }
-  .c-blue{
-    color:#000000;
+
+  .c-blue {
+    color: #000000;
     margin-left: 1vw;
     font-size: 0.78em;
-    span{
+
+    span {
       color: var(--van-text-ellipsis-action-color);
     }
   }
 
+  .a-center {
+    display: flex;
+      flex-direction: column;
+    //align-items: center;
+  }
+
+  .generate {
+    background-color: #0088ff;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875em;
+    padding: 2vw 0;
+    margin-top: 4vw;
+    border-radius: 4px;
+  }
+
+  .generating {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 4vw;
+  }
+
+  .center-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .text {
+    margin-top: 10px;
+    color: #A4A4A4;
+  }
+
 }
-.flex-1{
+.h-67{
+    //height:67vh;
+    z-index:999;
+}
+.flex-1 {
   width: 100%;
 }
-.box{
-  height:10vh;
+.title-ai{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
+
 ::v-deep(.van-nav-bar__content) {
   background-color: #0088ff;
 }
+
+.card-item {
+  padding: 2vw;
+  background-color: #fff;
+  border-radius: 10px;
+  width: 92vw;
+  margin: 2vw 0;
+
+}
+    .file-box-left{
+        display:flex;
+        flex-direction:column;
+        padding: 0 2vw;
+        .file {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2vw;
+        }
+}
+.file-box-right{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #0088ff;
+    .textTag{
+        margin-left: 2vw;
+    }
+    .textTagSuccess{
+        color:#16cb8d;
+        margin-left: 2vw;
+    }
+    .textTagFail{
+        color:#ff5b5b;
+        margin-left: 2vw;
+    }
+    .audioPic{
+        vertical-align: middle;
+    }
+}
+.box{
+    height: 10vh;
+}
+.fileName{
+    margin-left: 1vw;
+    font-size: 0.875em;
+}
+.down{
+    display: flex;
+    align-items: center;
+}
+
+
 
 ::v-deep(.van-nav-bar__title) {
   color: #ffffff;
@@ -266,17 +531,48 @@ export default {
 ::v-deep(.van-icon-arrow-left:before) {
   color: #ffffff;
 }
-:deep(.van-text-ellipsis){
-  font-size: 0.75em;
-  color:#000000;
+::v-deep(.van-image){
+    vertical-align: middle;
 }
-.f-z-12{
+:deep(.van-text-ellipsis) {
+  font-size: 0.75em;
+  color: #000000;
+}
+.theme-color{
+    color: #4BA3FB;
+}
+
+.f-z-12 {
   font-size: 0.75em;
 }
-.f-z-14{
+.f-z-16{
+    font-size: 1em;
+    color: #000000;
+}
+.f-z-14 {
   font-size: 0.875em;
 }
-.m-b-5{
+
+.m-r-2 {
+  margin-right: 2vw;
+}
+
+.f-z-14-c {
+  font-size: 0.875em;
+  color: rgba(23, 26, 29, 0.4);
+  //font-weight: 550;
+}
+
+.f-z-14-black {
+  font-size: 0.875em;
+  color: #000000;
+}
+
+.item-card {
+  padding-bottom: 2vw;
+}
+
+.m-b-5 {
   margin-bottom: 2vw;
 }
 

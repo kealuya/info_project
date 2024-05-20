@@ -17,20 +17,20 @@
 
     </van-tabs>
     <div :class="{ 'list1': tabIndex }">
-      <div class="list">
+      <div>
         <van-pull-refresh v-model="isLoading" success-text="刷新成功" @refresh="onRefresh">
           <div v-if="searchLoading && list.length==0" class="h-67">
             <van-loading :vertical="true" color="#1989fa" type="spinner">加载中...</van-loading>
           </div>
           <van-radio-group v-if="!isShowImg" v-model="selectedItem" @change="handleRadioChange">
             <van-list
+                    class="list"
                 v-model:loading="loading"
                 :finished="finished"
                 :immediate-check="false"
                 :offset="30"
                 finished-text="没有更多了"
-                loading-text="正在加载中请稍后"
-                style="height: 100%"
+                loading-text="加载中..."
                 @load="getListLoad"
 
             >
@@ -44,6 +44,7 @@
                   <!--                  <van-checkbox v-model="item.isCheck" @change="changeCheck"></van-checkbox>-->
                 </div>
                 <van-divider/>
+                  <div class="f-z-12 m-b-10">价值ID:{{ item.worthId }}</div>
                 <div class="f-z-12 m-b-10">任务评分：{{ item.worthScore }}分</div>
                 <div class="flex-space f-z-12 m-b-10">
                   <div>预计可申请金额：{{ item.money }}</div>
@@ -64,25 +65,25 @@
         </van-pull-refresh>
       </div>
       <div class="footer_btn" v-if="list.length>0">
-        <van-button block type="primary" @click="handleSubmit">
+        <van-button block type="primary" @click="handleSubmit" :loading="isShow" loading-text="提交中">
           提交申请
         </van-button>
       </div>
     </div>
-    <div :class="{ 'list1': !tabIndex}" class="listReacord">
+    <div :class="{ 'list1': !tabIndex}" >
       <van-pull-refresh v-model="isLoading" success-text="刷新成功" @refresh="onRefresh">
         <div v-if="searchLoading && list.length==0" class="h-67">
           <van-loading :vertical="true" color="#1989fa" type="spinner">加载中...</van-loading>
         </div>
         <van-list
+                class="listReacord"
             v-if="!isShowImg"
             v-model:loading="loading"
             :finished="finished"
             :immediate-check="false"
             :offset="80"
             finished-text="没有更多了"
-            loading-text="正在加载中请稍后"
-            style="height: 100%"
+            loading-text="加载中..."
             @load="getListLoad"
 
         >
@@ -92,6 +93,7 @@
               <div class="list_title">{{ item.worthTitle }}</div>
             </div>
             <van-divider/>
+              <div class="f-z-12 m-b-10">价值ID:{{ item.worthId }}</div>
             <div class="f-z-12 m-b-10">任务评分:{{ item.worthScore }}</div>
             <div class="f-z-12 m-b-10">预计可申请金额:{{ item.money }}</div>
             <div class="flex-space f-z-12">
@@ -141,6 +143,7 @@ const searchLoading = ref<Boolean>(false)  //控制 数据没请求回来的 loa
 const finishText = ref<string>('没有更多了')
 const isShowImg = ref<boolean>(false)  //数据为空的时候 控制图片的显示隐藏
 let lastRefreshTime = 0;
+const isShow = ref<boolean>(false)
 const refreshInterval = 15000; // 15秒
 interface listValueType {
   currentPage: number,//	当前页
@@ -157,7 +160,23 @@ interface paramsValueType {
   userName: string,//	否	用户姓名
   userMobile: string	//否	用户手机号
 }
-
+interface applicationType{
+    worthId: string, //价值ID，对应任务的ID
+    worthTitle: string, //价值title，对应任务的title
+    worthScore: string, //价值评分
+    status: string, //状态，0未申请，1已申请
+    money: string, //价值金额
+    userId: string, //用户ID
+    userName: string, //用户姓名
+    userMobile: string, //用户手机号
+    corpName: string, //企业名称
+    corpCode: string, //企业code
+    createTime: string, //创建时间
+    creater: string, //创建人，默认登录用户
+    bz1:string, //备注
+    bz2:string,
+    bz3:string
+}
 let params = ref<listValueType>({
   currentPage: 1,//	当前页
   pageSize: 10,//	每页显示条数
@@ -175,7 +194,7 @@ let paramsValue = ref<paramsValueType>({
 const checked = ref(false);
 const active = ref(0);
 const router = useRouter()
-const list = ref<any>([])
+const list = ref<applicationType[]>([])
 const lists = ref<any>([])
 const handleRadioChange = (value: any) => {
   console.log('value', value)
@@ -183,13 +202,13 @@ const handleRadioChange = (value: any) => {
 }
 //点击了tab切换
 const tabChange = async (name: number) => {
-  console.log('检测到了切换')
+  // console.log('检测到了切换')
   if (name == 1) {
     params.value.currentPage = 1
     params.value.status = '1'
     list.value = []
     //这个必须加
-    loading.value = true
+    loading.value = false
     finished.value = false
     await getValueList()
     tabIndex.value = true
@@ -198,7 +217,7 @@ const tabChange = async (name: number) => {
     params.value.currentPage = 1
     list.value = []
     //这个必须加
-    loading.value = true
+    loading.value = false
     finished.value = false
     await getValueList()
     tabIndex.value = false
@@ -248,7 +267,7 @@ const changeCheck = () => {
 }
 //触底事件
 const getListLoad = async () => {
-  // loading.value = true
+
   if (list.value.length < totalCount.value && params.value.currentPage < pageCount.value) {
     params.value.currentPage = params.value.currentPage + 1
     // setTimeout(() => {
@@ -267,7 +286,7 @@ const onClickLeft = () => {
 }
 //点击了提交申请按钮
 const handleSubmit = async () => {
-  active.value = 1
+    isShow.value = true
   params.value.status = '1'
   tabIndex.value = true
   params.value.currentPage = 1
@@ -276,15 +295,19 @@ const handleSubmit = async () => {
   list.value.length = 0
   applyWorth(paramsValue.value).then(async (res: any) => {
     if (res.success) {
+        active.value = 1
+        isShow.value = false
       showSuccessToast(res.msg)
     }
   }).finally(async()=>{
+      active.value = 1
     await getValueList()
   })
 }
 //获取价值列表
 const getValueList = () => {
-    searchLoading.value = true
+    loading.value = true
+    // searchLoading.value = true
     // loading.value = true
   getWorthList(params.value).then((res: any) => {
     if (res.success) {
@@ -312,6 +335,9 @@ const getValueList = () => {
     }
   }).finally(() => {
     searchLoading.value = false
+      setTimeout(()=>{
+          isLoading.value = false
+      },5000)
   })
 }
 onMounted(async () => {
@@ -360,7 +386,7 @@ onMounted(async () => {
     margin-bottom: 2vh;
   }
 .noData{
-  min-height:calc(100vh - var(--van-nav-bar-height) - var(--van-tabs-line-height) - var(--van-tabbar-height) - var(--van-button-default-height) - 2vh)
+  min-height:calc(100vh - var(--van-nav-bar-height) - var(--van-tabs-line-height) - var(--van-button-default-height) - 2vh)
 }
   .box {
     height: 50px;
@@ -376,7 +402,7 @@ onMounted(async () => {
     justify-content: center;
   }
   .list {
-    height: calc(100vh - var(--van-nav-bar-height) - var(--van-tabs-line-height) - var(--van-tabbar-height) - var(--van-button-default-height) - 2vh);
+    height: calc(100vh - var(--van-nav-bar-height) - var(--van-tabs-line-height) - var(--van-button-default-height) - 2vh);
     overflow-y: auto;
 
     .list_card {

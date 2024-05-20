@@ -74,9 +74,9 @@
                 <van-field v-model="createMeetingParams.meetingPeople" name="meetingType" placeholder="请输入会议参会人"/>
             </div>
             <!--     </div>-->
-            <div class="f-z-14-c m-t-10"><span style="color: red">*</span>附件上传 <span class="f-z-12-c">(文件格式仅限.doc, .docx, .txt, .xls, .xlsx, .pdf)</span></div>
+            <div class="f-z-14-c m-t-10"><span style="color: red">*</span>附件上传 <span class="f-z-12-c">(文件格式仅限.doc, .docx, .txt)</span></div>
             <div class="f-z-16">
-                <van-uploader v-model="fileList" :before-read="beforeRead" :after-read="afterRead" :max-count="1" accept=".doc,.docx,.pdf,.ppt,.pptx,.xlsx,.xls">
+                <van-uploader v-model="fileList" :before-read="beforeRead" :after-read="afterRead" :max-count="1" accept=".doc,.docx,.txt">
                     <van-button icon="plus" type="primary" size="small">上传文件</van-button>
                 </van-uploader>
             </div>
@@ -297,7 +297,7 @@ const handelMetting = () => {
                 createMeetingParams.value.meetingTitle = reasonForBorrowing.value
                 createMeetingParams.value.meetingCity = fieldValue.value
                 createMeetingParams.value.meetingTime = date.value
-                console.log('createMeetingParams',createMeetingParams)
+                // console.log('createMeetingParams',createMeetingParams)
                 //调取会议创建的接口
                 createMeeting(createMeetingParams.value).then((res:any)=>{
                     if(res.success){

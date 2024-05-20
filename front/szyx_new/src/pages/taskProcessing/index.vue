@@ -17,7 +17,7 @@
 
         </van-tabs>
         <div :class="{ 'list1': tabIndex }" class="list">
-            <van-pull-refresh v-model="isLoading" :disabled="isShowImg" class="refresh" success-text="刷新成功"
+            <van-pull-refresh v-model="isLoading"  class="refresh" success-text="刷新成功"
                               @refresh="onRefresh">
                 <div v-if="searchLoading && rwList.length==0" class="h-67">
                     <van-loading :vertical="true" color="#1989fa" type="spinner">加载中...</van-loading>
@@ -29,7 +29,7 @@
                         :immediate-check="false"
                         :offset="30"
                         finished-text="没有更多了"
-                        loading-text="正在加载中请稍后"
+                        loading-text="加载中..."
                         @load="getListLoad"
                 >
                     <div>
@@ -42,9 +42,13 @@
                                 />
                                 <div class="list_title">{{ item.taskTitle }}</div>
                                 <!--                  //放弃任务的 图标-->
-                                <van-icon name="delete-o" color="#e96352" size="20" @click="deleteHandle(item.taskId)"/>
+                                <van-icon name="delete-o" color="#e96352" size="20" @click.stop="deleteHandle(item.taskId)"/>
                             </div>
                             <van-divider/>
+                            <div class="m-b-10 f-z-12"><span style="color: #4BA3FB">任务ID：</span>{{
+                                    item.taskId
+                                }}
+                            </div>
                             <div @click="businessDetailHandle(item)">
                                 <div class="m-b-10 f-z-12"><span style="color: #4BA3FB">任务介绍：</span>{{
                                     item.taskData
@@ -72,7 +76,7 @@
             </van-pull-refresh>
         </div>
         <div class="list">
-            <van-pull-refresh v-model="isLoading" :disabled="isShowImg" success-text="刷新成功" @refresh="onRefresh">
+            <van-pull-refresh v-model="isLoading"  success-text="刷新成功" @refresh="onRefresh">
                 <div v-if="searchLoading && rwList.length==0" class="h-67">
                     <van-loading :vertical="true" color="#1989fa" type="spinner">加载中...</van-loading>
                 </div>
@@ -83,7 +87,7 @@
                         :immediate-check="false"
                         :offset="30"
                         finished-text="没有更多了"
-                        loading-text="正在加载中请稍后"
+                        loading-text="加载中..."
                         @load="getListLoad"
 
                 >
@@ -100,6 +104,8 @@
                                        style="position:absolute;right:8vw;top:4vw" width="72"></van-image>
                         </div>
                         <van-divider/>
+                        <div class="m-b-10 f-z-12"><span style="color: #4BA3FB">任务ID：</span>{{ item.taskId}}
+                        </div>
                         <div class="m-b-10 f-z-12"><span style="color: #4BA3FB">任务介绍：</span>{{ item.taskData }}
                         </div>
                         <div class="m-b-10 f-z-12"><span style="color: #4BA3FB">创建时间：</span>{{ item.createTime }}
@@ -130,13 +136,13 @@ import {LISTTYPE, paramsTye} from '../../services/task-processing/types/index'
 import {getTaskList,giveUpTask} from '../../services/task-processing/index'
 import {inject, onMounted, ref} from 'vue';
 import yiwancheng from '../../assets/img/yiwancheng.png'
-import {useRouter} from "vue-router";
+import {useRouter,useRoute} from "vue-router";
 import businessIcon from "../../assets/img/business_icon.png";
 import {taskData} from '../../store/index'
 import empty from "../../assets/img/zanwupiaoju.png";
 import {showFailToast} from "vant/es";
 import {showConfirmDialog, showSuccessToast} from "vant";
-
+const route = useRoute()
 const isLoading = ref<boolean>(false)  //控制 下拉刷新
 const active = ref(0);
 const router = useRouter()
@@ -152,6 +158,7 @@ const taskStore = taskData()
 const disabled = ref<boolean>(false)
 let lastRefreshTime = 0;
 const refreshInterval = 15000; // 15秒
+const tag = ref<number>(0)
 const isFinished = ref<boolean>(false)   //控制 已完成按钮的显示隐藏
 interface itemType {
     taskContent: string,
@@ -179,20 +186,22 @@ const changeList = async (name: number) => {
         rwList.value = []
         loading.value = false
         finished.value = false
+        // searchLoading.value = false
         // isFinished.value = true
         // isLoading.value = true
         await getList()
         tabIndex.value = true
-
+        tag.value = 1
     } else {
         // isFinished.value = false
-        console.log('进来了')
+        // console.log('进来了')
         params.value.currentPage = 1
         rwList.value = []
         loading.value = false
         finished.value = false
         await getList()
         tabIndex.value = false
+        tag.value = 1
 
     }
 }
@@ -247,9 +256,15 @@ const onClickLeft = () => {
 }
 const getList = async () => {
     params.value.flag = String(active.value)
-    searchLoading.value = true
+    // searchLoading.value = true
+    // if( tag.value = 0){
+    //     searchLoading.value = true
+    // }else{
+    //     searchLoading.value = false
+    // }
+    loading.value = true
     await getTaskList(params.value).then(async (res: any) => {
-        loading.value = true
+
         if (res.success) {
             // rwList.value.length = 0
             // if (active.value == 0) {  //说明是我的任务
@@ -318,6 +333,7 @@ const deleteHandle = (id: string) => {
         });
 }
 onMounted(async () => {
+    // console.log(route.query.finish,'sahjcvdjsvjdsjkvjknvj ')
     let userInfoData: any = inject("userInfo"); // 取出用户信息用于调用接口
     params.value.corpCode = localStorage.getItem('corpCode') //从本地获取corpCode
     //从本地获取corpCode
@@ -327,6 +343,18 @@ onMounted(async () => {
     rwList.value.length = 0
     params.value.currentPage = 1
     await getList()
+    if(route.query.finish){
+        active.value = 1
+        params.value.currentPage = 1
+        rwList.value = []
+        loading.value = false
+        finished.value = false
+        await getList()
+        tabIndex.value = true
+        tag.value = 1
+    }else{
+        active.value = 0
+    }
 })
 </script>
 
@@ -427,12 +455,12 @@ onMounted(async () => {
 }
 
 .refresh {
-  min-height: calc(100vh - var(--van-nav-bar-height) - var(--van-tabs-line-height) - var(--van-tabbar-height));
+  min-height: calc(100vh - var(--van-nav-bar-height) - var(--van-tabs-line-height));
 }
 
 .list { //必须算
   //height: 100vh;
-  height: calc(100vh - var(--van-nav-bar-height) - var(--van-tabs-line-height) - var(--van-tabbar-height));
+  height: calc(100vh - var(--van-nav-bar-height) - var(--van-tabs-line-height));
   overflow-y: auto;
 
   .list_card {

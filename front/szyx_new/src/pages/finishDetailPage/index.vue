@@ -6,36 +6,38 @@
             @click-left="onClickLeft"
     />
     <div class="contain-card">
+        <div class="f-z-16-c m-b-10" style="display:flex;align-items: center">  <van-image :src="finish" width="40" fit="contain" class="m-r-2"
+                                                  height="40"></van-image>已完成的任务详情</div>
         <div class="item-card">
-            <span class="f-z-14-c">任务ID：</span>
+            <span class="f-z-14-c">任务ID</span>
             <div class="f-z-14-black">{{taskId}}</div>
         </div>
      <div class="item-card">
-         <span class="f-z-14-c">任务标题：</span>
+         <span class="f-z-14-c">任务标题</span>
          <div class="f-z-14-black">{{taskTitle}}</div>
      </div>
         <div class="item-card">
-            <span class="f-z-14-c">任务类型：</span>
+            <span class="f-z-14-c">任务类型</span>
             <div class="f-z-14-black">{{taskType}}</div>
         </div>
-        <van-image :src="yiwancheng" class="img"
+        <van-image :src="yiwancheng" class="img" wdith="70"  fit="contain"
                    height="70"></van-image>
     </div>
     <div class="contain-card">
     <div class="item-card">
-        <div class="f-z-16-c m-b-10">任务介绍：</div>
+        <div class="f-z-16-c m-b-10">任务介绍</div>
         <span class="f-z-14-black">{{taskData}}</span>
     </div>
     </div>
     <div class="contain-card">
     <div class="item-card">
-        <div class="f-z-16-c  m-b-10">任务类型：</div>
+        <div class="f-z-16-c  m-b-10">任务类型</div>
         <span class="f-z-14-black">{{taskContent}}</span>
     </div>
     </div>
 
     <div class="contain-card">
-        <div class="f-z-16-c m-b-10">会议列表：</div>
+        <div class="f-z-16-c m-b-10">关联的业务内容</div>
         <div v-for="item in meetingList" class="m-b-10">
            <div class="title m-b-10">
                <van-tag type="success" v-if="item.meetingType=='document'">文档记录</van-tag>
@@ -52,6 +54,7 @@
     <div style="height: 20px"></div>
 </template>
 <script setup lang="ts">
+import finish from '../../assets/img/finish.png'
   import {useRoute,useRouter} from "vue-router";
   import {inject, onMounted, ref} from "vue";
   import {myTaskDetails} from '../../services/task-processing/index'
@@ -78,6 +81,7 @@
       params.value.corpCode = localStorage.getItem('corpCode')
       params.value.userId = userInfoData.userInfo.userId
       params.value.taskId = route.query.id
+          console.log('params',params)
       myTaskDetails(params.value).then((res:any)=>{
           console.log('res',res)
           if(res.success){
@@ -146,6 +150,9 @@
 }
 .m-l-10{
     margin-left: 2vw;
+}
+.m-r-2{
+  margin-right: 2vw;
 }
 .f-z-14-4B5563{
     font-size: 0.75em;

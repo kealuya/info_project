@@ -2,6 +2,7 @@ import {createRouter, createWebHashHistory} from 'vue-router'
 import InvoiceList from '../pages/invoiceFolder/invoice/index.vue'
 import error from '../pages/404/index.vue';
 import {userInfoData} from "../store";
+import {inject} from "vue";
 
 // @ts-ignore
 const router = createRouter({
@@ -42,20 +43,31 @@ const router = createRouter({
           component: () => import('../pages/taskPool/index.vue'),
         },
         {
-          path: '/taskDetail_two',
-          name: 'taskDetail_two',
-          component: () => import('../pages/taskDetail_two/index.vue'),
+          path: '/taskPoolDetail',
+          name: 'taskPoolDetail',
+          component: () => import('../pages/taskPoolDetail/index.vue'),
         },
+          //个人中心 个人信息页面
         {
-          path: '/taskDetail_three',
-          name: 'taskDetail_three',
-          component: () => import('../pages/taskDetail_three/index.vue'),
+          path: '/personalInformation',
+          name: 'personalInformation',
+          component: () => import('../pages/personalInformation/index.vue'),
         },
-        {
-          path: '/taskDetail_four',
-          name: 'taskDetail_four',
-          component: () => import('../pages/taskDetail_four/index.vue'),
-        },
+        // {
+        //   path: '/taskDetail_two',
+        //   name: 'taskDetail_two',
+        //   component: () => import('../pages/taskDetail_two/index.vue'),
+        // },
+        // {
+        //   path: '/taskDetail_three',
+        //   name: 'taskDetail_three',
+        //   component: () => import('../pages/taskDetail_three/index.vue'),
+        // },
+        // {
+        //   path: '/taskDetail_four',
+        //   name: 'taskDetail_four',
+        //   component: () => import('../pages/taskDetail_four/index.vue'),
+        // },
         //完成任务
         {
           path: '/addTasks',
@@ -537,32 +549,39 @@ function checkLogin() {
   // 返回 true 表示登录有效，返回 false 表示登录过期
   return localStorage.getItem('token') !== null
 }
-router.beforeEach((to,from,next)=>{
-  // 模拟url登陆地址导航栏截取
-  // const url='http://122.9.41.215/fk_move/MapprList?userid=1815&school=szht6666'
-  // let urlOne = url.split('?');
-  // let userInfo=urlOne[1].split('&');
-  // let userId =userInfo[0].replaceAll('userid=','');
-  // let qyId=userInfo[1].replaceAll('school=','');
-  const userInfoState: any = userInfoData();
-  // console.log(userInfoState)
-  const store = userInfoData()
+// router.beforeEach((to,from,next)=>{
+//   let userInfoData: any = inject("userInfo"); // 取出用户信息用于调用接口
+//   // console.log('userInfoData',userInfoData.userInfo)
+//   if (to.path !== '/login' && !checkLogin()) {
+//     // 如果不是登录页面且用户未登录，则重定向到登录页面
+//     next('/login')
+//   } else {
+//     // 否则，继续正常的导航
+//     next();
+//   }
+//   if (to.path === '/login' || to.path === '/404') {
+//     next();
+//   } else {
+//     if (userInfoData.userInfo==null) {
+//       next('/login');
+//     }
+//     else {
+//       next();
+//     }
+//   }
+//
+// })
+router.beforeEach((to, from, next) => {
+  let userInfoData: any = inject("userInfo"); // 取出用户信息用于调用接口
   if (to.path !== '/login' && !checkLogin()) {
     // 如果不是登录页面且用户未登录，则重定向到登录页面
-    next('/login')
+    next('/login');
+  } else if (to.path !== '/login' && to.path !== '/404' && userInfoData.userInfo == null) {
+    // 如果不是登录页面和404页面，并且用户信息为空，则重定向到登录页面
+    next('/login');
   } else {
     // 否则，继续正常的导航
     next();
   }
-  if (to.path === '/login' || to.path === '/404') {
-    next();
-  } else {
-    if (userInfoState.userInfo==null) {
-      next('/login');
-    } else {
-      next();
-    }
-  }
-
-})
+});
 export default router

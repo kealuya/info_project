@@ -2,7 +2,7 @@
     <div class="container">
         <!-- 上半部分的header -->
         <van-nav-bar
-                title="业务列表"
+                title="会议列表"
                 left-text="返回"
                 left-arrow
         />
@@ -36,7 +36,7 @@
             <!--     </div>-->
         </div>
         <van-pull-refresh v-model="isLoading" success-text="刷新成功" @refresh="onRefresh"
-                          :disabled="isShowImg || pullRefreshDisabled">
+                          :disabled="pullRefreshDisabled">
             <div v-if="searchLoading && ywList.length==0&&!isPull" class="h-67">
                 <van-loading type="spinner" color="#1989fa" :vertical="true">加载中...</van-loading>
             </div>
@@ -54,21 +54,23 @@
             >
                 <div v-for="(item,index) in ywList" class="list_card"
                      @click="businessDetailHandle(item.meetingType,item.meetingId)">
-                    <div class="flex-space m-b-10">
-                        <div class="list_title">
-                            <van-tag v-if="item.meetingType=='audio'" type="primary">音频会议</van-tag>
-                            <van-tag v-else type="success">文档记录</van-tag>
-                            {{ item.meetingTitle }}{{ index + 1 }}
+                    <div class="m-b-10 flex-space-between">
+                        <div class="list_title flex-space">
+                              <van-tag v-if="item.meetingType=='audio'" type="primary">音频会议</van-tag>
+                              <van-tag v-else type="success">文档会议</van-tag>
+                              <div class="meeting-title">{{ item.meetingTitle }}</div>
+                        </div>
+                        <div>
+                            <van-tag type="primary" v-if="item.meetingFlag=='0'">未使用</van-tag>
+                            <van-tag type="success" v-else>已使用</van-tag>
                         </div>
                     </div>
                     <van-divider/>
+                    <div class="f-z-12 m-b-10">会议ID：{{ item.meetingId }}</div>
                     <!--         <div class="f-z-12 m-b-10">会议时长：{{ item.time }}</div>-->
-                    <div class="f-z-12 m-b-10">会议地址：{{ item.meetingCity }}{{ item.meetingAddress }}</div>
+                    <div class="f-z-12 m-b-10">会议地址：{{ item.meetingAddress?item.meetingAddress:'--' }}</div>
                     <div class="f-z-12 m-b-10">创建时间：{{ item.createTime }}</div>
-                    <!--         <div class="f-z-12 m-b-10">-->
-                    <!--           <span v-if="item.hyType" style="color: #0080FF">已关联任务：RW202404080001</span>-->
-                    <!--         </div>-->
-
+                       <div class="f-z-12 m-b-10" style="color: #0088ff" v-if="item.meetingFlag=='1'" @click.stop="associated(item.taskId)">已关联任务ID：{{ item.taskId }}</div>
                 </div>
             </van-list>
             <van-row v-else-if="isShowImg" align="center" class="tc" justify="center">
@@ -115,6 +117,7 @@ import businessIcon from '../../assets/img/business_icon.png';
 import {ref, computed, onMounted, inject} from 'vue';
 // import userRouter from 'user'
 import {useRouter} from "vue-router";
+import {IMeetingDetailTypeResponse} from '../../services/task-processing/types/index'
 import {getMeetingList} from '../../services/task-processing/index'
 import empty from '../../assets/img/zanwupiaoju.png'
 import {showSuccessToast, showFailToast} from "vant";
@@ -135,7 +138,7 @@ const refreshInterval = 15000; // 15秒
 const isPull = ref<boolean>(false)
 const pullRefreshDisabled = ref(false)
 const calendarRef = ref<Calendar | null>(); // 创建一个 ref 用于存储 calendar 实例
-
+const ywList = ref<IMeetingDetailTypeResponse[]>([])  //业务数据列表
 const divScroll = (e: any) => {
     if (e.target.scrollTop == 0) {
         pullRefreshDisabled.value = false
@@ -167,6 +170,8 @@ let params = ref<paramsType>({
     userId: '', //人员ID
     meetingFlag: '' //会议是否使用 0：未使用   1：已使用
 })
+
+
 const resetHandel = () => {
     showDate.value = false;
     params.value.startTime = ''
@@ -186,8 +191,7 @@ const resetHandle = async () => {
     ywList.value.length = 0 //清空数据
     await getList()
 }
-//业务数据列表
-const ywList = ref([])
+
 const option1 = [
     {text: '全部会议', value: 'meetAll'},
     {text: '已使用', value: '1'},
@@ -195,8 +199,8 @@ const option1 = [
 ]
 const option2 = [
     {text: '会议类型', value: 'meet'},
-    {text: '音频记录', value: 'audio'},
-    {text: '文档记录', value: 'document'},
+    {text: '音频会议', value: 'audio'},
+    {text: '文档会议', value: 'document'},
 ];
 //切换了会议类型
 const dropdownChange = async (value: string) => {
@@ -243,21 +247,10 @@ const onRefresh = async () => {
     ywList.value = []//清空表单
     await getList() //重新加载数据
 }
-// const onRefresh = async () => {
-//   const currentTime = Date.now();
-//   if (currentTime - lastRefreshTime < refreshInterval) {
-//     showFailToast("刷新操作太频繁，请稍后再试！");
-//     isLoading.value = false; // 关闭下拉刷新的 loading
-//     return; // 直接返回，不执行加载数据的操作
-//   }
-//   lastRefreshTime = currentTime;
-//   isLoading.value = true; // 打开下拉刷新的 loading
-//   params.value.currentPage = 1; // 重置页码
-//   ywList.value = []; // 清空表单
-//   await getList(); // 重新加载数据
-//   showSuccessToast("刷新成功！");
-//   isLoading.value = false; // 关闭下拉刷新的 loading
-// };
+//点击了已关联任务
+const associated = (id:string)=>{
+    router.replace({path: '/finishDetail', query: {id: id}})
+}
 const thisYear = new Date().getFullYear();
 
 const minDate = computed(() => {
@@ -267,7 +260,7 @@ const minDate = computed(() => {
 const maxDate = computed(() => {
     return new Date(thisYear + 1, 0); // 明年一月
 });
-const formatDate = (date) => {
+const formatDate = (date:Date) => {
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, '0'); // 补0
     const day = date.getDate().toString().padStart(2, '0');           // 补0
@@ -280,8 +273,7 @@ const onConfirm = async () => {
     ywList.value.length = 0
     await getList()
 }
-const checkedConfirm = (value) => {
-    console.log('value', value)
+const checkedConfirm = (value:string) => {
     if (value.length === 2) {
         const [startDate, endDate] = value;
         console.log('开始日期:', startDate);
@@ -290,28 +282,9 @@ const checkedConfirm = (value) => {
         params.value.endTime = formatDate(endDate)
     }
 }
-// const onConfirm=()=>{
-//       // 使用保存的日期范围
-//       if (this.selectedRange) {
-//           const [startDate, endDate] = this.selectedRange;
-//           console.log('已确认的开始和结束日期:', startDate, endDate);
-//       } else {
-//           console.log('没有选择任何日期范围');
-//       }
-//       this.showDate = false; // 隐藏日历
-//   }
-// // console.log(values,'zheli')
-// showDate.value = false;
-// let beginTime = formatDate(start);
-// let endTime = formatDate(end);
-// params.value.startTime = beginTime
-// params.value.endTime = endTime
-// params.value.currentPage = 1
-// ywList.value.length = 0
-// await getList()
 const businessDetailHandle = (type: string, meetingId: string) => {
-    console.log('type', type)
-    router.replace({path: '/businessDetail', query: {meetingId}})
+    // console.log('type', type)
+    router.replace({path: '/businessDetail', query: {meetingId:meetingId}})
 }
 const speechHandle = () => {
     router.replace('/speech')
@@ -422,7 +395,7 @@ onMounted(async () => {
 }
 
 .btn-footer {
-  height: 10vh;
+  height: 8vh;
 }
 
 .list {
@@ -435,15 +408,24 @@ onMounted(async () => {
     padding: 2vw;
     background-color: #FFFFFF;
     border-radius: 10px;
-
+   .flex-space-between{
+       display: flex;
+       justify-content: space-between;
+   }
     .flex-space {
       display: flex;
-      justify-content: space-between;
     }
 
     .list_title {
       font-size: 0.875em;
       font-weight: bold;
+        .meeting-title{
+            margin-left: 2vw;
+            width: 60vw;
+            white-space: nowrap;      /* 确保文本在一行内显示 */
+            overflow: hidden;         /* 超出容器的文本隐藏 */
+            text-overflow: ellipsis;  /* 超出部分显示为省略号 */
+        }
     }
 
     .f-z-12 {

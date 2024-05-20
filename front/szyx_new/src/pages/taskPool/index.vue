@@ -6,8 +6,17 @@
         left-arrow
         @click-left="onClickLeft"
     />
+      <van-tabs v-model:active="active" @change="changeList">
+          <van-tab title="未参与">
+
+          </van-tab>
+          <van-tab title="已参与">
+
+          </van-tab>
+
+      </van-tabs>
     <div class="list">
-      <van-pull-refresh  v-model="isLoading" success-text="刷新成功" @refresh="onRefresh" :disabled="isShowImg">
+      <van-pull-refresh  v-model="isLoading" success-text="刷新成功" @refresh="onRefresh">
         <van-list
             :finished-text="finishText"
             v-model:loading="loading"
@@ -15,7 +24,7 @@
             :offset="30"
             finished-text="没有更多了"
             :immediate-check="false"
-            loading-text="正在加载中请稍后"
+            loading-text="加载中..."
             @load="getListLoad"
 
         >
@@ -30,21 +39,28 @@
                 <div class="list_title">{{item.taskTitle}}</div>
               </div>
               <!--              <van-divider />-->
-              <div class="m-b-10 f-z-12"><span style="color: #4BA3FB" >任务目标：</span>{{item.taskData}}</div>
+                <div class="m-b-10 f-z-12"><span style="color: #4BA3FB" >任务ID：</span>{{item.taskId}}</div>
+              <div class="m-b-10 f-z-12"><span style="color: #4BA3FB" >任务介绍：</span>{{item.taskData}}</div>
 <!--              <div class="m-b-10 f-z-12"><span style="color: #4BA3FB" >任务类型：</span>{{item.taskType}}</div>-->
               <div class="m-b-10 f-z-12" style="display: flex;justify-content: space-between">
                 <div>
                   <span style="color: #4BA3FB" >创建时间：</span>{{item.createTime}}
                 </div>
-                <van-tag type="success" v-if="item.taskStatus==1">已完成</van-tag>
-                <van-tag type="warning" v-else-if="item.taskStatus==0">未参与</van-tag>
+                <van-tag type="success" v-if="item.userJoinState=='Yes'">已参与</van-tag>
+                <van-tag type="warning" v-else-if="item.userJoinState=='No'">未参与</van-tag>
               </div>
               <!--          <div class="m-b-10 f-z-12"><span style="font-size: 12px;color: #4BA3FB">发布时间：<span>{{item.time}}</span></span></div>-->
             </div>
           </div>
-          <div v-else>
-            <img :src="empty" alt="" class="img">
-          </div>
+            <van-row justify="center" align="center" class="tc" v-else-if="isShowImg">
+                <div>
+                    <img style="height:50vw;width:80vw;object-fit: contain" src="../../assets/img/zanwupiaoju.png" />
+                    <div class="banner">暂无数据</div>
+                </div>
+            </van-row>
+<!--          <div v-else>-->
+<!--            <img :src="empty" alt="" style="height:50vw;width:80vw;object-fit: contain">-->
+<!--          </div>-->
         </van-list>
       </van-pull-refresh>
     </div>
@@ -52,12 +68,13 @@
 </template>
 
 <script setup lang="ts">
-import {onBeforeMount, onMounted, ref,nextTick } from 'vue';
+import {onBeforeMount, onMounted, ref,nextTick,inject } from 'vue';
 import { showFailToast } from 'vant';
 import {getTaskPoolList} from "../../services/task-processing/index";
 import empty from '../../assets/img/zanwupiaoju.png'
 import {useRouter} from "vue-router";
 import businessIcon from "../../assets/img/business_icon.png";
+// import {inject} from "vue/dist/vue";
 interface  LISTTYPE{
   bz1: String,
   bz2: String,
@@ -89,14 +106,37 @@ let params = ref<any>({
   pageSize:10,
   status:'0',
   corpCode: "",
+    userJoinState:'No'
 })
+const changeList = async (name: number) => {
+    if (name == 1) {
+        params.value.currentPage = 1
+        params.value.userJoinState = 'Yes'
+        listData.value = []
+        loading.value = false
+        finished.value = false
+        await getList()
+        // tabIndex.value = true
+        // tag.value = 1
+    } else {
+        params.value.userJoinState = 'No'
+        params.value.currentPage = 1
+        listData.value = []
+        loading.value = false
+        finished.value = false
+        await getList()
+        // tabIndex.value = false
+        // tag.value = 1
+
+    }
+}
 const businessDetailHandle = ()=>{
   router.replace('/task')
 
 }
 //点击跳转到详情页面
 const toDetail=(row:any)=>{
-  router.replace({name:'taskDetail',query:row})
+  router.replace({name:'taskPoolDetail',query:row})
 }
 const onClickLeft = () => {
   // history.go(-2)
@@ -104,6 +144,7 @@ const onClickLeft = () => {
 }
 //获取列表数据
 const getList = ()=>{
+    loading.value = true
   getTaskPoolList(params.value).then((res:any) => {
     if(res.success==false){
       showFailToast(res.msg)
@@ -132,7 +173,7 @@ const getList = ()=>{
 }
 //触底事件
 const getListLoad = async ()=>{
-  console.log('111111111111111111',listData.value.length,totalCount.value)
+  // console.log('111111111111111111',listData.value.length,totalCount.value)
   if (listData.value.length < totalCount.value && params.value.currentPage < pageCount.value) {
     console.log(0)
     params.value.currentPage = params.value.currentPage + 1
@@ -155,7 +196,9 @@ const onRefresh = async()=>{
   await getList() //重新加载数据
 }
 onBeforeMount(async () => {
+    let userInfoData: any = inject("userInfo"); // 取出用户信息用于调用接口
   params.value.corpCode = await localStorage.getItem('corpCode') //从本地获取corpCode
+    params.value.userId = userInfoData.userInfo.userId
   getList()
 })
 
@@ -166,7 +209,7 @@ onBeforeMount(async () => {
 .container{
   height:100vh;
   .list{
-    height: calc(100vh - var(--van-nav-bar-height) - var(--van-tabbar-height));
+    height: calc(100vh - var(--van-nav-bar-height) - var(--van-tabs-line-height));
     overflow-y: auto;
     .list_cardtask{
       width:92vw;
@@ -202,9 +245,15 @@ onBeforeMount(async () => {
         font-weight: 550;
         color:#000000;
       }
+
     }
   }
 
+}
+.banner{
+  color: #bbc2cc;
+  font-size: 12px;
+  margin: 5px 10px 0;
 }
 //:deep(.van-divider){
 //  margin: 10px;

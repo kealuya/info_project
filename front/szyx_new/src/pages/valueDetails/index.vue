@@ -6,19 +6,19 @@
       @click-left="onClickLeft"
   />
     <div class="content">
-      <div class="title_one m-b-10" >{{worthTitle}}</div>
+      <div class="title_one m-b-10" >{{worth.worthTitle}}</div>
       <div class="title_two f-z-14 f-w-550  m-b-10">
         <span>价值概况</span>
 <!--        <span class="m-l">发布日期</span>-->
       </div>
       <div class="f-z-14  m-b-10">
-        &nbsp;{{worthData}}
+        &nbsp;{{worth.taskData}}
       </div>
       <div class="title_two f-z-14 f-w-550  m-b-10">
         <span>申请价值内容</span>
       </div>
       <div class="f-z-14 m-b-10">
-        &nbsp;{{worthContent}}
+        &nbsp;{{worth.taskContent}}
       </div>
     </div>
     <div class="card_small">
@@ -26,7 +26,7 @@
         <van-image :src="pingfen" width="25" height="25"></van-image>
         <div>价值申请评分</div>
       </div>
-      <div class="right"> <div>{{worthScore}}分</div></div>
+      <div class="right"> <div>{{worth.worthScore}}分</div></div>
     </div>
   <div class="card_small">
     <div class="left">
@@ -34,7 +34,7 @@
       <div>价值申请金额</div>
 
     </div>
-    <div class="right"> <div>{{money}}元</div></div>
+    <div class="right"> <div>{{worth.money}}元</div></div>
   </div>
   <div style="wdith:96vw;margin:2vw;text-align: center;background-color:#fff;">
     <div><van-image :src="erweima" width="230" height="200"></van-image></div>
@@ -56,13 +56,20 @@ import {useRouter,useRoute} from "vue-router";
 // import { showSuccessToast, showFailToast } from 'vant';
 import {showSuccessToast} from "vant";
 import {inject, onMounted, ref} from "vue";
+interface valueType{
+    worthTitle:string
+    taskData:string
+    taskContent:string,
+    worthScore:string,
+    money:string
+}
 const router = useRouter()
 const route = useRoute()
 let worthScore = ref<string>()
 let money= ref<string>()
-let worthData = ref<string>()
-let worthContent = ref<string>()
-let worthTitle = ref<string>()
+let worth = ref<valueType>({})
+// let worthContent = ref<string>()
+// let worthTitle = ref<string>()
 interface paramsType{
   worthId: string, //价值ID，对应任务的ID
   corpName: string | undefined | null, //企业名称
@@ -74,11 +81,8 @@ interface paramsType{
 let params =ref<paramsType>(
     {
       worthId: '', //价值ID，对应任务的ID
-      corpName: "", //企业名称
       corpCode: '', //企业code
       userId: "", //用户ID
-      userName: "", //用户姓名
-      userMobile: "" //用户手机号
     }
 )
 const onClickLeft = () => {
@@ -96,17 +100,14 @@ onMounted(()=>{
   params.value.corpCode = localStorage.getItem('corpCode') //从本地获取corpCode
   //从本地获取corpCode
   params.value.userId = userInfoData.userInfo.userId
-  params.value.userName = userInfoData.userInfo.userName
-  params.value.userMobile = userInfoData.userInfo.userMobile
-  params.value.corpName = userInfoData.userInfo.corpName
-  console.log('params',params.value)
   getWorthDetails(params.value).then((res:any)=>{
   if(res.success){
-    worthScore.value = res.data.worthScore
-    money.value = res.data.money
-    worthTitle.value = res.data.worthTitle
-    worthData.value = res.data.worthData
-    worthContent.value = res.data.worthContent
+      worth.value = {...res.data}
+    // worthScore.value = res.data.worthScore
+    // money.value = res.data.money
+    // worthTitle.value = res.data.worthTitle
+    // worthData.value = res.data.worthData
+    // worthContent.value = res.data.worthContent
   }
   })
 })

@@ -1,6 +1,7 @@
 import request from "../request";
 import { stringify } from 'qs';
-import axios from "axios";
+import axios, {AxiosResponse} from "axios";
+import {meetingListType, ResponseType} from "./types";
 //获取验证码接口
 export function getMessageCaptcha(query :object){
     return new Promise(function (resolve, reject) {
@@ -190,7 +191,7 @@ export function getUserInfoCount(query :object){
         request({
             url:'/v4/userinfo/getUserInfoCount',
             data: query
-        }).then((response: object) => {
+        }).then((response: AxiosResponse<meetingListType>) => {
             resolve(response)
         }).catch((error :string) => {
             resolve({})
@@ -221,7 +222,6 @@ export function uploadMeetingFile(query: object) {
                 formData.append(key, query[key]);
             }
         }
-
         request({
             url: '/v4/meeting/uploadMeetingFile',
             method: 'POST', // 或者其他 HTTP 方法
@@ -258,6 +258,63 @@ export function giveUpTask(query :object){
             url:'/v4/task/giveUpTask',
             data: query
         }).then((response: object) => {
+            resolve(response)
+        }).catch((error :string) => {
+            resolve({})
+        })
+    })
+}
+// /v4/meeting/deleteAudioMeetingFile
+// 会议删除接口
+export function deleteAudioMeetingFile(query :object){
+    // console.log('query',query)
+    return new Promise(function (resolve, reject) {
+        request({
+            url:'/v4/meeting/deleteAudioMeetingFile',
+            data: query
+        }).then((response: object) => {
+            resolve(response)
+        }).catch((error :string) => {
+            resolve({})
+        })
+    })
+}
+// http://localhost:7001s
+//任务池详情接口
+    export function taskPoolDetails(query :object){
+        // console.log('query',query)
+        return new Promise(function (resolve, reject) {
+            request({
+                url:'/v4/task/taskPoolDetails',
+                data: query
+            }).then((response: object) => {
+                resolve(response)
+            }).catch((error :string) => {
+                resolve({})
+            })
+        })
+    }
+    //音频会议录音生成会议摘要
+export function audioMeeting(query :object){
+    // console.log('query',query)
+    return new Promise(function (resolve, reject) {
+        request({
+            url:'/v4/meeting/audioMeeting_Ai_Abstract',
+            data: query
+        }).then((response: AxiosResponse<ResponseType>) => {
+            resolve(response)
+        }).catch((error :string) => {
+            resolve({})
+        })
+    })
+}
+export function audioMeeting_Ai_Summary_BrainMap(query :object){
+    // console.log('query',query)
+    return new Promise(function (resolve, reject) {
+        request({
+            url:'/v4/meeting/audioMeeting_Ai_Summary_BrainMap',
+            data: query
+        }).then((response: AxiosResponse<ResponseType>) => {
             resolve(response)
         }).catch((error :string) => {
             resolve({})

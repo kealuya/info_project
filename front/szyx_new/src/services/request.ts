@@ -9,7 +9,7 @@ const instance = axios.create({
     // 基础路径
     // baseURL: version+'',
     // 请求超时时间
-    timeout: 10000,
+    timeout: 60000,
     method:'post',
 
 })
@@ -125,7 +125,7 @@ instance.interceptors.response.use(
 let requests = <any>[];
 const refreshToken = (config: any) => {
     const service1 = axios.create({
-        timeout: 5000
+        timeout: 150000
     });
     service1.interceptors.request.use(
         config => {
