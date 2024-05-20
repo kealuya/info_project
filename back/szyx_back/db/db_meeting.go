@@ -248,8 +248,8 @@ func GetMeetingListTranslation() (res []meeting.Meeting, msg error) {
 	// 计算三天前的时间
 	threeDaysAgo := now.AddDate(0, 0, -3)
 
-	startDate := now.Format("2006-01-02 15:04:05")
-	endDate := threeDaysAgo.Format("2006-01-02 15:04:05")
+	endDate := now.Format("2006-01-02 15:04:05")
+	startDate := threeDaysAgo.Format("2006-01-02 15:04:05")
 
 	Param = append(Param, "1") //1 代表转译中
 	Param = append(Param, startDate)

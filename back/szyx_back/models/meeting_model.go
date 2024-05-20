@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/astaxie/beego/logs"
@@ -28,33 +29,52 @@ func GetMeetingList(meetingDto *meeting.MeetingList_Param) (res meeting.MeetingL
 	return res, err
 }
 
-/**
-创建会议，保存到数据库中。 调用语音转译接口 把录音转成文字
-*/
+///**
+//创建会议，保存到数据库中。 调用语音转译接口 把录音转成文字
+//*/
 //func CreateMeeting(meetingDto *meeting.Meeting) (err error) {
 //	//创建会议
 //	err = db.CreateMeeting(meetingDto)
 //	//调用语音转译接口 把录音转成文字
 //	if err == nil || meetingDto.MeetingType == "audio" {
 //		//遍历音频会议 上传的所有录音文件
-//		fileList, _ := db.GetMeetingFileList(meetingDto.MeetingId)
+//		fileList, _ := db.GetMeetingFileList(meetingDto.MeetingId,meetingDto.Creater)
+//		//多段录音传同一个orderId，转译接口会合并录音内容生成转译文本
 //		orderId := ""
 //		for _, v := range fileList {
+//			fmt.Println("请求参数：" + v.FileUrl +  v.FileName + v.MeetingId + orderId)
 //			//调用语音识别接口
-//			responseStr := common.DoHttpPost_Audio(v.FileUrl, v.FileName, v.MeetingId, orderId)
-//			fmt.Println(responseStr)
-//			//TODO 这块逻需要调用java在联调
-//			//TODO 目前传了MeetingId和获取的orderId。 需要确认java那边同一orderId的录音，返回转译的问题
-//			orderId = "假装是获取到的orderId"
+//			responseStr := common.DoHttpPost_Audio(v.FileUrl, v.FileName,v.MeetingId,orderId)
+//			logs.Info("录音转译接口返回:" + responseStr)
+//			//转译接口返回结构取值
+//			jsonData := []byte(responseStr)
+//			var data map[string]interface{}
+//			err1 := json.Unmarshal(jsonData, &data)
+//			if err1 != nil {
+//				fmt.Println("转换json失败:", err)
+//				return err1
+//			}
+//			orderId = data["orderId"].(string)
 //		}
 //	}
 //	return err
 //}
-func CreateMeeting(meetingDto *meeting.Meeting) (err error) {
+
+func CreateMeeting(meetingDto *meeting.Meeting) (err error, msg string) {
 	//创建会议
 	err = db.CreateMeeting(meetingDto)
-	common.DoHttpPost_kdxf_audio_translation_meeting(meetingDto.MeetingId)
-	return err
+	//调用音频转译接口  传会议id,java根据会议id查会议的音频文件,进行音频转译
+	responseStr := common.DoHttpPost_kdxf_audio_translation_meeting(meetingDto.MeetingId)
+	//转译接口返回结构取值
+	jsonData := []byte(responseStr)
+	var data map[string]interface{}
+	json.Unmarshal(jsonData, &data)
+	if(data["success"] == true){
+		msg = "音频转译申请成功"
+	}else {
+		msg = "音频转译失败" + data["msg"].(string)
+	}
+	return err,msg
 }
 
 /**
@@ -72,7 +92,7 @@ func AudioMeeting_Ai_Abstract(meetingId string) (err error) {
 	//根据会议ID，得到orderId
 	kdxfSpeech, err := db.GetOrderIdByMeetingId(meetingId)
 	//1.会议摘要
-	responseZY := common.DoHttpPost_kdxf_audio_summary(kdxfSpeech.OrderId)
+	responseZY := common.DoHttpPost_kdxf_audio_summary(kdxfSpeech.OrderId,meetingId)
 	logs.Info("Ai生成摘要返回：" + responseZY)
 	ZY_result := new(kdxf.Kdxf_audio_result)
 	common.Unmarshal([]byte(responseZY), &ZY_result)
@@ -97,9 +117,8 @@ func AudioMeeting_Ai_Summary_BrainMap(meetingId string) (err error) {
 	})
 	//根据会议ID，得到orderId
 	kdxfSpeech, err := db.GetOrderIdByMeetingId(meetingId)
-
 	//2.会议纪要
-	responseJY := common.DoHttpPost_kdxf_audio_minutes(kdxfSpeech.OrderId)
+	responseJY := common.DoHttpPost_kdxf_audio_minutes(kdxfSpeech.OrderId,meetingId)
 	logs.Info("Ai生成纪要返回：" + responseJY)
 	JY_result := new(kdxf.Kdxf_audio_result)
 	common.Unmarshal([]byte(responseJY), &JY_result)
@@ -158,7 +177,7 @@ func CreateAudioMeetingSummary(speechDto *kdxf.Kdxf_audio_param) (res kdxf.Kdxf_
 
 	//FIXME 根据文件ID，得到orderId
 	kdxfSpeech, err := db.GetOrderIdByMeetingId(speechDto.MeetingId)
-	responseStr := common.DoHttpPost_kdxf_audio_summary(kdxfSpeech.OrderId)
+	responseStr := common.DoHttpPost_kdxf_audio_summary(kdxfSpeech.OrderId,speechDto.MeetingId)
 
 	Kdxf_audio_result := new(kdxf.Kdxf_audio_result)
 	common.Unmarshal([]byte(responseStr), &Kdxf_audio_result)
@@ -182,7 +201,7 @@ func CreateAudioMeetingMinutes(speechDto *kdxf.Kdxf_audio_param) (res kdxf.Kdxf_
 
 	//FIXME 根据文件ID，得到orderId
 	kdxfSpeech, err := db.GetOrderIdByMeetingId(speechDto.MeetingId)
-	responseStr := common.DoHttpPost_kdxf_audio_minutes(kdxfSpeech.OrderId)
+	responseStr := common.DoHttpPost_kdxf_audio_minutes(kdxfSpeech.OrderId,speechDto.MeetingId)
 
 	Kdxf_audio_result := new(kdxf.Kdxf_audio_result)
 	common.Unmarshal([]byte(responseStr), &Kdxf_audio_result)
@@ -250,7 +269,7 @@ func CreateDocumentMeetingBrainMap(speechDto *kdxf.Kdxf_audio_param) (res kdxf.K
 
 	//FIXME 根据文件ID，得到orderId
 	kdxfSpeech, err := db.GetOrderIdByMeetingId(speechDto.MeetingId)
-	responseStr := common.DoHttpPost_kdxf_audio_minutes(kdxfSpeech.OrderId)
+	responseStr := common.DoHttpPost_kdxf_audio_minutes(kdxfSpeech.OrderId,speechDto.MeetingId)
 
 	Kdxf_audio_result := new(kdxf.Kdxf_audio_result)
 	common.Unmarshal([]byte(responseStr), &Kdxf_audio_result)

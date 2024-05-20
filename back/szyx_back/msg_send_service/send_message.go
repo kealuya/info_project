@@ -8,12 +8,14 @@ import (
 )
 
 //短信服务地址
-var Message_Service_Url = "XXXXXX"
+var Message_Service_Url = "http://114.115.168.29:8083/Ali/duanxin"
 
 func Send_AlibabaMessage(phone string, code string) (messageReturn system.MessageAlibabaReturn) {
 	messageAlibaba := new(system.MessageAlibaba)
 	messageAlibaba.Code = code
 	messageAlibaba.Phone = phone
+	messageAlibaba.Sign = "fk"
+	messageAlibaba.TemplateName = "verificationCode"
 	messageJson := common.Marshal(messageAlibaba)
 	logs.Debug("手机号登录调用阿里云短信获取验证码入参：" + string(messageJson))
 	respBodyMessage := common.DoHttpPost(Message_Service_Url, string(messageJson))

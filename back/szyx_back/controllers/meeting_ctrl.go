@@ -40,10 +40,10 @@ func (MeetingCtrl *MeetingCtrl) CreateMeeting() {
 		return
 	}
 	//业务处理
-	err := models.CreateMeeting(metting)
+	err,mag := models.CreateMeeting(metting)
 	if err == nil {
 		resJson.Success = true
-		resJson.Msg = "会议创建成功"
+		resJson.Msg = "会议创建成功" + mag
 		//resJson.Data = meetingRes
 	} else {
 		resJson.Success = false
@@ -293,13 +293,13 @@ func (MeetingCtrl *MeetingCtrl) AudioMeeting_Ai_Abstract() {
 		return
 	}
 	//业务处理
-	//err := models.AudioMeeting_Ai_Abstract(speech.MeetingId)
+	err := models.AudioMeeting_Ai_Abstract(speech.MeetingId)
 	if true {
 		resJson.Success = true
-		resJson.Msg = "生成会议摘要申请成功"
+		resJson.Msg = "正在生成摘要，请稍等..."
 	} else {
 		resJson.Success = false
-		//resJson.Msg = fmt.Sprintf("Ai生成内容报错:%s", err)
+		resJson.Msg = fmt.Sprintf("Ai生成内容报错:%s", err)
 	}
 }
 
@@ -327,13 +327,13 @@ func (MeetingCtrl *MeetingCtrl) AudioMeeting_Ai_Summary_BrainMap() {
 		return
 	}
 	//业务处理
-	//err := models.AudioMeeting_Ai_Summary_BrainMap(speech.MeetingId)
+	err := models.AudioMeeting_Ai_Summary_BrainMap(speech.MeetingId)
 	if true {
 		resJson.Success = true
 		resJson.Msg = "生成会议纪要、脑图申请成功"
 	} else {
 		resJson.Success = false
-		//resJson.Msg = fmt.Sprintf("Ai生成内容报错:%s", err)
+		resJson.Msg = fmt.Sprintf("Ai生成内容报错:%s", err)
 	}
 }
 

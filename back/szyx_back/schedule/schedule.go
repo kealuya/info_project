@@ -9,7 +9,7 @@ import (
 
 func InitTask() {
 	//每5分钟执行一次，获取转译文件
-	tk_Middle := toolbox.NewTask("getKdxfResult", "0 */5 * * * *", GetKdxfResult)
+	tk_Middle := toolbox.NewTask("getKdxfResult", "0 */1 * * * *", GetKdxfResult)
 	toolbox.AddTask("getKdxfResult", tk_Middle)
 }
 

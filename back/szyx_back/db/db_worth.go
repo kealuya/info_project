@@ -88,7 +88,10 @@ func GetWorthDetails(info *worth.Worth) (res worth.Worth, msg error) {
 	dbHandler := db_handler.NewDbHandler()
 	//价值详情信息
 	var Param []interface{}
+ 	Param = append(Param, info.CorpCode)
+	Param = append(Param, info.UserId)
 	Param = append(Param, info.WorthId)
+
 
 	selRes, err := dbHandler.SelectOne(db_handler.SelectWorthById_sql, Param...)
 	if len(selRes) > 0 && err == nil {

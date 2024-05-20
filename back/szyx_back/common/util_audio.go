@@ -12,30 +12,30 @@ import (
 )
 
 //kdxf音频转换地址
-var kdxf_audio = "http://localhost:7003/uploadAudio"
+var kdxf_audio = "http://172.16.161.31:7003/uploadAudio"
 
 //kdxf音频转换地址---入参meetingId
-var kdxf_audio_translation_meeting = "http://localhost:7003/audioMeetingTranslation"
+var kdxf_audio_translation_meeting = "http://172.16.161.31:7003/audioMeetingTranslation"
 
 //kdxf 获取音频转译结果
-var kdxf_audio_translation_getResult = "http://localhost:7003/getResultByMeetingId"
+var kdxf_audio_translation_getResult = "http://172.16.161.31:7003/getResultByMeetingId"
 
 //kdxf音频会议总结
-var kdxf_CreateMeetingSummary = "http://localhost:7003/convertAudioToSummary"
+var kdxf_CreateMeetingSummary = "http://172.16.161.31:7003/convertAudioToSummary"
 
 //kdxf音频会议纪要
-var kdxf_CreateMeetingMinutes = "http://localhost:7003/convertAudioToMeetingMinute"
+var kdxf_CreateMeetingMinutes = "http://172.16.161.31:7003/convertAudioToMeetingMinute"
 
 //kdxf音频会议脑图
-var kdxf_CreateMeetingBrainMap = "http://localhost:7003/convertAudioToBrainMap"
+var kdxf_CreateMeetingBrainMap = "http://172.16.161.31:7003/convertAudioToBrainMap"
 
 //==================================文档操作=====================
 
 //kdxf 文档  会议纪要生成
-var kdxf_CreateMeetingMinutes_document = "http://localhost:7003/convertDocumentToSummary"
+var kdxf_CreateMeetingMinutes_document = "http://172.16.161.31:7003/convertDocumentToSummary"
 
 //kdxf音频转换项目，测试地址
-var test_audio = "http://localhost:7003/hello"
+var test_audio = "http://172.16.161.31:7003/hello"
 
 //kdxf音频转换
 func DoHttpPost_Audio(fileUrl string, filename string, meetingId string, orderId string, options ...map[string]string) (respBody string) {
@@ -114,10 +114,11 @@ func DoHttpPost_Audio(fileUrl string, filename string, meetingId string, orderId
 }
 
 //kdxf 语音翻译后  生成会议总结
-func DoHttpPost_kdxf_audio_summary(orderId string, options ...map[string]string) (respBody string) {
+func DoHttpPost_kdxf_audio_summary(orderId string, meetingId string,options ...map[string]string) (respBody string) {
 	req := httplib.Post(kdxf_CreateMeetingSummary)
 	req.Header("Content-Type", "application/json")
 	req.Param("orderId", orderId)
+	req.Param("meetingId", meetingId)
 	respBody, err := req.String()
 	ErrorHandler(err)
 	logs.Debug(respBody)
@@ -125,10 +126,11 @@ func DoHttpPost_kdxf_audio_summary(orderId string, options ...map[string]string)
 }
 
 //kdxf 语音翻译后  生成会议纪要
-func DoHttpPost_kdxf_audio_minutes(orderId string, options ...map[string]string) (respBody string) {
+func DoHttpPost_kdxf_audio_minutes(orderId string,meetingId string,options ...map[string]string) (respBody string) {
 	req := httplib.Post(kdxf_CreateMeetingMinutes)
 	req.Header("Content-Type", "application/json")
 	req.Param("orderId", orderId)
+	req.Param("meetingId", meetingId)
 	respBody, err := req.String()
 	ErrorHandler(err)
 	logs.Warn("Java系统的返回值：" + respBody)
@@ -153,7 +155,7 @@ func DoHttpPost_kdxf_audio_translation_meeting(meetingId string, options ...map[
 	req.Param("meetingId", meetingId)
 	respBody, err := req.String()
 	ErrorHandler(err)
-	logs.Warn(respBody)
+	logs.Info("创建会议调用语音转译返回：" + respBody)
 	return respBody
 }
 
@@ -164,7 +166,7 @@ func DoHttpPost_kdxf_audio_translation_getResult(meetingId string, options ...ma
 	req.Param("meetingId", meetingId)
 	respBody, err := req.String()
 	ErrorHandler(err)
-	logs.Warn(respBody)
+	logs.Info("定时任务获取转译结果-返回：" + respBody)
 	return respBody
 }
 

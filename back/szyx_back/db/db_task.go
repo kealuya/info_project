@@ -3,6 +3,7 @@ package db
 import (
 	"errors"
 	"fmt"
+	"github.com/gohouse/t"
 	"szyx_back/common"
 	db_handler "szyx_back/db/handler"
 	"szyx_back/entity/meeting"
@@ -252,8 +253,10 @@ func FinishMyTask(info *task.MyTask) (msg error) {
 
 	//完成任务后 价值数据生成组装
 	var Param []interface{}
+	tc := t.New(time.Now().UnixNano())
 	btTime := time.Now().Format("2006-01-02")
-	Param = append(Param, info.TaskId)                      //价值ID //TODO 目前先用任务id 作为价值id，目前业务是一个完成的任务对应一条价值
+	Param = append(Param, "JZ" + tc.String())                      //价值ID
+	Param = append(Param, info.TaskId)                      //价值关联的任务ID
 	Param = append(Param, "85")                             //价值评分 //TODO 评分怎样来的，还不确定，是否需要管理端设定，先固定值
 	Param = append(Param, btTime+"-"+info.UserName+"-价值申请") //价值标题
 	Param = append(Param, common.MY_WORTH_APPLY_FLAG_KEY_0) //价值状态 0：未申请   1：已申请

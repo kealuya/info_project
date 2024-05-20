@@ -5,6 +5,12 @@ import "szyx_back/entity"
 //价值
 type Worth struct {
 	WorthId      string `json:"worthId" description:"价值Id" `
+	TaskId       string `json:"taskId" description:"价值关联的任务Id" `
+	TaskTitle       string `json:"taskTitle" description:"价值关联的任务标题" `
+	TaskData       string `json:"taskData" description:"价值关联的任务内容" `
+	TaskContent       string `json:"taskContent" description:"价值关联的任务介绍" `
+	MeetingId       string `json:"meetingId" description:"价值关联的会议id" `
+	MeetingTitle       string `json:"meetingTitle" description:"价值关联的会议标题" `
 	WorthTitle   string `json:"worthTitle" description:"价值title" `
 	WorthScore   string `json:"worthScore" description:"任务价值评分" `
 	WorthData    string `json:"worthData" description:"价值概况" `
