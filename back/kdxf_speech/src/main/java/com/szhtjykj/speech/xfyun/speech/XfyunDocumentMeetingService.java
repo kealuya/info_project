@@ -2,12 +2,20 @@ package com.szhtjykj.speech.xfyun.speech;
 
 import com.szhtjykj.speech.dao.MeetingFileDao;
 import com.szhtjykj.speech.model.MeetingFile;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.beetl.sql.solon.annotation.Db;
 import org.noear.solon.annotation.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -27,7 +35,7 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 @Component
 public class XfyunDocumentMeetingService {
 
-    static Logger log = LoggerFactory.getLogger(XfyunSpeechService.class);
+    static Logger log = LoggerFactory.getLogger(XfyunDocumentMeetingService.class);
 
     @Db
     MeetingFileDao meetingFileDao;
@@ -86,6 +94,30 @@ public class XfyunDocumentMeetingService {
             log.info("得到的字符" + returnStr);
             inputStream.close();
 
+        }else if(fileType.equals("pdf")){
+            //pdf文件处理
+            try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+                HttpGet httpGet = new HttpGet(fileList.get(0).getFileUrl());
+                CloseableHttpResponse response = httpClient.execute(httpGet);
+
+                if (response.getStatusLine().getStatusCode() == 200) {
+                    HttpEntity entity = response.getEntity();
+                    try (InputStream contentStream = entity.getContent();
+                         PDDocument document = PDDocument.load(contentStream)) {
+
+                        PDFTextStripper pdfStripper = new PDFTextStripper();
+                        String text = pdfStripper.getText(document);
+                        log.info("PDF文档内容：" + text);
+
+                    } catch (IOException e) {
+                        log.error("读取PDF内容时发生错误："+ e.getMessage());
+                    }
+                } else {
+                    log.error("请求PDF文档失败，状态码：" + response.getStatusLine().getStatusCode());
+                }
+            } catch (IOException e) {
+                log.error("下载PDF文档时发生错误：" + e.getMessage());
+            }
         }else{
             //文件类型不正确
         }
