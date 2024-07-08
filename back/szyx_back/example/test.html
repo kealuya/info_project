@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stream Data</title>
+    <style>
+        #output {
+            width: 90%;
+            height: 400px;
+            border: 1px solid #cccccc;
+            padding: 10px;
+            overflow-y: auto;
+        }
+
+        #input {
+            width: 90%;
+            height: 400px;
+            border: 1px solid #cccccc;
+            padding: 10px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+<h1>Stream Data</h1>
+<textarea id="input"></textarea>
+<br>
+<button onclick="fetchStreamData()">Send</button>
+<div id="output"></div>
+
+<script>
+    async function fetchStreamData() {
+
+        let inputDiv = document.getElementById('input');
+        let inputValue = inputDiv.value;
+        const response = await fetch('/stream', {
+            method: 'POST', // 使用 POST 方法
+            headers: {
+                'Content-Type': 'application/text', // 设置请求头
+            },
+            body: inputValue// 请求体中包含 JSON 参数
+        });
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+
+        let outputDiv = document.getElementById('output');
+        let result = '';
+
+        // 持续读取响应体中的数据
+        while (true) {
+            const {done, value} = await reader.read();
+            if (done) {
+                break;
+            }
+            // 解码新读取的数据
+            result += decoder.decode(value, {stream: true});
+
+            // 更新页面内容
+            outputDiv.innerText = result;
+            outputDiv.scrollTop = outputDiv.scrollHeight; // 滚动到底部
+        }
+    }
+
+    // 在页面加载后立即调用fetchStreamData函数
+    // window.onload = fetchStreamData;
+</script>
+</body>
+</html>
