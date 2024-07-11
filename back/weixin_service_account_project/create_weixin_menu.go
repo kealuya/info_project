@@ -100,7 +100,7 @@ func createMenu(accessToken string) error {
 
 func main() {
 	var err error
-	err = GetAccessToken()
+	err = GetAccessTokenNow()
 
 	if err != nil {
 		fmt.Printf("Error getting access token: %v\n", err)
