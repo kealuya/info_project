@@ -7,12 +7,12 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/astaxie/beego/httplib"
 	"github.com/astaxie/beego/logs"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/mozillazg/go-pinyin"
+	"log"
 	"math"
 	"math/rand"
 	"os"
@@ -92,26 +92,22 @@ func GetGoroutineID() string {
 
 // 共通错误recover处理方法
 func RecoverHandler(f func(err error)) {
-	if err := recover(); err != nil {
-		logs.Error("★★★★错误recover::", err)
-		logs.Error(string(debug.Stack()))
-
-		reflect.TypeOf(&err).String()
-		if f != nil {
-			_, ok := err.(error)
-			if ok {
+	defer func() {
+		if err := recover(); err != nil {
+			logs.Error(string(debug.Stack()))
+			if f != nil {
 				f(err.(error))
-			} else {
-				f(errors.New(err.(string)))
 			}
 		}
-	}
+	}()
 }
 
 // 共通错误error处理方法
-func ErrorHandler(err error, info ...interface{}) {
+func ErrorHandler(err error, info ...any) {
 	if err != nil {
-		logs.Error("★★★错误error::", err, info)
+		logs.Error(err, info)
+		//logs.Error(string(debug.Stack()))
+		log.Panicln()
 	}
 }
 

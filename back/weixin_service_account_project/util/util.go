@@ -3,14 +3,11 @@ package util
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/beego/beego/v2/core/config"
 	"net/http"
 	"time"
 )
 
-var TOKEN = "renhao666"                                    // Your token
-var APPID = "wx5276498b4494a34a"                           // Your AppID
-var AESKEY = "WgM6RPo5WvVjSP3BFeEvuoMntlq6qYgIy2rroFACl12" // Your EncodingAESKey
-var APPSECRET = "e5946c74933fee21389bc22164eb4600"
 var ACCESSTOKEN = ""
 
 func init() {
@@ -21,6 +18,8 @@ func GetAccessToken() string {
 	return ACCESSTOKEN
 }
 func GetAccessTokenNow() error {
+	APPID, _ := config.String("APPID")
+	APPSECRET, _ := config.String("APPSECRET")
 	url := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s", APPID, APPSECRET)
 	resp, err := http.Get(url)
 	if err != nil {

@@ -3,10 +3,14 @@ package llm
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"io/ioutil"
+	"github.com/astaxie/beego/logs"
+	"io"
 	"net/http"
 	"strconv"
+	"strings"
+	"weixin_service_account_project/common"
 )
 
 type RequestData struct {
@@ -38,7 +42,8 @@ type ResponseData struct {
 	} `json:"data"`
 }
 
-func CallLlm(query string) string {
+func CallLlm(query string) (answer string, resultError error) {
+	appKey := "app-ccNX6lmaqAeD6U9VXEcQNwWD"
 	url := "http://122.9.41.45:9111/v1/workflows/run"
 	requestData := RequestData{
 		ResponseMode: "blocking",
@@ -48,61 +53,54 @@ func CallLlm(query string) string {
 	//requestData.Inputs.WordCount = 8000
 	//requestData.Inputs.ThemeCount = 8
 
-	jsonData, err := json.Marshal(requestData)
-	if err != nil {
-		fmt.Printf("Error marshalling request data: %v\n", err)
+	common.RecoverHandler(func(err error) {
+		answer = ""
+		resultError = err
+		return
+	})
 
-	}
+	jsonData, err := json.Marshal(requestData)
+	common.ErrorHandler(err)
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
-	if err != nil {
-		fmt.Printf("Error creating request: %v\n", err)
+	common.ErrorHandler(err)
 
-	}
-
-	req.Header.Set("Authorization", "Bearer app-ccNX6lmaqAeD6U9VXEcQNwWD")
+	req.Header.Set("Authorization", "Bearer "+appKey)
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
-	if err != nil {
-		fmt.Printf("Error making request: %v\n", err)
-
-	}
+	common.ErrorHandler(err)
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Printf("Error reading response body: %v\n", err)
-
-	}
+	body, err := io.ReadAll(resp.Body)
+	common.ErrorHandler(err)
 
 	if resp.StatusCode != http.StatusOK {
-		fmt.Printf("Error: received status code %d\n", resp.StatusCode)
-		fmt.Printf("Response body: %s\n", body)
-
+		common.ErrorHandler(errors.New(fmt.Sprintf("Error: received status code %d\n . Response body: %s\n", resp.StatusCode, body)))
 	}
 
 	var responseData ResponseData
 	err = json.Unmarshal(body, &responseData)
-	if err != nil {
-		fmt.Printf("Error unmarshalling response data: %v\n", err)
+	common.ErrorHandler(err)
 
-	}
+	// 大模型返回状态记录
+	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf("Workflow Run ID: %s\n", responseData.WorkflowRunID))
+	sb.WriteString(fmt.Sprintf("Task ID: %s\n", responseData.TaskID))
+	sb.WriteString(fmt.Sprintf("Status: %s\n", responseData.Data.Status))
+	sb.WriteString(fmt.Sprintf("Output Text: %s\n", responseData.Data.Outputs.Output))
+	sb.WriteString(fmt.Sprintf("Elapsed Time: %.2f seconds\n", responseData.Data.ElapsedTime))
+	sb.WriteString(fmt.Sprintf("Total Tokens: %d\n", responseData.Data.TotalTokens))
+	sb.WriteString(fmt.Sprintf("Total Steps: %d\n", responseData.Data.TotalSteps))
+	sb.WriteString(fmt.Sprintf("Created At: %d\n", responseData.Data.CreatedAt))
+	sb.WriteString(fmt.Sprintf("Finished At: %d\n", responseData.Data.FinishedAt))
+	logs.Info(sb.String())
 
-	fmt.Printf("Workflow Run ID: %s\n", responseData.WorkflowRunID)
-	fmt.Printf("Task ID: %s\n", responseData.TaskID)
-	fmt.Printf("Status: %s\n", responseData.Data.Status)
-	fmt.Printf("Output Text: %s\n", responseData.Data.Outputs.Output)
-	fmt.Printf("Elapsed Time: %f seconds\n", responseData.Data.ElapsedTime)
-	fmt.Printf("Total Tokens: %d\n", responseData.Data.TotalTokens)
-	fmt.Printf("Total Steps: %d\n", responseData.Data.TotalSteps)
-	fmt.Printf("Created At: %d\n", responseData.Data.CreatedAt)
-	fmt.Printf("Finished At: %d\n", responseData.Data.FinishedAt)
 	if responseData.Data.Error != nil {
-		fmt.Printf("Error: %v\n", responseData.Data.Error)
+		common.ErrorHandler(errors.New(fmt.Sprintf("Error: %v\n", responseData.Data.Error)))
 	}
-	return fmt.Sprintf("%s", responseData.Data.Outputs.Output)
+	return fmt.Sprintf("%s", responseData.Data.Outputs.Output), nil
 }
 
 // decodeUnicode 使用 strconv.Unquote 简化转换
