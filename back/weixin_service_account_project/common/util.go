@@ -92,14 +92,12 @@ func GetGoroutineID() string {
 
 // 共通错误recover处理方法
 func RecoverHandler(f func(err error)) {
-	defer func() {
-		if err := recover(); err != nil {
-			logs.Error(string(debug.Stack()))
-			if f != nil {
-				f(err.(error))
-			}
+	if err := recover(); err != nil {
+		logs.Error(string(debug.Stack()))
+		if f != nil {
+			f(err.(error))
 		}
-	}()
+	}
 }
 
 // 共通错误error处理方法

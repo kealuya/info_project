@@ -3,13 +3,25 @@ package main
 import (
 	"github.com/beego/beego/v2/core/logs"
 	beego "github.com/beego/beego/v2/server/web"
+	"runtime"
 	"weixin_service_account_project/module"
-	_ "weixin_service_account_project/util"
 )
 
 func init() {
 	_ = logs.SetLogger(logs.AdapterConsole)
 	_ = logs.SetLogger(logs.AdapterFile, `{"filename":"logs/project.log","level":7,"maxlines":0,"maxsize":0,"daily":true,"maxdays":10,"color":true}`)
+	config()
+}
+
+func config() {
+	// 获取当前系统的 CPU 核心数
+	numCPU := runtime.NumCPU()
+	logs.Info("Number of CPUs: %d\n", numCPU)
+
+	// 设置 GOMAXPROCS 为 CPU 核心数
+	prevGOMAXPROCS := runtime.GOMAXPROCS(numCPU)
+	logs.Info("Previous GOMAXPROCS setting: %d\n", prevGOMAXPROCS)
+	logs.Info("Current GOMAXPROCS setting: %d\n", runtime.GOMAXPROCS(0))
 }
 
 func main() {

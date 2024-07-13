@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	. "weixin_service_account_project/util"
+	"weixin_service_account_project/module"
 )
 
 type MenuButton struct {
@@ -100,14 +100,14 @@ func createMenu(accessToken string) error {
 
 func main() {
 	var err error
-	err = GetAccessTokenNow()
+	err = module.GetAccessTokenNow()
 
 	if err != nil {
 		fmt.Printf("Error getting access token: %v\n", err)
 		return
 	}
 
-	err = createMenu(ACCESSTOKEN)
+	err = createMenu(module.ACCESSTOKEN)
 	if err != nil {
 		fmt.Printf("Error creating menu: %v\n", err)
 		return

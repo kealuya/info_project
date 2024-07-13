@@ -5,8 +5,9 @@
 #0，需要先在本机执行一下语句，将密钥同步到云端服务器，这样就可以无需密码验证，直接进行同步
 #1，本机生成密码（公钥）
     #ssh-keygen -t rsa
+    #ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
 #2，将密钥同步至云端服务器
-    #ssh-copy-id root@124.70.48.30
+    #ssh-copy-id root@122.9.41.45
 #3，此时会需要输入云端服务器密码
 #4，在云端服务器上及本机上安装rsync
     #在 Ubuntu 或 Debian 系统上安装 rsync

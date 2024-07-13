@@ -53,7 +53,7 @@ func CallLlm(query string) (answer string, resultError error) {
 	//requestData.Inputs.WordCount = 8000
 	//requestData.Inputs.ThemeCount = 8
 
-	common.RecoverHandler(func(err error) {
+	defer common.RecoverHandler(func(err error) {
 		answer = ""
 		resultError = err
 		return

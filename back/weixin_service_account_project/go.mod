@@ -5,7 +5,6 @@ go 1.20
 require (
 	github.com/astaxie/beego v1.12.3
 	github.com/beego/beego/v2 v2.2.2
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gorilla/websocket v1.5.0
 	github.com/huaweicloud/huaweicloud-sdk-go-obs v3.24.6+incompatible
 	github.com/json-iterator/go v1.1.12

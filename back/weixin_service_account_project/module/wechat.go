@@ -13,7 +13,6 @@ import (
 	"time"
 	"weixin_service_account_project/common"
 	"weixin_service_account_project/llm"
-	. "weixin_service_account_project/util"
 )
 
 type WeChatController struct {
@@ -25,15 +24,9 @@ func (c *WeChatController) HandleMessage() {
 
 	var msg request
 	err := xml.Unmarshal(c.Ctx.Input.RequestBody, &msg)
-	common.ErrorHandler(err)
-	// 系统性错误处理
-	common.RecoverHandler(func(err error) {
-		// 回复多条客服消息
-		err = sendCustomMessage(msg.FromUserName, "服务器暂时无法回复，请稍后再试...")
-		if err != nil {
-			logs.Error(err)
-		}
-	})
+	if err != nil {
+		logs.Error(err)
+	}
 
 	// 收到消息后的自动回复
 	reply := response{
@@ -46,66 +39,87 @@ func (c *WeChatController) HandleMessage() {
 	}
 
 	output, err := xml.Marshal(reply)
-	common.ErrorHandler(err)
-
+	if err != nil {
+		logs.Error(err)
+	}
 	c.Ctx.ResponseWriter.Header().Set("Content-Type", "application/xml")
 	_, err = c.Ctx.ResponseWriter.Write(output)
-	common.ErrorHandler(err)
-
+	// 因为自动回复消息是直接响应用户的response，发现如果该方法有执行不完的代码，该响应不会发送。
+	// 导致微信侧会不停尝试重新调用接口，数据重复提交。
+	// 所以大模型调用，全部移到goroutine中。
+	if err != nil {
+		logs.Error(err)
+	}
 	// 显示"正在输入"状态
-	fmt.Println(GetAccessToken())
 	err = sendTypingStatus(GetAccessToken(), msg.FromUserName, "Typing")
-	common.ErrorHandler(err)
-
-	llmQuery := ""
-	if msg.MsgType == "voice" {
-		voice, err := llm.DownloadVoice(GetAccessToken(), msg.MediaId16K)
-		common.ErrorHandler(err)
-
-		wav, err := llm.ConvertAMRToPCM(voice)
-		common.ErrorHandler(err)
-		llmQuery = llm.CallVoiceToText(wav)
-	} else {
-		llmQuery = msg.Content
+	if err != nil {
+		logs.Error(err)
 	}
 
-	// 记录
-	logs.Info("接受用户消息::", msg.MsgID, msg.FromUserName, msg.MsgType, llmQuery)
-
-	type llmAnswer struct {
-		answer string
-		err    error
-	}
-
-	llmChannel := make(chan llmAnswer, 1)
 	go func() {
-		answer, err := llm.CallLlm(llmQuery)
-		llmChannel <- llmAnswer{answer: answer, err: err}
-		return
-	}()
+		// 系统性错误处理
+		defer common.RecoverHandler(func(err error) {
+			// 回复多条客服消息
+			err = sendCustomMessage(msg.FromUserName, "服务器暂时无法回复，请稍后再试...")
+			if err != nil {
+				logs.Error(err)
+			}
+		})
+		llmQuery := ""
+		if msg.MsgType == "voice" {
+			voice, err := llm.DownloadVoice(GetAccessToken(), msg.MediaId16K)
+			common.ErrorHandler(err)
 
-	select {
-
-	case answer := <-llmChannel:
-		if answer.err != nil {
-			common.ErrorHandler(answer.err)
-			return
+			wav, err := llm.ConvertAMRToPCM(voice)
+			common.ErrorHandler(err)
+			llmQuery = llm.CallVoiceToText(wav)
+		} else {
+			llmQuery = msg.Content
 		}
-		// 回复客服消息
-		err = sendCustomMessage(msg.FromUserName, answer.answer)
-		common.ErrorHandler(err)
 
-	case <-time.After(20 * time.Second): // 超时
-		// 回复多条客服消息
-		err = sendCustomMessage(msg.FromUserName, "服务器请求超时，请稍后再试...")
+		// 记录
+		logs.Info("接受用户消息::", msg.MsgID, msg.FromUserName, msg.MsgType, llmQuery)
+
+		type llmAnswer struct {
+			answer string
+			err    error
+		}
+
+		llmChannel := make(chan llmAnswer)
+		go func() {
+			answer, err := llm.CallLlm(llmQuery)
+			llmChannel <- llmAnswer{answer: answer, err: err}
+			close(llmChannel)
+			return
+		}()
+
+		select {
+
+		case answer := <-llmChannel:
+			if answer.err != nil {
+				common.ErrorHandler(answer.err)
+				return
+			}
+			// 回复客服消息
+			err = sendCustomMessage(msg.FromUserName, answer.answer)
+			common.ErrorHandler(err)
+
+		case <-time.After(20 * time.Second): // 超时
+			// 回复多条客服消息
+			err = sendCustomMessage(msg.FromUserName, "服务器请求超时，请稍后再试...")
+			if err != nil {
+				logs.Error(err)
+			}
+		}
+
+		// 取消"正在输入"状态
+		err = sendTypingStatus(GetAccessToken(), msg.FromUserName, "CancelTyping")
 		if err != nil {
 			logs.Error(err)
 		}
-	}
 
-	// 取消"正在输入"状态
-	err = sendTypingStatus(GetAccessToken(), msg.FromUserName, "CancelTyping")
-	common.ErrorHandler(err)
+	}()
+
 }
 
 // 标准交互方法，无需考虑错误
