@@ -21,7 +21,7 @@ func config() {
 	// 设置 GOMAXPROCS 为 CPU 核心数
 	prevGOMAXPROCS := runtime.GOMAXPROCS(numCPU)
 	logs.Info("Previous GOMAXPROCS setting: %d\n", prevGOMAXPROCS)
-	logs.Info("Current GOMAXPROCS setting: %d\n", runtime.GOMAXPROCS(0))
+	logs.Info("Current GOMAXPROCS setting: %d\n", runtime.GOMAXPROCS(numCPU))
 }
 
 func main() {
