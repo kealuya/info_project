@@ -29,6 +29,9 @@ WINDOWS_SOURCE_DIR="C:/path/to/your/source/"
 DEST_DIR="root@$SERVER_ADDR:/root/weixin_service_account_project"
 PORT=8086
 
+# 获取当前时间
+start_time=$(date +%s)
+
 # 检查操作系统类型并同步代码
 if [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "darwin"* ]]; then
     echo "当前操作系统是类 Unix 系统。"
@@ -68,4 +71,8 @@ docker run -itd -p $PORT:$PORT --name weixin_service weixin_service_image || tru
 echo "Docker 容器 weixin_service 运行成功。"
 EOF
 
-echo "脚本执行完成。"
+# 获取当前时间
+end_time=$(date +%s)
+duration=$(( end_time - start_time ))
+
+echo "脚本执行完成。总耗时: ${duration}秒"

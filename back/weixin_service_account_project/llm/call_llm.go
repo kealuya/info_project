@@ -47,7 +47,7 @@ func CallLlm(query string) (answer string, resultError error) {
 	url := "http://122.9.41.45:9111/v1/workflows/run"
 	requestData := RequestData{
 		ResponseMode: "blocking",
-		User:         "",
+		User:         "亲",
 	}
 	requestData.Inputs.Query = query
 	//requestData.Inputs.WordCount = 8000

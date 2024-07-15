@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/astaxie/beego/httplib"
 	"github.com/astaxie/beego/logs"
@@ -91,11 +92,19 @@ func GetGoroutineID() string {
 }
 
 // 共通错误recover处理方法
-func RecoverHandler(f func(err error)) {
+func RecoverHandler[T any](f func(err T)) {
 	if err := recover(); err != nil {
-		logs.Error(string(debug.Stack()))
-		if f != nil {
-			f(err.(error))
+		log.Print(string(debug.Stack()))
+		switch e := err.(type) {
+		case string:
+			casted := errors.New(e).(T)
+			f(casted)
+		case error:
+			casted := e.(T)
+			f(casted)
+		default:
+			casted := fmt.Errorf("unknown error: %v", err).(T)
+			f(casted)
 		}
 	}
 }

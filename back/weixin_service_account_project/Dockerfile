@@ -33,6 +33,13 @@ FROM debian:bookworm-slim
 #ENV TNS_ADMIN=/opt/oracle/instantclient_19_10
 #ENV ORACLE_BASE=/opt/oracle/instantclient_19_10
 #ENV ORACLE_HOME=/opt/oracle/instantclient_19_10
+
+# 安装 ffmpeg 如果需要语音处理
+RUN apt-get update && apt-get install -y ffmpeg
+# 安装 ca-certificates 如果需要容器内请求https网站（证书认证），需要安装
+RUN apt-get install -y ca-certificates
+
+
 ENV TZ Asia/Shanghai
 
 # 设置工作目录并复制构建的可执行文件
