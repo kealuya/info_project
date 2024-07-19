@@ -73,8 +73,11 @@ func (c *WeChatController) HandleMessage() {
 			wav, err := llm.ConvertAMRToPCM(voice)
 			common.ErrorHandler(err)
 			llmQuery = llm.CallVoiceToText(wav)
-		} else {
+		} else if msg.MsgType == "text" {
 			llmQuery = msg.Content
+		} else {
+			// 其他事件暂时不处理
+			return
 		}
 
 		// 记录

@@ -32,27 +32,17 @@ func createMenu(accessToken string) error {
 		Button: []MenuButton{
 
 			{
-				Name: "业财服务",
-				SubButton: []MenuButton{
-					{
-						Type: "view",
-						Name: "浩天物流",
-						URL:  "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx5276498b4494a34a&redirect_uri=https%3A%2F%2Ftech.szhtkj.com.cn%2Fwuliu%2Fstatic%2Findex.html%23%2FssoLogin&response_type=code&scope=snsapi_base#wechat_redirect",
-					},
-					{
-						Type: "view",
-						Name: "智慧资产",
-						URL:  "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx5276498b4494a34a&redirect_uri=https%3A%2F%2Fzc.qcykj.com.cn%2Fxx_asset_h5%2F%23%2Flogin%3Fclient%3Dfwwx&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect",
-					},
-				},
+				Name: "境步AI",
+				Type: "view",
+				URL:  "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx3ea4762ffc9c7736&redirect_uri=https%3A%2F%2Fai.jingbukj.com%2FcostH5_XS&response_type=code&scope=snsapi_base#wechat_redirect",
 			},
 			{
-				Name: "账户",
+				Name: "医疗顾问",
 				SubButton: []MenuButton{
 					{
 						Type: "view",
-						Name: "用户绑定",
-						URL:  "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx5276498b4494a34a&redirect_uri=https%3A%2F%2Fzc.qcykj.com.cn%2Fxx_asset_h5%2F%23%2FjudgePage&response_type=code&scope=snsapi_base#wechat_redirect",
+						Name: "数组人",
+						URL:  "https://ai.jingbukj.com/costH5_PC/#/thedigitalhuman",
 					},
 				},
 			},
