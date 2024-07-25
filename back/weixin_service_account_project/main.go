@@ -29,6 +29,7 @@ func main() {
 	beego.Router("/wechat", &module.ManagerController{}, "get:VerifyToken")
 	// 用于接受用户提问，通过大模型回答
 	beego.Router("/wechat", &module.WeChatController{}, "post:HandleMessage")
+	beego.Router("/", &module.QyWeixinController{}, "get:Test")
 
 	// Start beego server
 	beego.Run()
