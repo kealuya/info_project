@@ -1,12 +1,9 @@
 package chat
 
 import (
-	"bytes"
 	_ "embed"
-	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
+	"github.com/go-resty/resty/v2"
 	"os"
 )
 
@@ -43,42 +40,22 @@ func (receiver *Chat) Conversation(query string) BlockingResponse {
 		User:           "llm",
 		Files:          nil,
 	}
-	jsonData, err := json.Marshal(chatStr)
+
+	br := BlockingResponse{}
+	client := resty.New()
+	resp, err := client.R().SetBody(chatStr).EnableTrace().
+		SetHeader("Authorization", "Bearer "+API_KEY).
+		SetHeader("Content-Type", "application/json").
+		SetResult(&br).
+		Post(API_URL)
 	if err != nil {
-		fmt.Println("Error marshalling JSON:", err)
+		fmt.Println("Error request:", err)
 		os.Exit(1)
 	}
-
-	// 创建新的HTTP请求
-	req, err := http.NewRequest("POST", API_URL, bytes.NewBuffer(jsonData))
-	if err != nil {
-		fmt.Println("Error creating request:", err)
-		os.Exit(1)
-	}
-
-	// 设置请求头
-	req.Header.Set("Authorization", "Bearer "+API_KEY)
-	req.Header.Set("Content-Type", "application/json")
-
-	// 执行请求
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		fmt.Println("Error making POST request:", err)
-		os.Exit(1)
-	}
-	defer resp.Body.Close()
 
 	// 打印响应状态和数据
-	if resp.StatusCode != 200 {
-		fmt.Println("Error server response:", resp.Status)
-		os.Exit(1)
-	}
-	br := BlockingResponse{}
-	b, _ := io.ReadAll(resp.Body)
-	err = json.Unmarshal(b, &br)
-	if err != nil {
-		fmt.Println("Error marshalling JSON:", err)
+	if resp.StatusCode() != 200 {
+		fmt.Println("Error server response:", resp.Error())
 		os.Exit(1)
 	}
 

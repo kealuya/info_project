@@ -4,12 +4,24 @@ import (
 	_ "embed"
 	"fmt"
 	"github.com/spf13/cobra"
+	"io"
 	"llm/chat"
 	"os"
 )
 
-//go:embed  chat.gob
 var chatId string
+var file *os.File
+
+func init() {
+	myFile, err := os.OpenFile("chat.gob", os.O_CREATE|os.O_RDWR, 0755)
+	if err != nil {
+		fmt.Println("Failed to open chat.gob:", err)
+		return
+	}
+	file = myFile
+	all, _ := io.ReadAll(file)
+	chatId = string(all)
+}
 
 func main() {
 	Execute()
@@ -34,16 +46,13 @@ var rootCmd = &cobra.Command{
 }
 
 func chatEncode(conversationId string) {
-	// 创建或打开一个文件用于写入
-	file, err := os.OpenFile("chat.gob", os.O_RDWR, 0755)
-	if err != nil {
-		fmt.Println("Failed to open chat.gob:", err)
+
+	defer file.Close()
+	if chatId != "" {
 		return
 	}
-	defer file.Close()
-
 	// 将数据编码并写入文件
-	_, err = file.WriteString(conversationId)
+	_, err := file.WriteString(conversationId)
 	if err != nil {
 		fmt.Println("Failed to encode data:", err)
 		return
