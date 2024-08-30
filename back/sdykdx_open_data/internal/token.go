@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	baseUrl   = "http://data.ccmu.edu.cn/open-data/"
+	baseUrl   = "https://data.ccmu.edu.cn/open-data/"
 	TokenUrl  = baseUrl + "getAccessToken"
 	ApiUrl    = baseUrl + "api"
 	appId     = "20a6f1bdfa4c444da1502843ce743e1b"

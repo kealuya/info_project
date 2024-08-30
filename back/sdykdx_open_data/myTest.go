@@ -2,28 +2,49 @@ package main
 
 import (
 	"fmt"
-	"github.com/beego/beego/v2/core/logs"
-	"sdykdx_open_data/common"
+	"strings"
 )
 
-func init2() {
-	LogConfigInit2()
-	//TokenInit()
+type TextProcessorInterface interface {
+	Process(text string) string
 }
-func LogConfigInit2() {
-	_ = logs.SetLogger(logs.AdapterConsole)
-	_ = logs.SetLogger(logs.AdapterFile, `{"filename":"logs/my.log","level":7,"maxlines":0,"maxsize":0,"daily":true,"maxdays":365,"color":true,"separate":["error", "warning", "info", "debug"]}`)
-	//输出文件名和行号
-	logs.EnableFuncCallDepth(true)
-	//异步输出log
-	//logs.Async()
+
+// PlainText 是一种基本文本处理器
+type PlainText struct{}
+
+func (p *PlainText) Process(text string) string {
+	return text
 }
-func main2() {
-	init2()
-	defer common.RecoverHandler(func(err error) {
 
-	})
+// TextDecorator 是装饰器的基础类型
+//type TextDecorator struct {
+//	TextProcessorInterface
+//}
 
-	common.ErrorHandler(fmt.Errorf("errrrrr"), "22222")
+// NewlineDecorator 为文本增加换行符
+type NewlineDecorator struct {
+	TextProcessorInterface
+}
 
+func (d *NewlineDecorator) Process(text string) string {
+	return d.TextProcessorInterface.Process(text) + "\n"
+}
+
+// UppercaseDecorator 将文本转换为大写
+type UppercaseDecorator struct {
+	TextProcessorInterface
+}
+
+func (d *UppercaseDecorator) Process(text string) string {
+	processedText := d.TextProcessorInterface.Process(text)
+	return strings.ToUpper(processedText)
+}
+
+func main() {
+	plain := &PlainText{}
+	textWithNewline := &NewlineDecorator{plain}
+	textWithDecorations := &UppercaseDecorator{textWithNewline}
+
+	result := textWithDecorations.Process("Hello, Decorator!")
+	fmt.Print(result) // Outputs: "HELLO, DECORATOR!\n"
 }
