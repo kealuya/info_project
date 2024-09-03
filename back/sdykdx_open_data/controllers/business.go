@@ -45,3 +45,67 @@ func (c *BusinessController) Organization() {
 	}
 	return
 }
+
+func (c *BusinessController) GraduateStudent() {
+	defer func() {
+		_ = c.ServeJSON()
+	}()
+	xh := c.GetString("xh")
+
+	if xh == "" {
+		c.Data["json"] = Response{
+			Success: false,
+			Msg:     "参数缺失",
+			Data:    nil,
+		}
+		return
+	}
+
+	graduateStudent, err := models.ObtainGraduateStudent(xh)
+
+	if err != nil {
+		c.Data["json"] = Response{
+			Success: false,
+			Msg:     err.Error(),
+			Data:    nil,
+		}
+		return
+	}
+	c.Data["json"] = Response{
+		Success: true,
+		Data:    graduateStudent,
+	}
+	return
+}
+
+func (c *BusinessController) ClinicalTeacher() {
+	defer func() {
+		_ = c.ServeJSON()
+	}()
+	zgh := c.GetString("zgh")
+
+	if zgh == "" {
+		c.Data["json"] = Response{
+			Success: false,
+			Msg:     "参数缺失",
+			Data:    nil,
+		}
+		return
+	}
+
+	clinicalTeacher, err := models.ObtainClinicalTeacher(zgh)
+
+	if err != nil {
+		c.Data["json"] = Response{
+			Success: false,
+			Msg:     err.Error(),
+			Data:    nil,
+		}
+		return
+	}
+	c.Data["json"] = Response{
+		Success: true,
+		Data:    clinicalTeacher,
+	}
+	return
+}
