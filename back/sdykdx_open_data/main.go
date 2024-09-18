@@ -37,5 +37,8 @@ func BeeGoRun() {
 	//web.BConfig.CopyRequestBody = true
 	//web.BConfig.Listen.HTTPPort = 8080
 	web.CtrlGet("/organization", (*controllers.BusinessController).Organization)
+	web.CtrlGet("/clinical_teacher", (*controllers.BusinessController).ClinicalTeacher)
+	web.CtrlGet("/faculty", (*controllers.BusinessController).Faculty)
+	web.CtrlGet("/graduate_student", (*controllers.BusinessController).GraduateStudent)
 	web.Run()
 }

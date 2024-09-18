@@ -14,6 +14,7 @@ type Response struct {
 	Data    any    `json:"data"`
 }
 
+// Organization 组织架构信息
 func (c *BusinessController) Organization() {
 	defer func() {
 		_ = c.ServeJSON()
@@ -46,6 +47,7 @@ func (c *BusinessController) Organization() {
 	return
 }
 
+// GraduateStudent Organization 研究生基本信息
 func (c *BusinessController) GraduateStudent() {
 	defer func() {
 		_ = c.ServeJSON()
@@ -78,6 +80,7 @@ func (c *BusinessController) GraduateStudent() {
 	return
 }
 
+// ClinicalTeacher 临床教师信息
 func (c *BusinessController) ClinicalTeacher() {
 	defer func() {
 		_ = c.ServeJSON()
@@ -106,6 +109,39 @@ func (c *BusinessController) ClinicalTeacher() {
 	c.Data["json"] = Response{
 		Success: true,
 		Data:    clinicalTeacher,
+	}
+	return
+}
+
+// Faculty 教职工信息
+func (c *BusinessController) Faculty() {
+	defer func() {
+		_ = c.ServeJSON()
+	}()
+	zgh := c.GetString("zgh")
+
+	if zgh == "" {
+		c.Data["json"] = Response{
+			Success: false,
+			Msg:     "参数缺失",
+			Data:    nil,
+		}
+		return
+	}
+
+	faculty, err := models.ObtainFaculty(zgh)
+
+	if err != nil {
+		c.Data["json"] = Response{
+			Success: false,
+			Msg:     err.Error(),
+			Data:    nil,
+		}
+		return
+	}
+	c.Data["json"] = Response{
+		Success: true,
+		Data:    faculty,
 	}
 	return
 }
