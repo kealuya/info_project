@@ -36,9 +36,13 @@ func main() {
 func BeeGoRun() {
 	//web.BConfig.CopyRequestBody = true
 	//web.BConfig.Listen.HTTPPort = 8080
+	// Organization 组织架构信息?dwdm=2222222
 	web.CtrlGet("/organization", (*controllers.BusinessController).Organization)
+	// ClinicalTeacher 临床教师信息?zgh=2222222
 	web.CtrlGet("/clinical_teacher", (*controllers.BusinessController).ClinicalTeacher)
+	// Faculty 教职工信息?zgh=2222222
 	web.CtrlGet("/faculty", (*controllers.BusinessController).Faculty)
+	// GraduateStudent 研究生基本信息?xh=2222222
 	web.CtrlGet("/graduate_student", (*controllers.BusinessController).GraduateStudent)
 	web.Run()
 }
