@@ -88,7 +88,7 @@ func SendQyWeixinNewsMessage(numbers []string, title string, description string,
 			"content[news][articles][0][description]": description,
 			"content[news][articles][0][url]":         url,
 			"content[news][articles][0][picurl]":      "",
-			"wid":                                     "企业微信应用ID",
+			"wid":                                     "22",
 		}).SetResult(&sendMessageResponse).
 		Post(qy_weixin.MessageUrl)
 	common.ErrorHandler(err)

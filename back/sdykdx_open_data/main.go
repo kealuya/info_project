@@ -64,7 +64,35 @@ func BeeGoRun() {
 		用户授权成功后将跳转至`redirect?state=XXXX&code=CODE
 		页面部分，拿到code，并回传后台
 	*/
+	// 返回：{"success":true,"msg":"","data":{"appId":"222222222"}}
 	web.CtrlGet("/qy_weixin_appid", (*controllers.QyWeixinController).GetAppId)
+	/*
+			请求：{"code":"用户code"}
+			返回：
+				type UserInfo struct { // 用户详细信息
+			Realname string `json:"realname"` // 用户真实姓名
+			Sex      string `json:"sex"`      // 用户性别
+			Email    string `json:"email"`    // 邮箱地址
+			Mobile   string `json:"mobile"`   // 手机号
+			Weixin   string `json:"weixin"`   // 微信号
+			Qq       string `json:"qq"`       // QQ 号
+			Csrq     string `json:"csrq"`     // 初始日期，格式为 YYYYMMDD
+			Mz       string `json:"mz"`       // 民族，使用国标代码表示
+			Avatar   string `json:"avatar"`   // 用户头像 URL
+
+			Role struct { // 身份信息
+				Number   string `json:"number"`   // 学工号
+				Identity string `json:"identity"` // 身份描述
+			} `json:"role"`
+			Departs json.RawMessage `json:"departs"` // 所在学院或部门名称
+			// 部门字段，可能需要根据实际情况调整为合适的表示方式
+		}
+	*/
 	web.CtrlPost("/qy_weixin_userinfo", (*controllers.QyWeixinController).GetUserByCode)
+	/*
+		请求：{"numbers":"学号","description":"消息描述","title":"消息标题","url":"跳转链接"}
+		返回：{"success":true,"msg":"","data":null}
+	*/
+	web.CtrlPost("/qy_weixin_send_message", (*controllers.QyWeixinController).SendQyWeixinMessage)
 	web.Run()
 }
