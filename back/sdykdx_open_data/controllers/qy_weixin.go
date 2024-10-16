@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"encoding/json"
 	"github.com/beego/beego/v2/server/web"
+	"io"
 	"sdykdx_open_data/internal/qy_weixin"
 	models_qy_weixin "sdykdx_open_data/models/qy_weixin"
 )
@@ -28,9 +30,31 @@ func (c *QyWeixinController) GetUserByCode() {
 	defer func() {
 		_ = c.ServeJSON()
 	}()
-	code := c.GetString("code")
 
-	if code == "" {
+	// 读取请求体
+	body, err := io.ReadAll(c.Ctx.Request.Body)
+	if err != nil {
+		c.Data["json"] = Response{
+			Success: false,
+			Msg:     "无法读取请求体",
+			Data:    nil,
+		}
+		return
+	}
+
+	// 解析 JSON 数据
+	var payload map[string]any
+	if err := json.Unmarshal(body, &payload); err != nil {
+		c.Data["json"] = Response{
+			Success: false,
+			Msg:     "请求体解析错误",
+			Data:    nil,
+		}
+		return
+	}
+
+	code, ok := payload["code"]
+	if !ok || code == "" {
 		c.Data["json"] = Response{
 			Success: false,
 			Msg:     "参数缺失，获取用户Code未提供",
@@ -39,12 +63,12 @@ func (c *QyWeixinController) GetUserByCode() {
 		return
 	}
 
-	userInfo, err := models_qy_weixin.ObtainUserInfoByCode(code)
+	userInfo, errObtainUserInfoByCode := models_qy_weixin.ObtainUserInfoByCode(code.(string))
 
-	if err != nil {
+	if errObtainUserInfoByCode != nil {
 		c.Data["json"] = Response{
 			Success: false,
-			Msg:     err.Error(),
+			Msg:     errObtainUserInfoByCode.Error(),
 			Data:    nil,
 		}
 		return
@@ -56,17 +80,42 @@ func (c *QyWeixinController) GetUserByCode() {
 	return
 }
 
+type RequestPayload struct {
+	Description string   `json:"description"`
+	Title       string   `json:"title"`
+	URL         string   `json:"url"`
+	Numbers     []string `json:"numbers"`
+}
+
 // SendQyWeixinMessage  发送企业微信消息
 func (c *QyWeixinController) SendQyWeixinMessage() {
 	defer func() {
 		_ = c.ServeJSON()
 	}()
-	numbers := c.GetStrings("numbers")
-	description := c.GetString("description")
-	title := c.GetString("title")
-	url := c.GetString("url")
+	// 读取请求体
+	body, err := io.ReadAll(c.Ctx.Request.Body)
+	if err != nil {
+		c.Data["json"] = Response{
+			Success: false,
+			Msg:     "无法读取请求体",
+			Data:    nil,
+		}
+		return
+	}
 
-	if description == "" || title == "" || url == "" || numbers == nil || len(numbers) == 0 {
+	// 解析 JSON 数据
+	var payload RequestPayload
+	if err := json.Unmarshal(body, &payload); err != nil {
+		c.Data["json"] = Response{
+			Success: false,
+			Msg:     "请求体解析错误",
+			Data:    nil,
+		}
+		return
+	}
+
+	// 检查参数是否完整
+	if payload.Description == "" || payload.Title == "" || payload.URL == "" || len(payload.Numbers) == 0 {
 		c.Data["json"] = Response{
 			Success: false,
 			Msg:     "参数缺失",
@@ -75,12 +124,12 @@ func (c *QyWeixinController) SendQyWeixinMessage() {
 		return
 	}
 
-	err := models_qy_weixin.SendQyWeixinNewsMessage(numbers, title, description, url)
+	errSendQyWeixinNewsMessage := models_qy_weixin.SendQyWeixinNewsMessage(payload.Numbers, payload.Title, payload.Description, payload.URL)
 
-	if err != nil {
+	if errSendQyWeixinNewsMessage != nil {
 		c.Data["json"] = Response{
 			Success: false,
-			Msg:     err.Error(),
+			Msg:     errSendQyWeixinNewsMessage.Error(),
 			Data:    nil,
 		}
 		return
