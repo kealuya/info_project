@@ -94,5 +94,6 @@ func BeeGoRun() {
 		返回：{"success":true,"msg":"","data":null}
 	*/
 	web.CtrlPost("/qy_weixin_send_message", (*controllers.QyWeixinController).SendQyWeixinMessage)
+	web.CtrlGet("/portal_cas", (*controllers.CasController).PortalCas)
 	web.Run()
 }

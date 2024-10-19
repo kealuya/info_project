@@ -94,13 +94,6 @@ func (c *CasController) PortalCas() {
 	c.Redirect(u.RawQuery, 200)
 }
 
-func handleFailure(failure *AuthenticationFailure) {
-	fmt.Println("验证失败")
-	fmt.Printf("错误代码: %s\n", failure.Code)
-	fmt.Printf("错误信息: %s\n", failure.Message)
-
-}
-
 // CASResponse 结构体用于解析 CAS 服务的响应
 type CASResponse struct {
 	XMLName xml.Name               `xml:"serviceResponse"`
