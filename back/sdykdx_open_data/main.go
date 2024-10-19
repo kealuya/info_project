@@ -11,8 +11,8 @@ import (
 
 func init() {
 	LogConfigInit()
-	TokenInit()
-	QyWeixinAccessTokenInit()
+	//TokenInit()
+	//QyWeixinAccessTokenInit()
 }
 func TokenInit() {
 	internal.ObtainToken()
@@ -95,5 +95,6 @@ func BeeGoRun() {
 	*/
 	web.CtrlPost("/qy_weixin_send_message", (*controllers.QyWeixinController).SendQyWeixinMessage)
 	web.CtrlGet("/portal_cas", (*controllers.CasController).PortalCas)
+	web.CtrlGet("/test_cas", (*controllers.CasController).TestCas)
 	web.Run()
 }

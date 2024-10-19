@@ -55,7 +55,7 @@ RUN apt-get update && apt-get install -y ca-certificates
 
 # 设置工作目录并复制构建的可执行文件
 WORKDIR /app
-#COPY --from=builder /app/conf /app/conf
+COPY --from=builder /app/conf /app/conf
 COPY --from=builder /app/main /app/main
 
 # 添加调试命令查看文件是否存在

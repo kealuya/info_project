@@ -14,6 +14,10 @@ type CasController struct {
 	web.Controller
 }
 
+func (c *CasController) TestCas() {
+	c.Redirect("https://baidu.com?niubi=232", 302)
+}
+
 func (c *CasController) PortalCas() {
 	ticket := c.GetString("ticket")
 
@@ -90,8 +94,9 @@ func (c *CasController) PortalCas() {
 	redirect, _ := config.String("redirect")
 	u, _ := url.Parse(redirect)
 	// 设置查询参数
+	// todo url参数需要进行加密处理
 	u.RawQuery = params.Encode()
-	c.Redirect(u.RawQuery, 200)
+	c.Redirect(u.RawQuery, 302)
 }
 
 // CASResponse 结构体用于解析 CAS 服务的响应
