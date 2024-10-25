@@ -11,8 +11,8 @@ import (
 
 func init() {
 	LogConfigInit()
-	//TokenInit()
-	//QyWeixinAccessTokenInit()
+	TokenInit()
+	QyWeixinAccessTokenInit()
 }
 func TokenInit() {
 	internal.ObtainToken()
