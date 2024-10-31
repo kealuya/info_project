@@ -62,6 +62,7 @@ func (c *CasController) PortalCas() {
 
 	// 解析 XML 响应
 	var casResponse CASResponse
+	logs.Info("resp.Body()::", string(resp.Body()))
 	err = xml.Unmarshal(resp.Body(), &casResponse)
 	if err != nil {
 		msg := fmt.Sprintf("XML 解析失败: %v\n", err)
@@ -76,14 +77,14 @@ func (c *CasController) PortalCas() {
 	// 处理响应
 	if casResponse.Success != nil {
 		success := casResponse.Success
-		logs.Info(ticket+" - 验证成功::", fmt.Sprintf("用户名: %s\n", success.User), fmt.Sprintf("姓名: %s\n", success.Name), fmt.Sprintf("员工编号: %s\n", success.EmployeeNumber))
+		logs.Info(ticket+" - 验证成功::", fmt.Sprintf("用户名: %s\n", success.User), fmt.Sprintf("姓名: %s\n", success.Attributes.Name), fmt.Sprintf("员工编号: %s\n", success.Attributes.EmployeeNumber))
 		params.Add("isOk", "true")
 		params.Add("user", success.User)
-		params.Add("name", success.Name)
-		params.Add("employee_number", success.EmployeeNumber)
+		params.Add("name", success.Attributes.Name)
+		params.Add("employee_number", success.Attributes.EmployeeNumber)
 		dataMap["user"] = success.User
-		dataMap["name"] = success.Name
-		dataMap["employee_number"] = success.EmployeeNumber
+		dataMap["name"] = success.Attributes.Name
+		dataMap["employee_number"] = success.Attributes.EmployeeNumber
 		myResp.Success = true
 		myResp.Data = dataMap
 	} else {
@@ -113,7 +114,7 @@ func (c *CasController) PortalCas() {
 	u, _ := url.Parse(redirect)
 	// 设置查询参数
 	desSecretKey := "szhtszht"
-	hexText, err := des.DesCbcEncryptHex([]byte(params.Encode()), []byte(desSecretKey), nil)
+	hexText, err := des.DesCbcEncryptHex([]byte(params.Encode()), []byte(desSecretKey), []byte("12345678"))
 	if err != nil {
 		msg := fmt.Sprintf("参数加密失败: %v\n", err)
 		logs.Error(msg)
@@ -129,15 +130,19 @@ func (c *CasController) PortalCas() {
 	//return
 }
 
-// CASResponse 结构体用于解析 CAS 服务的响应
+// CASResponse 结构体
 type CASResponse struct {
-	XMLName xml.Name               `xml:"serviceResponse"`
+	XMLName xml.Name               `xml:"http://www.yale.edu/tp/cas serviceResponse"`
 	Success *AuthenticationSuccess `xml:"authenticationSuccess"`
 	Failure *AuthenticationFailure `xml:"authenticationFailure"`
 }
 
 type AuthenticationSuccess struct {
-	User           string `xml:"user"`
+	User       string     `xml:"user"`
+	Attributes Attributes `xml:"attributes"`
+}
+
+type Attributes struct {
 	Name           string `xml:"name"`
 	EmployeeNumber string `xml:"employeeNumber"`
 }
