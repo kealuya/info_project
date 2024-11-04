@@ -271,7 +271,7 @@ func SaveHotelDetailInfo() (bizError error) {
 
 	const (
 		saveHotelDetailInfoPageSize    = 1000 // 每次从数据库获取的酒店数量
-		saveHotelDetailInfoWorkerCount = 20   // 并发工作的协程数量
+		saveHotelDetailInfoWorkerCount = 5    // 并发工作的协程数量
 	)
 
 	// 创建任务通道和错误通道
@@ -344,7 +344,7 @@ func processHotelBatch(taskChan <-chan []repository.HotelInfo, errChan chan<- er
 
 	now := time.Now()
 	for hotels := range taskChan {
-		for _, hotel := range hotels {
+		for i, hotel := range hotels {
 			// 查询酒店详情
 			requestData := api_szjl.QueryHotelDetailRequestData{
 				HotelId: hotel.HotelId,
@@ -352,7 +352,11 @@ func processHotelBatch(taskChan <-chan []repository.HotelInfo, errChan chan<- er
 			}
 
 			hotelDetail, err := api_szjl.QueryHotelDetail(requestData)
-			common.ErrorHandler(err, hotel.HotelId)
+			if err != nil {
+				errChan <- fmt.Errorf("QueryHotelDetail error: %v , hotel_id: %v", err, hotel.HotelId)
+				continue
+			}
+
 			for _, item := range hotelDetail.HotelDetailList {
 
 				// 转换并保存酒店静态信息
@@ -371,7 +375,13 @@ func processHotelBatch(taskChan <-chan []repository.HotelInfo, errChan chan<- er
 					repository.InsertRoomTypes(roomTypes)
 				}
 			}
-			logs.Info(fmt.Sprintf("酒店 %d 详情处理完成\n", hotel.HotelId))
+			//logs.Info(fmt.Sprintf("酒店 %d 详情处理完成\n", hotel.HotelId))
+
+			time.Sleep(300 * time.Millisecond)
+			if i%100 == 0 {
+				// 能整除
+				time.Sleep(5000 * time.Millisecond)
+			}
 		}
 	}
 }
