@@ -1,0 +1,3 @@
+config/config.yaml
+logs/*
+pkg/api_szjl/api_szjl_config.yaml
