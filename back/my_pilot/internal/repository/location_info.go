@@ -21,13 +21,15 @@ type LocationInfo struct {
 }
 
 // GetDistinctStatesByCountry 获取指定国家的去重省份列表
-func GetDistinctStatesByCountry(countryId int) ([]LocationInfo, error) {
+func GetDistinctStatesByCountry(countryId int) []LocationInfo {
 	var locationInfo []LocationInfo
 	err := dbEngine.Distinct("state_id", "state_cn", "state_en").
 		Table("location_info").
 		Where("country_id = ?", countryId).
 		Find(&locationInfo)
-	return locationInfo, err
+
+	common.ErrorHandler(err)
+	return locationInfo
 }
 
 func InsertLocations(locations []LocationInfo) {

@@ -46,3 +46,21 @@ func SaveHotelInfo(context *gin.Context) {
 	})
 	return
 }
+
+func SaveHotelStaticInfo(context *gin.Context) {
+
+	err := handler.SaveHotelDetailInfo()
+	if err != nil {
+		context.JSON(200, Response{
+			Success: false,
+			Msg:     err.Error(),
+		})
+		return
+	}
+
+	context.JSON(200, Response{
+		Success: true,
+		Data:    nil,
+	})
+	return
+}

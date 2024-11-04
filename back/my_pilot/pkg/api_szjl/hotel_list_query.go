@@ -46,9 +46,9 @@ type QueryHotelResult struct {
 	Hotels    []HotelInfo `json:"hotels"`
 }
 
-var queryHotelUrl = baseURL + "/hotel/queryHotelList.json"
-
 func QueryHotel(requestData QueryHotelRequestData) (*QueryHotelResult, error) {
+
+	var queryHotelUrl = baseURL + "/hotel/queryHotelList.json"
 	// 创建 resty 客户端
 	client := resty.New()
 

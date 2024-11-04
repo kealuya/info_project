@@ -36,9 +36,9 @@ type QueryCityResult struct {
 	HotelGeoList []HotelGeo `json:"hotelGeoList"`
 }
 
-var queryCityUrl = baseURL + "/city/queryCity.json"
-
 func QueryCity(requestData QueryCityRequestData) (*QueryCityResult, error) {
+
+	var queryCityUrl = baseURL + "/city/queryCity.json"
 	// Create resty client
 	client := resty.New()
 

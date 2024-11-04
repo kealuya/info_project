@@ -1,12 +1,13 @@
 package repository
 
 import (
+	"my_pilot/common"
 	"time"
 )
 
 type HotelStaticInfo struct {
 	Id                int64     `xorm:"pk autoincr 'id'"`
-	HotelId           int64     `xorm:"'hotel_id' not null"`
+	HotelId           int       `xorm:"'hotel_id' not null"`
 	ThemeType         string    `xorm:"'theme_type' varchar(100)"`
 	HotelNameCn       string    `xorm:"'hotel_name_cn' varchar(200) not null"`
 	HotelNameEn       string    `xorm:"'hotel_name_en' varchar(400)"`
@@ -42,28 +43,30 @@ type HotelStaticInfo struct {
 }
 
 // InsertHotelStaticInfo 插入单个酒店静态信息
-func InsertHotelStaticInfo(hotel *HotelStaticInfo) error {
+func InsertHotelStaticInfo(hotel HotelStaticInfo) {
 	_, err := dbEngine.Insert(hotel)
-	return err
+	common.ErrorHandler(err)
+	return
 }
 
 // BatchInsertHotelStaticInfo 批量插入酒店静态信息
-func BatchInsertHotelStaticInfo(hotels []HotelStaticInfo) error {
+func BatchInsertHotelStaticInfo(hotels []HotelStaticInfo) {
 	session := dbEngine.NewSession()
 	defer session.Close()
 
-	if err := session.Begin(); err != nil {
-		return err
-	}
+	err := session.Begin()
+	common.ErrorHandler(err)
 
 	for _, hotel := range hotels {
 		if _, err := session.Insert(&hotel); err != nil {
 			session.Rollback()
-			return err
+			common.ErrorHandler(err)
 		}
 	}
 
-	return session.Commit()
+	err = session.Commit()
+	common.ErrorHandler(err)
+	return
 }
 
 // GetHotelStaticInfo 根据酒店ID获取静态信息

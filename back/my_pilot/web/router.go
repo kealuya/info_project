@@ -23,6 +23,7 @@ func SetupRouter(r *gin.Engine) *gin.Engine {
 		{
 			system.GET("/save_location_info", controller.SaveLocationInfo)
 			system.GET("/save_hotel_info", controller.SaveHotelInfo)
+			system.GET("/save_hotel_static_info", controller.SaveHotelStaticInfo)
 		}
 	}
 

@@ -20,7 +20,9 @@ func init() {
 	viper.SetConfigType("yaml")            // 如果配置文件的名称中没有扩展名，则需要配置此项
 
 	// 添加配置文件路径
-	viper.AddConfigPath(".") // 优先级
+	viper.AddConfigPath("./pkg/api_szjl/") // 相对于项目根目录的路径
+	viper.AddConfigPath("../api_szjl/")    // 相对于当前包的上一级目录
+	viper.AddConfigPath(".")               // 当前目录
 
 	// 读取配置文件
 	if err := viper.ReadInConfig(); err != nil {
@@ -34,9 +36,9 @@ func init() {
 		log.Panicf("解析配置文件失败: %w", err)
 	}
 
-	appKey = szjlConfig["szjl"]["appKey"]
-	secretKey = szjlConfig["szjl"]["secretKey"]
-	baseURL = szjlConfig["szjl"]["baseURL"]
+	appKey = szjlConfig["szjl"]["app_key"]
+	secretKey = szjlConfig["szjl"]["secret_key"]
+	baseURL = szjlConfig["szjl"]["base_url"]
 }
 
 // 测试用账号及地址

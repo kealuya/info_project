@@ -47,3 +47,19 @@ func InsertHotels(hotels []HotelInfo) {
 	common.ErrorHandler(errSessionCommit)
 	return
 }
+
+// GetHotelsAll 分页获取酒店信息
+func GetHotelsAll(start, limit int) []HotelInfo {
+	var hotels []HotelInfo
+	err := dbEngine.Limit(limit, start).Find(&hotels)
+	common.ErrorHandler(err)
+	return hotels
+}
+
+// CountHotels 计算全部酒店数量
+func CountHotels() int64 {
+	var hotels []HotelInfo
+	count, err := dbEngine.Count(&hotels)
+	common.ErrorHandler(err)
+	return count
+}
