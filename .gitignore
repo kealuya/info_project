@@ -32,3 +32,6 @@ back/szyx_back/secret/secret.go
 back/szyx_back/secret/secret_key.go
 
 back/szyx_back/.DS_Store
+
+back/my_pilot/config/config.yaml
+back/my_pilot/pkg/api_szjl/api_szjl_config.yaml
