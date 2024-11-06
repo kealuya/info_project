@@ -43,10 +43,12 @@ type HotelStaticInfo struct {
 }
 
 // InsertHotelStaticInfo 插入单个酒店静态信息
-func InsertHotelStaticInfo(hotel HotelStaticInfo) {
+func InsertHotelStaticInfo(hotel HotelStaticInfo) error {
 	_, err := dbEngine.Insert(hotel)
-	common.ErrorHandler(err)
-	return
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // BatchInsertHotelStaticInfo 批量插入酒店静态信息

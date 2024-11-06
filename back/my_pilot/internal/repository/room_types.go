@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"fmt"
+	"github.com/beego/beego/v2/core/logs"
 	"my_pilot/common"
 	"time"
 )
@@ -9,7 +11,7 @@ type RoomType struct {
 	Id              int64     `xorm:"pk autoincr 'id'"`
 	HotelId         int       `xorm:"'hotel_id' not null"`
 	RoomTypeId      string    `xorm:"'room_type_id' not null"`
-	RoomTypeCn      string    `xorm:"'room_type_cn' varchar(100) not null"`
+	RoomTypeCn      string    `xorm:"'room_type_cn' varchar(400) not null"`
 	RoomTypeEn      string    `xorm:"'room_type_en' varchar(200)"`
 	BasisRoomId     int       `xorm:"'basis_room_id' default(-1)"`
 	BasisRoomCn     string    `xorm:"'basis_room_cn' varchar(100)"`
@@ -37,8 +39,8 @@ func InsertRoomTypes(roomTypes []RoomType) {
 		_, err := session.Insert(&roomType)
 		if err != nil {
 			session.Rollback()
-			common.ErrorHandler(err)
-			return
+			//common.ErrorHandler(err)
+			logs.Error("roomType insert failed.", fmt.Sprintf("%+v", roomType))
 		}
 	}
 

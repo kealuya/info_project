@@ -140,6 +140,8 @@ func SaveHotelInfo() (bizError error) {
 	locationInfo := repository.GetDistinctStatesByCountry(70007)
 	for _, locationInfo := range locationInfo {
 		err := saveHotelInfoWithState(locationInfo.StateId, locationInfo.StateCn)
+		// fixme 手动追加地区酒店
+		//err := saveHotelInfoWithState(70025, "G贵州")
 		common.ErrorHandler(err)
 	}
 	return nil
@@ -271,8 +273,8 @@ func SaveHotelDetailInfo() (bizError error) {
 	})
 
 	const (
-		saveHotelDetailInfoPageSize    = 200 // 每次从数据库获取的酒店数量
-		saveHotelDetailInfoWorkerCount = 1   // 并发工作的协程数量
+		saveHotelDetailInfoPageSize    = 100 // 每次从数据库获取的酒店数量
+		saveHotelDetailInfoWorkerCount = 20  // 并发工作的协程数量
 	)
 
 	// 创建任务通道和错误通道
@@ -345,7 +347,7 @@ func processHotelBatch(taskChan <-chan []repository.HotelInfo, errChan chan<- er
 
 	now := time.Now()
 	for hotels := range taskChan {
-		for i, hotel := range hotels {
+		for _, hotel := range hotels {
 			// 查询酒店详情
 			requestData := api_szjl.QueryHotelDetailRequestData{
 				HotelId: hotel.HotelId,
@@ -363,7 +365,11 @@ func processHotelBatch(taskChan <-chan []repository.HotelInfo, errChan chan<- er
 				// 转换并保存酒店静态信息
 				hotelStaticInfo := convertToHotelStaticInfo(item.HotelInfo, now)
 
-				repository.InsertHotelStaticInfo(hotelStaticInfo)
+				err := repository.InsertHotelStaticInfo(hotelStaticInfo)
+				if err != nil {
+					errChan <- fmt.Errorf("insert hotel static info error: %v,%+v", err, hotelStaticInfo)
+					continue
+				}
 
 				// 转换并保存房型信息
 				var roomTypes []repository.RoomType
@@ -378,11 +384,11 @@ func processHotelBatch(taskChan <-chan []repository.HotelInfo, errChan chan<- er
 			}
 			//logs.Info(fmt.Sprintf("酒店 %d 详情处理完成\n", hotel.HotelId))
 
-			time.Sleep(300 * time.Millisecond)
-			if i%100 == 0 {
-				// 能整除
-				time.Sleep(5000 * time.Millisecond)
-			}
+			//time.Sleep(300 * time.Millisecond)
+			//if i%100 == 0 {
+			//	// 能整除
+			//	time.Sleep(5000 * time.Millisecond)
+			//}
 		}
 	}
 }
