@@ -35,7 +35,8 @@ func ginLogger(c *gin.Context) {
 	// 使用自定义ResponseWriter
 	blw := &bodyLogWriter{body: bytes.NewBufferString(""), ResponseWriter: c.Writer}
 	c.Writer = blw
-
+	// 重新设置body
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(req))
 	// ----请求前----
 	c.Next()
 	// ----请求后----

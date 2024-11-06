@@ -51,7 +51,7 @@ func InsertHotels(hotels []HotelInfo) {
 // GetHotelsAll 分页获取酒店信息
 func GetHotelsAll(start, limit int) []HotelInfo {
 	var hotels []HotelInfo
-	err := dbEngine.Limit(limit, start).Find(&hotels)
+	err := dbEngine.Limit(limit, start).Asc("id").Find(&hotels)
 	common.ErrorHandler(err)
 	return hotels
 }

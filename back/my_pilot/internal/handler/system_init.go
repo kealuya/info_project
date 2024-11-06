@@ -264,14 +264,15 @@ func convertToHotelInfo(hotel api_szjl.HotelInfo, now time.Time) repository.Hote
 	}
 }
 
+// SaveHotelDetailInfo 批量保存酒店静态信息
 func SaveHotelDetailInfo() (bizError error) {
 	defer common.RecoverHandler(func(err error) {
 		bizError = err
 	})
 
 	const (
-		saveHotelDetailInfoPageSize    = 1000 // 每次从数据库获取的酒店数量
-		saveHotelDetailInfoWorkerCount = 5    // 并发工作的协程数量
+		saveHotelDetailInfoPageSize    = 200 // 每次从数据库获取的酒店数量
+		saveHotelDetailInfoWorkerCount = 1   // 并发工作的协程数量
 	)
 
 	// 创建任务通道和错误通道

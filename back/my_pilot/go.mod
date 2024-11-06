@@ -7,7 +7,9 @@ require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-resty/resty/v2 v2.15.3
 	github.com/go-sql-driver/mysql v1.8.1
+	github.com/gohouse/t v0.0.5
 	github.com/google/uuid v1.6.0
+	github.com/jinzhu/copier v0.4.0
 	github.com/spf13/viper v1.19.0
 	xorm.io/xorm v1.3.9
 )

@@ -24,6 +24,10 @@ func SetupRouter(r *gin.Engine) *gin.Engine {
 			system.GET("/save_location_info", controller.SaveLocationInfo)
 			system.GET("/save_hotel_info", controller.SaveHotelInfo)
 			system.GET("/save_hotel_static_info", controller.SaveHotelStaticInfo)
+			system.GET("/search_hotel_static_info", controller.SearchHotelStaticInfo)
+			system.POST("/query_hotel_rate_plan", controller.QueryHotelRatePlan)
+			system.POST("/query_hotel_order_price", controller.QueryOrderPrice)
+			system.POST("/create_hotel_order", controller.CreateOrder)
 		}
 	}
 
