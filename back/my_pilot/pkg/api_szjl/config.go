@@ -39,6 +39,7 @@ func init() {
 	appKey = szjlConfig["szjl"]["app_key"]
 	secretKey = szjlConfig["szjl"]["secret_key"]
 	baseURL = szjlConfig["szjl"]["base_url"]
+	baseURL2 = szjlConfig["szjl"]["base_url2"]
 }
 
 // 测试用账号及地址
@@ -46,6 +47,7 @@ var (
 	appKey    string
 	secretKey string
 	baseURL   string
+	baseURL2  string
 )
 
 // Generate MD5 signature

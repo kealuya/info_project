@@ -12,11 +12,12 @@ type QueryRatePlanRequest struct {
 	HotelId      int    `json:"hotelId"`      // 酒店编号
 	CheckInDate  string `json:"checkInDate"`  // 入住日期
 	CheckOutDate string `json:"checkOutDate"` // 离店日期
-	RoomGroups   struct {
+	RoomGroups   []struct {
 		Adults    int    `json:"adults,omitempty"`    // 成人数
 		Children  int    `json:"children,omitempty"`  // 儿童数
 		ChildAges string `json:"childAges,omitempty"` // 儿童年龄
 	} // 房间信息
+	IsSkipCheckCondition bool `json:"isSkipCheckCondition"` //是否跳过预订规则校验
 }
 
 func QueryHotelRatePlan(qr QueryRatePlanRequest) (queryRatePlanResult *api_szjl.QueryRatePlanResult, bizError error) {

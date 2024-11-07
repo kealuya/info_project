@@ -38,7 +38,7 @@ type QueryOrderPriceResult struct {
 
 // QueryOrderPrice 查询订单报价
 func QueryOrderPrice(requestData QueryOrderPriceRequestData) (*QueryOrderPriceResult, error) {
-	var queryOrderPriceUrl = baseURL + "/hotel/queryOrderPrice.json"
+	var queryOrderPriceUrl = baseURL2 + "/hotel/queryOrderPrice.json"
 
 	// 创建 resty 客户端
 	client := resty.New()

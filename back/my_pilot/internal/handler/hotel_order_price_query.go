@@ -14,7 +14,7 @@ type QueryOrderPriceRequest struct {
 	CheckInDate   string `json:"checkInDate"`   // 入住日期
 	CheckOutDate  string `json:"checkOutDate"`  // 离店日期
 	NightlyPrices string `json:"nightlyPrices"` // 每日价格
-	RoomGroups    struct {
+	RoomGroups    []struct {
 		Adults    int    `json:"adults,omitempty"`    // 成人数
 		Children  int    `json:"children,omitempty"`  // 儿童数
 		ChildAges string `json:"childAges,omitempty"` // 儿童年龄
