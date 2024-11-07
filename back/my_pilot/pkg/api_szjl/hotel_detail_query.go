@@ -1,29 +1,51 @@
 package api_szjl
 
 import (
-	"encoding/json"
 	"fmt"
+	"github.com/bytedance/sonic"
 	"github.com/go-resty/resty/v2"
+	"net/http"
 	"strconv"
+	"sync"
 	"time"
 )
 
-// 请求体结构
+// QueryHotelDetailRequestData 请求体结构
 type QueryHotelDetailRequestData struct {
 	HotelId int    `json:"hotelId"`
 	Params  string `json:"params,omitempty"` // 1,2
 }
 
-// 酒店详情结构
+// QueryHotelDetailResponse 酒店详情结构
 type QueryHotelDetailResponse struct {
 	HotelDetailList []struct {
 		HotelId      int             `json:"hotelId"`
 		HotelInfo    HotelStaticInfo `json:"hotelInfo"`
 		RoomTypeList []RoomType      `json:"roomTypeList,omitempty"`
+		RateTypeList []RateType      `json:"rateTypeList"`
+		ImageList    []Image         `json:"imageList"`
 	} `json:"hotelDetailList"`
 }
 
-// 酒店信息结构
+// RateType 价格类型信息
+type RateType struct {
+	RateTypeId int    `json:"rateTypeId"` // 价格类型编号
+	RateTypeCn string `json:"rateTypeCn"` // 价格类型中文名
+	RateTypeEn string `json:"rateTypeEn"` // 价格类型英文名
+}
+
+// Image 图片信息
+type Image struct {
+	ImageId     int    `json:"imageId"`     // 图片编号
+	Type        string `json:"type"`        // 图片类型，见常量列表
+	RoomTypeIds string `json:"roomTypeIds"` // 图片关联房型，多个逗号分隔
+	ThumbUrl    string `json:"thumbUrl"`    // 缩略图地址
+	ImageUrl    string `json:"imageUrl"`    // 图片地址
+	ImageLogo   int    `json:"imageLogo"`   // 是否带水印(0:有水印logo 1:无水印logo)
+	ImageSize   int    `json:"imageSize"`   // 图片规格(0:未分类、1:350*350、2:550*412、3:640*960)
+}
+
+// HotelStaticInfo 酒店信息结构
 type HotelStaticInfo struct {
 	HotelId           int    `json:"hotelId"`
 	ThemeType         string `json:"themeType"`         // 酒店主题
@@ -58,7 +80,7 @@ type HotelStaticInfo struct {
 	UpdateTime        string `json:"updateTime"`        // 修改时间
 }
 
-// 房型信息结构
+// RoomType 房型信息结构
 type RoomType struct {
 	RoomTypeId      string `json:"roomTypeId"`      // 房型编号
 	RoomTypeCn      string `json:"roomTypeCn"`      // 客房中文名称
@@ -75,23 +97,50 @@ type RoomType struct {
 	BedCount        int    `json:"bedCount"`        // 加床数量
 }
 
-// 查询酒店详情
+var (
+	// 创建全局 resty 客户端，避免重复创建
+	globalClient = resty.New().
+			SetTimeout(20 * time.Second). // 设置超时
+			SetRetryCount(2).             // 设置重试次数
+			SetRetryWaitTime(100 * time.Millisecond).
+			SetRetryMaxWaitTime(300 * time.Millisecond).
+			SetTransport(&http.Transport{
+			MaxIdleConnsPerHost:   100,              // 每个host最大空闲连接数
+			MaxConnsPerHost:       100,              // 每个host最大连接数
+			IdleConnTimeout:       90 * time.Second, // 空闲连接超时时间
+			TLSHandshakeTimeout:   10 * time.Second,
+			ExpectContinueTimeout: 1 * time.Second,
+			DisableCompression:    false, // 如果不需要压缩可以禁用
+		})
+	// 初始化 sonic 编码器
+	jsonEncoder = sonic.ConfigDefault
+	// 使用对象池来减少内存分配
+	requestPool = sync.Pool{
+		New: func() interface{} {
+			return &Request[QueryHotelDetailRequestData]{}
+		},
+	}
+)
+
+// QueryHotelDetail 查询酒店详情
 func QueryHotelDetail(requestData QueryHotelDetailRequestData) (*QueryHotelDetailResponse, error) {
 
 	// 查询酒店详情的URL
 	var queryHotelDetailUrl = baseURL + "/hotel/queryHotelDetail.json"
 
 	// 创建 resty 客户端
-	client := resty.New()
+	//client := resty.New()
 
 	// 生成时间戳
 	timestamp := strconv.FormatInt(time.Now().UnixMilli(), 10)
 
 	// 生成签名
 	sign := generateSign(secretKey, appKey, timestamp)
-
+	// 从对象池获取请求对象
+	req := requestPool.Get().(*Request[QueryHotelDetailRequestData])
+	defer requestPool.Put(req)
 	// 创建请求体
-	req := Request[QueryHotelDetailRequestData]{
+	*req = Request[QueryHotelDetailRequestData]{
 		Head: RequestHead{
 			AppKey:    appKey,
 			Timestamp: timestamp,
@@ -101,15 +150,15 @@ func QueryHotelDetail(requestData QueryHotelDetailRequestData) (*QueryHotelDetai
 		Data: requestData,
 	}
 
-	// 将请求转换为JSON
-	jsonData, err := json.Marshal(req)
+	// 使用 sonic 序列化
+	jsonData, err := jsonEncoder.Marshal(req)
 	if err != nil {
 		return nil, fmt.Errorf("Error marshaling JSON: %v", err)
 	}
 
 	// 使用resty发送请求
 	var response Response[QueryHotelDetailResponse]
-	resp, err := client.R().
+	resp, err := globalClient.R().
 		SetQueryParam("reqData", string(jsonData)).
 		SetResult(&response).
 		Get(queryHotelDetailUrl)
@@ -126,7 +175,7 @@ func QueryHotelDetail(requestData QueryHotelDetailRequestData) (*QueryHotelDetai
 	// 处理响应结果
 	if response.Code == 0 {
 		return &response.Result, nil
-	} else {
-		return nil, fmt.Errorf("Request failed with code %d: %s", response.Code, response.ErrorMsg)
 	}
+	return nil, fmt.Errorf("Request failed with code %d: %s", response.Code, response.ErrorMsg)
+
 }

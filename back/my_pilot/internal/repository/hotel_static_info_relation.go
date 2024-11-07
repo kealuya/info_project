@@ -28,7 +28,35 @@ type RoomType struct {
 	Updated         time.Time `xorm:"updated"`
 }
 
-func InsertRoomTypes(roomTypes []RoomType) {
+// RateType 价格类型信息
+type RateType struct {
+	Id         int64     `xorm:"pk autoincr 'id'"`
+	HotelId    int       `xorm:"'hotel_id' not null"`
+	RateTypeId int       `xorm:"'rate_type_id' not null"`
+	RateTypeCn string    `xorm:"'rate_type_cn' varchar(100) not null"`
+	RateTypeEn string    `xorm:"'rate_type_en' varchar(100)"`
+	Status     int       `xorm:"'status' default(1)"`
+	Created    time.Time `xorm:"created"`
+	Updated    time.Time `xorm:"updated"`
+}
+
+// Image 图片信息
+type Image struct {
+	Id          int64     `xorm:"pk autoincr 'id'"`
+	HotelId     int       `xorm:"'hotel_id' not null"`
+	ImageId     int       `xorm:"'image_id' not null"`
+	Type        string    `xorm:"'type' varchar(50) not null"`
+	RoomTypeIds string    `xorm:"'room_type_ids' varchar(500)"`
+	ThumbUrl    string    `xorm:"'thumb_url' varchar(500) not null"`
+	ImageUrl    string    `xorm:"'image_url' varchar(500) not null"`
+	ImageLogo   int       `xorm:"'image_logo' default(0)"`
+	ImageSize   int       `xorm:"'image_size' default(0)"`
+	Status      int       `xorm:"'status' default(1)"`
+	Created     time.Time `xorm:"created"`
+	Updated     time.Time `xorm:"updated"`
+}
+
+func InsertRoomTypes(roomTypes []RoomType) error {
 	session := dbEngine.NewSession()
 	defer session.Close()
 
@@ -38,15 +66,61 @@ func InsertRoomTypes(roomTypes []RoomType) {
 	for _, roomType := range roomTypes {
 		_, err := session.Insert(&roomType)
 		if err != nil {
-			session.Rollback()
+			//session.Rollback()
 			//common.ErrorHandler(err)
-			logs.Error("roomType insert failed.", fmt.Sprintf("%+v", roomType))
+			logs.Error(fmt.Errorf("roomType insert failed.%w - roomType:%+v", err, roomType))
+			continue
 		}
 	}
 
 	errSessionCommit := session.Commit()
-	common.ErrorHandler(errSessionCommit)
-	return
+	if errSessionBegin != nil {
+		return fmt.Errorf("roomType insert failed.%w", errSessionCommit)
+	}
+	return nil
+}
+
+// InsertRateTypes 批量插入价格类型
+func InsertRateTypes(rateTypes []RateType) error {
+	session := dbEngine.NewSession()
+	defer session.Close()
+
+	errSessionBegin := session.Begin()
+	common.ErrorHandler(errSessionBegin)
+
+	for _, rateType := range rateTypes {
+		_, err := session.Insert(&rateType)
+		if err != nil {
+			//session.Rollback()
+			logs.Error(fmt.Errorf("rateType insert failed.%w - rateTypes:%+v", err, rateTypes))
+			continue
+		}
+	}
+
+	errSessionCommit := session.Commit()
+	return fmt.Errorf("rateTypes insert failed.%w", errSessionCommit)
+
+}
+
+// InsertImages 批量插入图片信息
+func InsertImages(images []Image) error {
+	session := dbEngine.NewSession()
+	defer session.Close()
+
+	errSessionBegin := session.Begin()
+	common.ErrorHandler(errSessionBegin)
+
+	for _, image := range images {
+		_, err := session.Insert(&image)
+		if err != nil {
+			//session.Rollback()
+			logs.Error(fmt.Errorf("image insert failed.%w - rateTypes:%+v", err, image))
+			continue
+		}
+	}
+
+	errSessionCommit := session.Commit()
+	return fmt.Errorf("images insert failed.%w", errSessionCommit)
 }
 
 // UpdateRoomTypesStatus 批量更新房型状态

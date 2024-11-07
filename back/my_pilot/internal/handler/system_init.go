@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"github.com/beego/beego/v2/core/logs"
+	"github.com/jinzhu/copier"
 	"my_pilot/common"
 	"my_pilot/internal/repository"
 	"my_pilot/pkg/api_szjl"
@@ -274,7 +275,7 @@ func SaveHotelDetailInfo() (bizError error) {
 
 	const (
 		saveHotelDetailInfoPageSize    = 100 // 每次从数据库获取的酒店数量
-		saveHotelDetailInfoWorkerCount = 20  // 并发工作的协程数量
+		saveHotelDetailInfoWorkerCount = 10  // 并发工作的协程数量
 	)
 
 	// 创建任务通道和错误通道
@@ -353,15 +354,22 @@ func processHotelBatch(taskChan <-chan []repository.HotelInfo, errChan chan<- er
 				HotelId: hotel.HotelId,
 				Params:  "1,2",
 			}
-
+			// 记录开始时间
+			start := time.Now()
 			hotelDetail, err := api_szjl.QueryHotelDetail(requestData)
 			if err != nil {
 				errChan <- fmt.Errorf("QueryHotelDetail error: %v , hotel_id: %v", err, hotel.HotelId)
 				continue
 			}
 
+			// 计算运行时间
+			duration := time.Since(start).Milliseconds()
+			// 输出运行时间（毫秒）
+			fmt.Printf("api_szjl.QueryHotelDetail(requestData)Function took %d milliseconds to complete\n", duration)
 			for _, item := range hotelDetail.HotelDetailList {
 
+				// 记录开始时间
+				start := time.Now()
 				// 转换并保存酒店静态信息
 				hotelStaticInfo := convertToHotelStaticInfo(item.HotelInfo, now)
 
@@ -374,13 +382,82 @@ func processHotelBatch(taskChan <-chan []repository.HotelInfo, errChan chan<- er
 				// 转换并保存房型信息
 				var roomTypes []repository.RoomType
 				for _, roomType := range item.RoomTypeList {
-					roomTypeInfo := convertToRoomType(roomType, hotel.HotelId, now)
-					roomTypes = append(roomTypes, roomTypeInfo)
+					//roomTypeInfo := convertToRoomType(roomType, hotel.HotelId, now)
+
+					resoStruct := repository.RoomType{}
+					err := copier.Copy(&resoStruct, &roomType)
+					if err != nil {
+						errChan <- fmt.Errorf("copier error: %v,%+v", err, roomType)
+						continue
+					}
+					resoStruct.HotelId = hotel.HotelId
+					resoStruct.Created = now
+					resoStruct.Updated = now
+					roomTypes = append(roomTypes, resoStruct)
 				}
 
 				if len(roomTypes) > 0 {
-					repository.InsertRoomTypes(roomTypes)
+					err := repository.InsertRoomTypes(roomTypes)
+					if err != nil {
+						errChan <- fmt.Errorf("repository.InsertRoomTypes(roomTypes) error: %v , hotel_id: %v", err, hotel.HotelId)
+						continue
+					}
 				}
+
+				// 转换并保存价格类型信息
+				var rateTypes []repository.RateType
+				for _, rateType := range item.RateTypeList {
+					//roomTypeInfo := convertToRoomType(roomType, hotel.HotelId, now)
+
+					resoStruct := repository.RateType{}
+					err := copier.Copy(&resoStruct, &rateType)
+					if err != nil {
+						errChan <- fmt.Errorf("copier error: %v,%+v", err, rateType)
+						continue
+					}
+					resoStruct.HotelId = hotel.HotelId
+					resoStruct.Created = now
+					resoStruct.Updated = now
+					rateTypes = append(rateTypes, resoStruct)
+				}
+
+				if len(rateTypes) > 0 {
+					err := repository.InsertRateTypes(rateTypes)
+					if err != nil {
+						errChan <- fmt.Errorf("repository.InsertRateTypes(rateTypes) error: %v , hotel_id: %v", err, hotel.HotelId)
+						continue
+					}
+				}
+
+				// 转换并保存图片类型信息
+				var images []repository.Image
+				for _, image := range item.ImageList {
+					//roomTypeInfo := convertToRoomType(roomType, hotel.HotelId, now)
+
+					resoStruct := repository.Image{}
+					err := copier.Copy(&resoStruct, &image)
+					if err != nil {
+						errChan <- fmt.Errorf("copier error: %v,%+v", err, image)
+						continue
+					}
+					resoStruct.HotelId = hotel.HotelId
+					resoStruct.Created = now
+					resoStruct.Updated = now
+					images = append(images, resoStruct)
+				}
+
+				if len(images) > 0 {
+					err := repository.InsertImages(images)
+					if err != nil {
+						errChan <- fmt.Errorf("repository.InsertImages(images) error: %v , hotel_id: %v", err, hotel.HotelId)
+						continue
+					}
+				}
+
+				// 计算运行时间
+				duration := time.Since(start).Milliseconds()
+				// 输出运行时间（毫秒）
+				fmt.Printf("for _, item := range hotelDetail.HotelDetailListFunction took %d milliseconds to complete\n", duration)
 			}
 			//logs.Info(fmt.Sprintf("酒店 %d 详情处理完成\n", hotel.HotelId))
 
