@@ -298,7 +298,7 @@ func SaveHotelDetailInfo() (bizError error) {
 	go func() {
 		for err := range errChan {
 			if err != nil {
-				logs.Error(fmt.Printf("Error: %v\n", err))
+				logs.Error(err)
 			}
 		}
 	}()
@@ -342,7 +342,6 @@ func SaveHotelDetailInfo() (bizError error) {
 func processHotelBatch(taskChan <-chan []repository.HotelInfo, errChan chan<- error) {
 
 	defer common.RecoverHandler(func(err error) {
-		fmt.Println(err)
 		errChan <- err
 	})
 
@@ -354,22 +353,14 @@ func processHotelBatch(taskChan <-chan []repository.HotelInfo, errChan chan<- er
 				HotelId: hotel.HotelId,
 				Params:  "1,2",
 			}
-			// 记录开始时间
-			start := time.Now()
 			hotelDetail, err := api_szjl.QueryHotelDetail(requestData)
 			if err != nil {
 				errChan <- fmt.Errorf("QueryHotelDetail error: %v , hotel_id: %v", err, hotel.HotelId)
 				continue
 			}
 
-			// 计算运行时间
-			duration := time.Since(start).Milliseconds()
-			// 输出运行时间（毫秒）
-			fmt.Printf("api_szjl.QueryHotelDetail(requestData)Function took %d milliseconds to complete\n", duration)
 			for _, item := range hotelDetail.HotelDetailList {
 
-				// 记录开始时间
-				start := time.Now()
 				// 转换并保存酒店静态信息
 				hotelStaticInfo := convertToHotelStaticInfo(item.HotelInfo, now)
 
@@ -454,10 +445,6 @@ func processHotelBatch(taskChan <-chan []repository.HotelInfo, errChan chan<- er
 					}
 				}
 
-				// 计算运行时间
-				duration := time.Since(start).Milliseconds()
-				// 输出运行时间（毫秒）
-				fmt.Printf("for _, item := range hotelDetail.HotelDetailListFunction took %d milliseconds to complete\n", duration)
 			}
 			//logs.Info(fmt.Sprintf("酒店 %d 详情处理完成\n", hotel.HotelId))
 
