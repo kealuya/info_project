@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"io"
 	configs "my_pilot/config"
+	"strings"
 	"time"
 )
 
@@ -24,6 +25,21 @@ func (w bodyLogWriter) Write(b []byte) (int, error) {
 }
 
 func ginLogger(c *gin.Context) {
+
+	// 阻止网络背景噪音
+	// 添加简单的请求过滤
+	if strings.Contains(c.Request.Host, "baidu.com") ||
+		strings.Contains(c.Request.Host, "example.com") {
+		c.AbortWithStatus(403)
+		return
+	}
+
+	// 检查是否是CONNECT方法
+	if c.Request.Method == "CONNECT" {
+		c.AbortWithStatus(403)
+		return
+	}
+
 	// 开始时间
 	start := time.Now()
 	// 匹配唯一编码
