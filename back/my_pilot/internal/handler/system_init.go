@@ -1,12 +1,17 @@
 package handler
 
 import (
+	"context"
 	"fmt"
 	"github.com/beego/beego/v2/core/logs"
+	"github.com/gohouse/t"
 	"github.com/jinzhu/copier"
+	"golang.org/x/time/rate"
 	"my_pilot/common"
 	"my_pilot/internal/repository"
 	"my_pilot/pkg/api_szjl"
+	"regexp"
+	"strings"
 	"sync"
 	"time"
 )
@@ -274,8 +279,8 @@ func SaveHotelDetailInfo() (bizError error) {
 	})
 
 	const (
-		saveHotelDetailInfoPageSize    = 100 // 每次从数据库获取的酒店数量
-		saveHotelDetailInfoWorkerCount = 10  // 并发工作的协程数量
+		saveHotelDetailInfoPageSize    = 50  // 每次从数据库获取的酒店数量
+		saveHotelDetailInfoWorkerCount = 100 // 并发工作的协程数量
 	)
 
 	// 创建任务通道和错误通道
@@ -298,7 +303,31 @@ func SaveHotelDetailInfo() (bizError error) {
 	go func() {
 		for err := range errChan {
 			if err != nil {
+				// 人为补偿机制尝试
+				if strings.Index(err.Error(), "status code: 503") >= 0 {
+					// 使用正则表达式匹配
+					re := regexp.MustCompile(`hotel_id:\s*(\d+)`)
+					matches := re.FindStringSubmatch(err.Error())
+					if len(matches) >= 2 {
+
+						logs.Warning("匹配上了重试错误::", err.Error())
+						hotelId := matches[1]
+						reId := regexp.MustCompile(`id:\s*(\d+)`)
+						matchesId := reId.FindStringSubmatch(err.Error())
+						id := matchesId[1]
+						if t.ParseInt(id) == 0 {
+							logs.Error(err)
+							continue
+						}
+						// 再次存入队列是，需要一个标志位判断，该record是否已经处理过，如果二次发生错误，就真的计入error
+						taskChan <- []repository.HotelInfo{{Id: 0, HotelId: t.ParseInt(hotelId)}}
+						logs.Warning("放入队列成功::", fmt.Sprintf("%+v", []repository.HotelInfo{{Id: 0, HotelId: t.ParseInt(hotelId)}}))
+						continue
+					}
+				}
+				//  打印错误
 				logs.Error(err)
+				//	判断错误，是否是酒店请求失败：QueryHotelDetail error: request failed with status code: 503 , hotel_id:xxxx
 			}
 		}
 	}()
@@ -338,6 +367,9 @@ func SaveHotelDetailInfo() (bizError error) {
 	return nil
 }
 
+// qps
+var limitSystemInit = rate.NewLimiter(rate.Limit(100), 1)
+
 // 处理一批酒店数据的工作函数
 func processHotelBatch(taskChan <-chan []repository.HotelInfo, errChan chan<- error) {
 
@@ -348,6 +380,19 @@ func processHotelBatch(taskChan <-chan []repository.HotelInfo, errChan chan<- er
 	now := time.Now()
 	for hotels := range taskChan {
 		for _, hotel := range hotels {
+
+			// todo
+			if hotel.Id == 0 {
+				logs.Warning("发现hotelid==0的数据，被二次插入taskChan", fmt.Sprintf("%+v", hotel))
+			}
+
+			// 确保qps
+			err := limitSystemInit.Wait(context.Background())
+			if err != nil {
+				errChan <- fmt.Errorf("QueryHotelDetail error: %v ,limit.Wait", err)
+				continue
+			}
+
 			// 查询酒店详情
 			requestData := api_szjl.QueryHotelDetailRequestData{
 				HotelId: hotel.HotelId,
@@ -355,8 +400,12 @@ func processHotelBatch(taskChan <-chan []repository.HotelInfo, errChan chan<- er
 			}
 			hotelDetail, err := api_szjl.QueryHotelDetail(requestData)
 			if err != nil {
-				errChan <- fmt.Errorf("QueryHotelDetail error: %v , hotel_id: %v", err, hotel.HotelId)
+				errChan <- fmt.Errorf("QueryHotelDetail error: %v , hotel_id: %v, id: %v", err, hotel.HotelId, hotel.Id)
 				continue
+			}
+			// todo
+			if hotel.Id == 0 {
+				logs.Warning("发现hotelid==0的数据，通过接口检索成功", fmt.Sprintf("%+v", hotel))
 			}
 
 			for _, item := range hotelDetail.HotelDetailList {

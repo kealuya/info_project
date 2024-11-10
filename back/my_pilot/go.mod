@@ -4,6 +4,7 @@ go 1.21
 
 require (
 	github.com/beego/beego/v2 v2.3.0
+	github.com/bytedance/sonic v1.11.6
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-resty/resty/v2 v2.15.3
 	github.com/go-sql-driver/mysql v1.8.1
@@ -11,12 +12,12 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/jinzhu/copier v0.4.0
 	github.com/spf13/viper v1.19.0
+	golang.org/x/time v0.6.0
 	xorm.io/xorm v1.3.9
 )
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
-	github.com/bytedance/sonic v1.11.6 // indirect
 	github.com/bytedance/sonic/loader v0.1.1 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
 	github.com/cloudwego/iasm v0.2.0 // indirect
