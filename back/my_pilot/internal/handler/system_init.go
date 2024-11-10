@@ -290,14 +290,41 @@ func SaveHotelDetailInfo() (bizError error) {
 	// 创建等待组
 	var wg sync.WaitGroup
 
-	// 启动工作协程池
-	for i := 0; i < saveHotelDetailInfoWorkerCount; i++ {
+	//启动工作协程池
+	for i := 0; i < 3; i++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
 			processHotelBatch(taskChan, errChan)
 		}()
 	}
+	go func() {
+		for i1 := 0; i1 < 8; i1++ {
+			time.Sleep(5 * time.Second)
+			for i := 0; i < 10; i++ {
+				wg.Add(1)
+				go func() {
+					defer wg.Done()
+					processHotelBatch(taskChan, errChan)
+				}()
+			}
+		}
+
+	}()
+
+	//// 创建大小为3的协程池
+	//pool, _ := ants.NewPool(10)
+	//defer pool.Release()
+	//for i := 0; i < 100; i++ {
+	//	wg.Add(1)
+	//	err := pool.Submit(func() {
+	//		defer wg.Done()
+	//		processHotelBatch(taskChan, errChan)
+	//	})
+	//	if err != nil {
+	//		fmt.Println(err)
+	//	}
+	//}
 
 	// 错误处理协程
 	go func() {
@@ -334,7 +361,6 @@ func SaveHotelDetailInfo() (bizError error) {
 
 	start := 0
 	totalProcessed := 0
-
 	for {
 		// 分页获取酒店信息
 		hotels := repository.GetHotelsAll(start, saveHotelDetailInfoPageSize)

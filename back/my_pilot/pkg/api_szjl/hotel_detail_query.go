@@ -103,10 +103,10 @@ var (
 			SetTimeout(20 * time.Second). // 设置超时
 			SetRetryCount(2).             // 设置重试次数
 			SetRetryWaitTime(1000 * time.Millisecond).
-			SetRetryMaxWaitTime(800 * time.Millisecond).
+			SetRetryMaxWaitTime(5000 * time.Millisecond).
 			SetTransport(&http.Transport{
 			MaxIdleConnsPerHost:   100,              // 每个host最大空闲连接数
-			MaxConnsPerHost:       100,              // 每个host最大连接数
+			MaxConnsPerHost:       200,              // 每个host最大连接数
 			IdleConnTimeout:       90 * time.Second, // 空闲连接超时时间
 			TLSHandshakeTimeout:   10 * time.Second,
 			ExpectContinueTimeout: 1 * time.Second,
