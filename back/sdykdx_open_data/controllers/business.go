@@ -86,8 +86,9 @@ func (c *BusinessController) ClinicalTeacher() {
 		_ = c.ServeJSON()
 	}()
 	zgh := c.GetString("zgh")
+	xm := c.GetString("xm")
 
-	if zgh == "" {
+	if zgh == "" && xm == "" {
 		c.Data["json"] = Response{
 			Success: false,
 			Msg:     "参数缺失",
@@ -96,7 +97,7 @@ func (c *BusinessController) ClinicalTeacher() {
 		return
 	}
 
-	clinicalTeacher, err := models.ObtainClinicalTeacher(zgh)
+	clinicalTeachers, err := models.ObtainClinicalTeacher(zgh, xm)
 
 	if err != nil {
 		c.Data["json"] = Response{
@@ -108,7 +109,7 @@ func (c *BusinessController) ClinicalTeacher() {
 	}
 	c.Data["json"] = Response{
 		Success: true,
-		Data:    clinicalTeacher,
+		Data:    clinicalTeachers,
 	}
 	return
 }
@@ -119,8 +120,9 @@ func (c *BusinessController) Faculty() {
 		_ = c.ServeJSON()
 	}()
 	zgh := c.GetString("zgh")
+	xm := c.GetString("xm")
 
-	if zgh == "" {
+	if zgh == "" && xm == "" {
 		c.Data["json"] = Response{
 			Success: false,
 			Msg:     "参数缺失",
@@ -129,7 +131,7 @@ func (c *BusinessController) Faculty() {
 		return
 	}
 
-	faculty, err := models.ObtainFaculty(zgh)
+	facultys, err := models.ObtainFaculty(zgh, xm)
 
 	if err != nil {
 		c.Data["json"] = Response{
@@ -141,7 +143,7 @@ func (c *BusinessController) Faculty() {
 	}
 	c.Data["json"] = Response{
 		Success: true,
-		Data:    faculty,
+		Data:    facultys,
 	}
 	return
 }

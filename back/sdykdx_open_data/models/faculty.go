@@ -8,7 +8,7 @@ import (
 
 const FacultyServiceID = "1810234648378056704"
 
-func ObtainFaculty(zgh string) (faculty *Faculty, bizErr error) {
+func ObtainFaculty(zgh, xm string) (faculty *[]Faculty, bizErr error) {
 
 	defer common.RecoverHandler(func(err error) {
 		bizErr = err
@@ -21,6 +21,7 @@ func ObtainFaculty(zgh string) (faculty *Faculty, bizErr error) {
 		ServiceID: FacultyServiceID,
 		Params: map[string]interface{}{
 			"ZGH": zgh,
+			"XM":  xm,
 			//"page": 1,
 			//"size": 20,
 		},
@@ -33,11 +34,8 @@ func ObtainFaculty(zgh string) (faculty *Faculty, bizErr error) {
 	if len(response.Data.Data) == 0 {
 		return nil, fmt.Errorf("查询无结果")
 	}
-	if len(response.Data.Data) != 1 {
-		return nil, fmt.Errorf("返回数据长度不为1")
-	}
 
-	return &response.Data.Data[0], nil
+	return &response.Data.Data, nil
 }
 
 type Faculty struct {

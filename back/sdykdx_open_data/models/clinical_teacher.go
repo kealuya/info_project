@@ -8,7 +8,7 @@ import (
 
 const ClinicalTeacherServiceID = "1819266813802614784"
 
-func ObtainClinicalTeacher(zgh string) (clinicalTeacher *ClinicalTeacher, bizErr error) {
+func ObtainClinicalTeacher(zgh, xm string) (clinicalTeacher *[]ClinicalTeacher, bizErr error) {
 
 	defer common.RecoverHandler(func(err error) {
 		bizErr = err
@@ -21,6 +21,7 @@ func ObtainClinicalTeacher(zgh string) (clinicalTeacher *ClinicalTeacher, bizErr
 		ServiceID: ClinicalTeacherServiceID,
 		Params: map[string]interface{}{
 			"ZGH": zgh,
+			"XM":  xm,
 			//"page": 1,
 			//"size": 20,
 		},
@@ -33,11 +34,8 @@ func ObtainClinicalTeacher(zgh string) (clinicalTeacher *ClinicalTeacher, bizErr
 	if len(response.Data.Data) == 0 {
 		return nil, fmt.Errorf("查询无结果")
 	}
-	if len(response.Data.Data) != 1 {
-		return nil, fmt.Errorf("返回数据长度不为1")
-	}
 
-	return &response.Data.Data[0], nil
+	return &response.Data.Data, nil
 }
 
 type ClinicalTeacher struct {

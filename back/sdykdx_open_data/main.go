@@ -10,6 +10,7 @@ import (
 )
 
 func init() {
+	logs.Info("init service")
 	LogConfigInit()
 	TokenInit()
 	QyWeixinAccessTokenInit()
@@ -45,6 +46,7 @@ func main() {
 }
 
 func BeeGoRun() {
+	logs.Info("start service")
 	//web.BConfig.CopyRequestBody = true
 	//web.BConfig.Listen.HTTPPort = 8080
 	// Organization 组织架构信息?dwdm=2222222
