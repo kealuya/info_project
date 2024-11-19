@@ -3,6 +3,7 @@ package web
 import (
 	"github.com/gin-gonic/gin"
 	"my_pilot/web/controller"
+	"net/http/pprof"
 )
 
 // SetupRouter 初始化路由
@@ -29,6 +30,23 @@ func SetupRouter(r *gin.Engine) *gin.Engine {
 			system.POST("/query_hotel_order_price", controller.QueryOrderPrice)
 			system.POST("/create_hotel_order", controller.CreateOrder)
 		}
+	}
+
+	// 注册debug路由组
+	debug := r.Group("/debug/pprof")
+	{
+		debug.GET("/", gin.WrapF(pprof.Index))
+		debug.GET("/cmdline", gin.WrapF(pprof.Cmdline))
+		debug.GET("/profile", gin.WrapF(pprof.Profile))
+		debug.POST("/symbol", gin.WrapF(pprof.Symbol))
+		debug.GET("/symbol", gin.WrapF(pprof.Symbol))
+		debug.GET("/trace", gin.WrapF(pprof.Trace))
+		debug.GET("/allocs", gin.WrapF(pprof.Handler("allocs").ServeHTTP))
+		debug.GET("/block", gin.WrapF(pprof.Handler("block").ServeHTTP))
+		debug.GET("/goroutine", gin.WrapF(pprof.Handler("goroutine").ServeHTTP))
+		debug.GET("/heap", gin.WrapF(pprof.Handler("heap").ServeHTTP))
+		debug.GET("/mutex", gin.WrapF(pprof.Handler("mutex").ServeHTTP))
+		debug.GET("/threadcreate", gin.WrapF(pprof.Handler("threadcreate").ServeHTTP))
 	}
 
 	return r
