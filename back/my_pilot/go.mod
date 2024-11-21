@@ -11,8 +11,8 @@ require (
 	github.com/gohouse/t v0.0.5
 	github.com/google/uuid v1.6.0
 	github.com/jinzhu/copier v0.4.0
-	github.com/panjf2000/ants/v2 v2.10.0
 	github.com/spf13/viper v1.19.0
+	github.com/streadway/amqp v1.1.0
 	golang.org/x/time v0.6.0
 	xorm.io/xorm v1.3.9
 )
@@ -57,7 +57,6 @@ require (
 	golang.org/x/crypto v0.25.0 // indirect
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9 // indirect
 	golang.org/x/net v0.27.0 // indirect
-	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.22.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect

@@ -2,6 +2,7 @@ package batch
 
 import (
 	"fmt"
+	"github.com/beego/beego/v2/core/logs"
 	"github.com/streadway/amqp"
 )
 
@@ -28,11 +29,12 @@ type Product struct {
 }
 
 func (p Product) Close() {
-	p.Connection.Close()
 	p.Channel.Close()
+	p.Connection.Close()
+	logs.Info("Product closed")
 }
 
-func (p Product) Publish(payload []byte) error {
+func (p Product) Publish(payload []byte, retryCount int) error {
 
 	// 发送消息
 	err := p.Channel.Publish(
@@ -41,10 +43,10 @@ func (p Product) Publish(payload []byte) error {
 		false, // mandatory
 		false, // immediate
 		amqp.Publishing{
-			ContentType: "application/json",
+			ContentType: "text/plain",
 			Body:        payload,
 			Headers: amqp.Table{
-				"retry_count": 0, // 声明重试次数
+				"retry_count": retryCount, // 声明重试次数
 			},
 		})
 	if err != nil {
