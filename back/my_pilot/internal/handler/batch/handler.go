@@ -8,6 +8,7 @@ import (
 	"github.com/streadway/amqp"
 	"golang.org/x/time/rate"
 	"my_pilot/common"
+	configs "my_pilot/config"
 	"my_pilot/internal/repository"
 	"runtime"
 	"sync"
@@ -39,7 +40,9 @@ const (
 
 // 初始化RabbitMQ连接
 func connectionInit() (*amqp.Connection, error) {
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	// 获取响应体
+	config := configs.GetConfig()
+	conn, err := amqp.Dial(config["rabbitmq"]["url"])
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to RabbitMQ: %v", err)
 	}
