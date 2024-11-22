@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gohouse/t"
 	"my_pilot/internal/handler"
+	"my_pilot/internal/handler/batch"
 )
 
 type Response struct {
@@ -52,6 +53,24 @@ func SaveHotelInfo(context *gin.Context) {
 func SaveHotelStaticInfo(context *gin.Context) {
 
 	err := handler.SaveHotelDetailInfo()
+	if err != nil {
+		context.JSON(200, Response{
+			Success: false,
+			Msg:     err.Error(),
+		})
+		return
+	}
+
+	context.JSON(200, Response{
+		Success: true,
+		Data:    nil,
+	})
+	return
+}
+
+func BatchSaveHotelStaticInfo(context *gin.Context) {
+
+	err := batch.Main()
 	if err != nil {
 		context.JSON(200, Response{
 			Success: false,

@@ -61,20 +61,21 @@ func InsertRoomTypes(roomTypes []RoomType) error {
 	defer session.Close()
 
 	errSessionBegin := session.Begin()
-	common.ErrorHandler(errSessionBegin)
-
+	if errSessionBegin != nil {
+		return fmt.Errorf("roomType insert failed.%w", errSessionBegin)
+	}
 	for _, roomType := range roomTypes {
 		_, err := session.Insert(&roomType)
 		if err != nil {
 			//session.Rollback()
 			//common.ErrorHandler(err)
 			logs.Error(fmt.Errorf("roomType insert failed.%w - roomType:%+v", err, roomType))
-			continue
+			return err
 		}
 	}
 
 	errSessionCommit := session.Commit()
-	if errSessionBegin != nil {
+	if errSessionCommit != nil {
 		return fmt.Errorf("roomType insert failed.%w", errSessionCommit)
 	}
 	return nil

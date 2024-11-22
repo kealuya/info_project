@@ -1,9 +1,11 @@
 package api_szjl
 
 import (
+	"context"
 	"fmt"
 	"github.com/bytedance/sonic"
 	"github.com/go-resty/resty/v2"
+	"golang.org/x/time/rate"
 	"net/http"
 	"strconv"
 	"sync"
@@ -120,10 +122,29 @@ var (
 			return &Request[QueryHotelDetailRequestData]{}
 		},
 	}
+	// 新增限流控制相关变量
+	rateLimiter     *rate.Limiter
+	concurrentLimit chan struct{}
+	initOnce        sync.Once
 )
+
+// 初始化限流控制
+func initLimiters() {
+	initOnce.Do(func() {
+		// 初始化令牌桶
+		rateLimiter = rate.NewLimiter(rate.Limit(50), 10)
+		// 初始化并发控制，限制50个并发
+		concurrentLimit = make(chan struct{}, 40)
+	})
+}
 
 // QueryHotelDetail 查询酒店详情
 func QueryHotelDetail(requestData QueryHotelDetailRequestData) (*QueryHotelDetailResponse, error) {
+
+	initLimiters()
+	_ = rateLimiter.Wait(context.Background())
+	concurrentLimit <- struct{}{}
+	defer func() { <-concurrentLimit }()
 
 	// 查询酒店详情的URL
 	var queryHotelDetailUrl = baseURL + "/hotel/queryHotelDetail.json"
@@ -153,7 +174,7 @@ func QueryHotelDetail(requestData QueryHotelDetailRequestData) (*QueryHotelDetai
 	// 使用 sonic 序列化
 	jsonData, err := jsonEncoder.Marshal(req)
 	if err != nil {
-		return nil, fmt.Errorf("Error marshaling JSON: %v", err)
+		return nil, fmt.Errorf("error marshaling JSON: %v", err)
 	}
 
 	// 使用resty发送请求
@@ -164,7 +185,7 @@ func QueryHotelDetail(requestData QueryHotelDetailRequestData) (*QueryHotelDetai
 		Get(queryHotelDetailUrl)
 
 	if err != nil {
-		return nil, fmt.Errorf("Error sending request: %v", err)
+		return nil, fmt.Errorf("error sending request: %v", err)
 	}
 
 	// 检查响应状态
@@ -176,6 +197,6 @@ func QueryHotelDetail(requestData QueryHotelDetailRequestData) (*QueryHotelDetai
 	if response.Code == 0 {
 		return &response.Result, nil
 	}
-	return nil, fmt.Errorf("Request failed with code %d: %s", response.Code, response.ErrorMsg)
+	return nil, fmt.Errorf("request failed with code %d: %s", response.Code, response.ErrorMsg)
 
 }
