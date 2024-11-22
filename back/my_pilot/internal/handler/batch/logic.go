@@ -1,9 +1,11 @@
 package batch
 
 import (
+	"context"
 	"fmt"
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/jinzhu/copier"
+	"my_pilot/common"
 	"my_pilot/internal/repository"
 	"my_pilot/pkg/api_szjl"
 	"time"
@@ -50,7 +52,14 @@ func getHotelInfoFromDb() chan []repository.HotelInfo {
 
 }
 
+var limiter = common.NewRateLimiter(100, 10, 15, context.Background())
+
 func getHotelStaticInfoFromSZJLAndInsertDb(hotel repository.HotelInfo) (bizErr error) {
+
+	if err := limiter.Acquire(); err != nil {
+		return err
+	}
+	defer limiter.Release()
 
 	defer func() {
 		if err := recover(); err != nil {

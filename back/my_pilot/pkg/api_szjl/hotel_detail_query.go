@@ -1,11 +1,9 @@
 package api_szjl
 
 import (
-	"context"
 	"fmt"
 	"github.com/bytedance/sonic"
 	"github.com/go-resty/resty/v2"
-	"golang.org/x/time/rate"
 	"net/http"
 	"strconv"
 	"sync"
@@ -122,29 +120,10 @@ var (
 			return &Request[QueryHotelDetailRequestData]{}
 		},
 	}
-	// 新增限流控制相关变量
-	rateLimiter     *rate.Limiter
-	concurrentLimit chan struct{}
-	initOnce        sync.Once
 )
-
-// 初始化限流控制
-func initLimiters() {
-	initOnce.Do(func() {
-		// 初始化令牌桶
-		rateLimiter = rate.NewLimiter(rate.Limit(50), 10)
-		// 初始化并发控制，限制50个并发
-		concurrentLimit = make(chan struct{}, 40)
-	})
-}
 
 // QueryHotelDetail 查询酒店详情
 func QueryHotelDetail(requestData QueryHotelDetailRequestData) (*QueryHotelDetailResponse, error) {
-
-	initLimiters()
-	_ = rateLimiter.Wait(context.Background())
-	concurrentLimit <- struct{}{}
-	defer func() { <-concurrentLimit }()
 
 	// 查询酒店详情的URL
 	var queryHotelDetailUrl = baseURL + "/hotel/queryHotelDetail.json"

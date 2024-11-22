@@ -165,7 +165,7 @@ func Main() (bizError error) {
 	common.ErrorHandler(err)
 
 	// 构造消费者
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 12; i++ {
 
 		c, err := GetMqConsumeInstance(conn, p, ctx)
 		common.ErrorHandler(err)
@@ -201,7 +201,7 @@ func Main() (bizError error) {
 	}()
 
 	// 发送生产者消息
-	var limitSystemInit = rate.NewLimiter(rate.Limit(50), 5)
+	var limitSystemInit = rate.NewLimiter(rate.Limit(12), 5)
 	var count int32 = 0
 	dbHotelArrayChan := getHotelInfoFromDb()
 	for dbHotelArray := range dbHotelArrayChan {

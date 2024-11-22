@@ -1,9 +1,11 @@
 package common
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/beego/beego/v2/core/logs"
+	"golang.org/x/time/rate"
 	"log"
 	"runtime/debug"
 )
@@ -32,4 +34,36 @@ func ErrorHandler(err error, info ...any) {
 	if err != nil {
 		log.Panic(err, info)
 	}
+}
+
+// RateLimiter 限流器
+type RateLimiter struct {
+	rateLimiter     *rate.Limiter
+	concurrentLimit chan struct{}
+	ctx             context.Context
+}
+
+func NewRateLimiter(rateLimit float64, burst int, concurrent int, ctx context.Context) *RateLimiter {
+	return &RateLimiter{
+		rateLimiter:     rate.NewLimiter(rate.Limit(rateLimit), burst),
+		concurrentLimit: make(chan struct{}, concurrent),
+		ctx:             ctx,
+	}
+}
+
+func (l *RateLimiter) Acquire() error {
+	if err := l.rateLimiter.Wait(l.ctx); err != nil {
+		return fmt.Errorf("rate limit: %w", err)
+	}
+
+	select {
+	case l.concurrentLimit <- struct{}{}:
+		return nil
+	case <-l.ctx.Done():
+		return fmt.Errorf("concurrent limit: %w", l.ctx.Err())
+	}
+}
+
+func (l *RateLimiter) Release() {
+	<-l.concurrentLimit
 }
