@@ -1,11 +1,11 @@
-package controller
+package hotel
 
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gohouse/t"
-	"my_pilot/internal/handler"
-	"my_pilot/internal/handler/batch"
+	"my_pilot/internal/hotel/handler"
+	"my_pilot/internal/hotel/handler/batch"
 )
 
 type Response struct {

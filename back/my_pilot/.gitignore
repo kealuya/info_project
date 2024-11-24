@@ -1,3 +1,5 @@
 config/config.yaml
 logs/*
 pkg/*.yaml
+pkg/api_jd_iop/*.yaml
+pkg/api_szjl/*.yaml
