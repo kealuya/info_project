@@ -22,6 +22,27 @@ var (
 	rwMutex sync.RWMutex
 )
 
+func init() {
+	viper.SetConfigName("api_jd_iop_config") // 配置文件名称(无扩展名)
+	viper.SetConfigType("yaml")              // 如果配置文件的名称中没有扩展名，则需要配置此项
+
+	// 添加配置文件路径
+	viper.AddConfigPath("./pkg/api_jd_iop/") // 相对于项目根目录的路径
+	viper.AddConfigPath("../api_jd_iop/")    // 相对于当前包的上一级目录
+	viper.AddConfigPath(".")                 // 当前目录
+
+	logs.Info("init api_jd_iop_config.yaml")
+	//读取配置文件
+	if err := viper.ReadInConfig(); err != nil {
+		log.Panicf("读取配置文件失败: %w", err)
+	}
+	ReadJdIopConfig()
+	// token处理逻辑
+	TokenHandler()
+	// 创建全局resty.Client
+	CreateRestyClient()
+}
+
 // GetJdIopConfig GetSzjlConfig 获取配置
 func GetJdIopConfig() map[string]map[string]string {
 	rwMutex.RLock()
@@ -39,36 +60,19 @@ func ReadJdIopConfig() {
 	}
 	rwMutex.Unlock()
 }
-func init() {
-	viper.SetConfigName("api_jd_iop_config") // 配置文件名称(无扩展名)
-	viper.SetConfigType("yaml")              // 如果配置文件的名称中没有扩展名，则需要配置此项
-
-	// 添加配置文件路径
-	viper.AddConfigPath("./pkg/api_jd_iop/") // 相对于项目根目录的路径
-	viper.AddConfigPath("../api_jd_iop/")    // 相对于当前包的上一级目录
-	viper.AddConfigPath(".")                 // 当前目录
-
-	logs.Info("init api_jd_iop_config.yaml")
-	//读取配置文件
-	if err := viper.ReadInConfig(); err != nil {
-		log.Panicf("读取配置文件失败: %w", err)
-	}
-	ReadJdIopConfig()
-}
 
 // TokenResponse 响应结构体
 type TokenResponse struct {
-	Success       bool   `json:"success"`
-	ResultCode    string `json:"resultCode"`
-	ResultMessage string `json:"resultMessage"`
-	Result        struct {
-		UID                 string `json:"uid"`
-		AccessToken         string `json:"access_token"`  // 匹配文档中的 access_token
-		RefreshToken        string `json:"refresh_token"` // 匹配文档中的 refresh_token
-		Time                int64  `json:"time"`
-		ExpiresIn           int    `json:"expires_in"`            // 匹配文档中的 expires_in
-		RefreshTokenExpires int64  `json:"refresh_token_expires"` // 匹配文档中的 refresh_token_expires
-	} `json:"result"`
+	Response[TokenResult]
+}
+
+type TokenResult struct {
+	UID                 string `json:"uid"`
+	AccessToken         string `json:"access_token"`  // 匹配文档中的 access_token
+	RefreshToken        string `json:"refresh_token"` // 匹配文档中的 refresh_token
+	Time                int64  `json:"time"`
+	ExpiresIn           int    `json:"expires_in"`            // 匹配文档中的 expires_in
+	RefreshTokenExpires int64  `json:"refresh_token_expires"` // 匹配文档中的 refresh_token_expires
 }
 
 // MD5加密函数
@@ -93,7 +97,8 @@ func refreshAccessToken(clientID, clientSecret, refreshToken string) (*TokenResp
 	var result TokenResponse
 	resp, err := client.R().
 		SetHeader("Content-Type", "application/x-www-form-urlencoded").
-		SetFormData(formData).
+		SetFormData(formData).SetResult(&result).
+		ForceContentType("application/json"). // 京东侧返回的默认头不正确【Content-Type: text/plain;charset=UTF-8】，需要强制指定
 		Post("https://api-iop.jd.com/oauth2/refreshToken")
 
 	if err != nil {
@@ -102,12 +107,6 @@ func refreshAccessToken(clientID, clientSecret, refreshToken string) (*TokenResp
 
 	if !resp.IsSuccess() {
 		return nil, fmt.Errorf("HTTP状态码错误: %d", resp.StatusCode())
-	}
-
-	// 直接解析响应体
-	err = json.Unmarshal(resp.Body(), &result)
-	if err != nil {
-		return nil, fmt.Errorf("解析响应失败: %v", err)
 	}
 
 	return &result, nil
@@ -173,7 +172,21 @@ func getAccessToken(clientID, clientSecret, username, password string) (*TokenRe
 }
 func TokenHandler() {
 	// 启动执行，然后每10小时执行一次
-	runToken()
+	err := runToken()
+	if err != nil {
+		log.Panicf("panic runToken: %v", err)
+	}
+	ticker := time.NewTicker(time.Hour * 10)
+	go func() {
+		for _ = range ticker.C {
+			errN := runToken()
+			if errN != nil {
+				logs.Error("panic runToken: %v", errN)
+			} else {
+				logs.Info("执行 AccessToken 刷新正常 ")
+			}
+		}
+	}()
 
 }
 
@@ -182,7 +195,14 @@ func IsTokenExpired(expire int64) bool {
 	return time.Now().UnixMilli() >= expire
 }
 
-func runToken() {
+func runToken() (bizErr error) {
+
+	defer func() {
+		if r := recover(); r != nil {
+			logs.Error("panic runToken: %v", r)
+			bizErr = fmt.Errorf("panic runToken: %v", r)
+		}
+	}()
 
 	config := GetJdIopConfig()
 
@@ -194,7 +214,7 @@ func runToken() {
 	}
 
 	if !resp.Success {
-		logs.Info("获取token失败: %s %s \n", resp.ResultCode, resp.ResultMessage)
+		logs.Info("获取token失败: %s %s 。重新获取。\n", resp.ResultCode, resp.ResultMessage)
 		username := config["jd_iop"]["username"]
 		password := config["jd_iop"]["password"]
 		// 获取refresh_token
@@ -205,19 +225,20 @@ func runToken() {
 		if !respGetAccessToken.Success {
 			log.Panicf("获取token失败: %s\n", respGetAccessToken.ResultMessage)
 		}
-		logs.Info("执行AccessToken 正常:: %+v", respGetAccessToken)
+		logs.Info("执行 accessToken 正常:: %+v", respGetAccessToken)
 
-		err := copier.Copy(&resp, respGetAccessToken)
-		if err != nil {
-			log.Panicf("copier.Copy失败: %s\n", err)
+		errCopier := copier.Copy(&resp, respGetAccessToken)
+		if errCopier != nil {
+			log.Panicf("copier.Copy失败: %s\n", errCopier)
 		}
 	} else {
-		logs.Info("执行refreshAccessToken 正常:: %+v", resp)
+		logs.Info("执行 refreshAccessToken 正常:: %+v", resp)
 	}
 
 	// 更新内存中的配置
 	viper.Set("token.access_token", resp.Result.AccessToken)
 	viper.Set("token.access_token_time", resp.Result.Time)
+	viper.Set("token.access_token_time_format", time.UnixMilli(resp.Result.Time).Format("2006-01-02 15:04:05"))
 	viper.Set("token.refresh_token", resp.Result.RefreshToken)
 	viper.Set("token.refresh_token_expire", resp.Result.RefreshTokenExpires)
 
@@ -227,8 +248,8 @@ func runToken() {
 	if err != nil {
 		log.Panicf("本地token写入失败: %v\n", err)
 	}
-
-	fmt.Printf("%+v\n", GetJdIopConfig())
+	return nil
+	//fmt.Printf("%+v\n", GetJdIopConfig())
 }
 
 func TokenHandlerNoSupport() {

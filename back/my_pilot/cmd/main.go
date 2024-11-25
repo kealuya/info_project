@@ -1,7 +1,17 @@
 package main
 
-import "my_pilot/pkg/api_jd_iop"
+import (
+	"fmt"
+	_ "my_pilot/pkg/api_jd_iop"
+	"my_pilot/pkg/api_jd_iop/product"
+)
 
 func main() {
-	api_jd_iop.TokenHandler()
+
+	r, err := product.GetPageNum()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(r)
+	select {}
 }

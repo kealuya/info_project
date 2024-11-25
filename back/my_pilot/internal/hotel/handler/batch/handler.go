@@ -9,7 +9,7 @@ import (
 	"golang.org/x/time/rate"
 	"my_pilot/common"
 	configs "my_pilot/config"
-	"my_pilot/internal/repository"
+	"my_pilot/internal/hotel/repository"
 	"runtime"
 	"sync"
 	"sync/atomic"

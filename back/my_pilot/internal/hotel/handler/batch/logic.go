@@ -6,7 +6,7 @@ import (
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/jinzhu/copier"
 	"my_pilot/common"
-	"my_pilot/internal/repository"
+	"my_pilot/internal/hotel/repository"
 	"my_pilot/pkg/api_szjl"
 	"time"
 )
