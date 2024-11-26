@@ -11,6 +11,7 @@ require (
 	github.com/gohouse/t v0.0.5
 	github.com/google/uuid v1.6.0
 	github.com/jinzhu/copier v0.4.0
+	github.com/shopspring/decimal v1.3.1
 	github.com/spf13/viper v1.19.0
 	github.com/streadway/amqp v1.1.0
 	golang.org/x/time v0.6.0

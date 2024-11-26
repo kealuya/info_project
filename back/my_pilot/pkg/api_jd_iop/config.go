@@ -19,21 +19,23 @@ import (
 var (
 	jdIopConfig map[string]map[string]string
 
+	myViper *viper.Viper
 	rwMutex sync.RWMutex
 )
 
 func init() {
-	viper.SetConfigName("api_jd_iop_config") // 配置文件名称(无扩展名)
-	viper.SetConfigType("yaml")              // 如果配置文件的名称中没有扩展名，则需要配置此项
+	myViper = viper.New()
+	myViper.SetConfigName("api_jd_iop_config") // 配置文件名称(无扩展名)
+	myViper.SetConfigType("yaml")              // 如果配置文件的名称中没有扩展名，则需要配置此项
 
 	// 添加配置文件路径
-	viper.AddConfigPath("./pkg/api_jd_iop/") // 相对于项目根目录的路径
-	viper.AddConfigPath("../api_jd_iop/")    // 相对于当前包的上一级目录
-	viper.AddConfigPath(".")                 // 当前目录
+	myViper.AddConfigPath("./pkg/api_jd_iop/") // 相对于项目根目录的路径
+	myViper.AddConfigPath("../api_jd_iop/")    // 相对于当前包的上一级目录
+	myViper.AddConfigPath(".")                 // 当前目录
 
 	logs.Info("init api_jd_iop_config.yaml")
 	//读取配置文件
-	if err := viper.ReadInConfig(); err != nil {
+	if err := myViper.ReadInConfig(); err != nil {
 		log.Panicf("读取配置文件失败: %w", err)
 	}
 	ReadJdIopConfig()
@@ -54,7 +56,7 @@ func ReadJdIopConfig() {
 	// 重新写入 jdIopConfig
 	rwMutex.Lock()
 	jdIopConfig = make(map[string]map[string]string)
-	if err := viper.Unmarshal(&jdIopConfig); err != nil {
+	if err := myViper.Unmarshal(&jdIopConfig); err != nil {
 		rwMutex.Unlock()
 		log.Panicf("解析配置文件失败: %w", err)
 	}
@@ -236,15 +238,15 @@ func runToken() (bizErr error) {
 	}
 
 	// 更新内存中的配置
-	viper.Set("token.access_token", resp.Result.AccessToken)
-	viper.Set("token.access_token_time", resp.Result.Time)
-	viper.Set("token.access_token_time_format", time.UnixMilli(resp.Result.Time).Format("2006-01-02 15:04:05"))
-	viper.Set("token.refresh_token", resp.Result.RefreshToken)
-	viper.Set("token.refresh_token_expire", resp.Result.RefreshTokenExpires)
+	myViper.Set("token.access_token", resp.Result.AccessToken)
+	myViper.Set("token.access_token_time", resp.Result.Time)
+	myViper.Set("token.access_token_time_format", time.UnixMilli(resp.Result.Time).Format("2006-01-02 15:04:05"))
+	myViper.Set("token.refresh_token", resp.Result.RefreshToken)
+	myViper.Set("token.refresh_token_expire", resp.Result.RefreshTokenExpires)
 
 	ReadJdIopConfig()
 
-	err = viper.WriteConfig()
+	err = myViper.WriteConfig()
 	if err != nil {
 		log.Panicf("本地token写入失败: %v\n", err)
 	}
@@ -291,12 +293,12 @@ func TokenHandlerNoSupport() {
 		}
 
 		// 更新内存中的配置
-		viper.Set("token.access_token", resp.Result.AccessToken)
-		viper.Set("token.access_token_time", resp.Result.Time)
-		viper.Set("token.refresh_token", resp.Result.RefreshToken)
-		viper.Set("token.refresh_token_expire", resp.Result.RefreshTokenExpires)
+		myViper.Set("token.access_token", resp.Result.AccessToken)
+		myViper.Set("token.access_token_time", resp.Result.Time)
+		myViper.Set("token.refresh_token", resp.Result.RefreshToken)
+		myViper.Set("token.refresh_token_expire", resp.Result.RefreshTokenExpires)
 
-		err = viper.WriteConfig()
+		err = myViper.WriteConfig()
 		if err != nil {
 			log.Panicf("本地token写入失败: %v\n", err)
 		}
