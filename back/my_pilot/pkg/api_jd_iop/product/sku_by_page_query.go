@@ -7,7 +7,7 @@ import (
 )
 
 // QuerySkuByPage   查询商品池编号
-func QuerySkuByPage(pageNum string, pageSize int, offset string) (*api_jd_iop.Response[SkuByPageResult], error) {
+func QuerySkuByPage(pageNum int, pageSize int, offset string) (*api_jd_iop.Response[SkuByPageResult], error) {
 
 	config := api_jd_iop.GetJdIopConfig()
 	url := config["jd_iop"]["base_url"] + "product/querySkuByPage"
@@ -17,7 +17,7 @@ func QuerySkuByPage(pageNum string, pageSize int, offset string) (*api_jd_iop.Re
 	// 构造请求参数
 	formData := map[string]string{
 		"token":    token,
-		"pageNum":  pageNum,
+		"pageNum":  t.New(pageNum).String(),
 		"pageSize": t.New(pageSize).String(), //每页大小，默认20，最大1000。建议 50 ~200
 		"offset":   offset,                   //偏移量，池id的首次查询传0，相同池ID的上次请求结果中skuIds中的最后一个skuId
 	}
@@ -39,6 +39,6 @@ func QuerySkuByPage(pageNum string, pageSize int, offset string) (*api_jd_iop.Re
 
 // SkuByPageResult   查询商品池编号
 type SkuByPageResult struct {
-	Skus   []string `json:"skus"`   // skuId集合
-	Offset string   `json:"offset"` // 在下一次查询时使用（偏移量）
+	Skus   []int `json:"skus"`   // skuId集合
+	Offset int   `json:"offset"` // 在下一次查询时使用（偏移量）
 }

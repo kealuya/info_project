@@ -6,7 +6,7 @@ import (
 )
 
 // GetPageNum 查询池内商品编号
-func GetPageNum() (*api_jd_iop.Response[PageNumResult], error) {
+func GetPageNum() (*api_jd_iop.Response[[]PageNumResult], error) {
 
 	config := api_jd_iop.GetJdIopConfig()
 	url := config["jd_iop"]["base_url"] + "product/getPageNum"
@@ -18,7 +18,7 @@ func GetPageNum() (*api_jd_iop.Response[PageNumResult], error) {
 		"token": token,
 	}
 
-	resultResp := &api_jd_iop.Response[PageNumResult]{}
+	resultResp := &api_jd_iop.Response[[]PageNumResult]{}
 	resp, errClient := client.SetHeader("Content-Type", "application/x-www-form-urlencoded").
 		SetFormData(formData).
 		SetResult(resultResp).
@@ -36,6 +36,6 @@ func GetPageNum() (*api_jd_iop.Response[PageNumResult], error) {
 // PageNumResult 查询商品池编号
 type PageNumResult struct {
 	Name    string `json:"name"`     // 商品池名称
-	PageNum string `json:"page_num"` // 商品池编号
+	PageNum int    `json:"page_num"` // 商品池编号
 
 }
