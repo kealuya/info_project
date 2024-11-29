@@ -1,18 +1,22 @@
-package api_stb_shop
+package api_jd_vop
 
 import (
+	"crypto/md5"
+	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/go-resty/resty/v2"
 	"github.com/jinzhu/copier"
 	"github.com/spf13/viper"
 	"log"
+	"strings"
 	"sync"
 	"time"
 )
 
 var (
-	stbConfig map[string]map[string]string
+	jdVopConfig map[string]map[string]string
 
 	myViper *viper.Viper
 	rwMutex sync.RWMutex
@@ -20,38 +24,38 @@ var (
 
 func init() {
 	myViper = viper.New()
-	myViper.SetConfigName("api_stb_shop_config") // 配置文件名称(无扩展名)
-	myViper.SetConfigType("yaml")                // 如果配置文件的名称中没有扩展名，则需要配置此项
+	myViper.SetConfigName("api_jd_vop_config") // 配置文件名称(无扩展名)
+	myViper.SetConfigType("yaml")              // 如果配置文件的名称中没有扩展名，则需要配置此项
 
 	// 添加配置文件路径
-	myViper.AddConfigPath("./pkg/api_stb_shop/") // 相对于项目根目录的路径
-	myViper.AddConfigPath("../api_stb_shop/")    // 相对于当前包的上一级目录
-	myViper.AddConfigPath(".")                   // 当前目录
+	myViper.AddConfigPath("./pkg/api_jd_vop/") // 相对于项目根目录的路径
+	myViper.AddConfigPath("../api_jd_vop/")    // 相对于当前包的上一级目录
+	myViper.AddConfigPath(".")                 // 当前目录
 
-	logs.Info("init api_stb_shop_config.yaml")
+	logs.Info("init api_jd_vop_config.yaml")
 	//读取配置文件
 	if err := myViper.ReadInConfig(); err != nil {
 		log.Panicf("读取配置文件失败: %w", err)
 	}
-	ReadStbConfig()
+	ReadJdVopConfig()
 	// token处理逻辑
 	TokenHandler()
 	// 创建全局resty.Client
 	CreateRestyClient()
 }
 
-// GetStbConfig   获取配置
-func GetStbConfig() map[string]map[string]string {
+// GetJdVopConfig   获取配置
+func GetJdVopConfig() map[string]map[string]string {
 	rwMutex.RLock()
 	defer rwMutex.RUnlock()
-	return stbConfig
+	return jdVopConfig
 }
-func ReadStbConfig() {
+func ReadJdVopConfig() {
 
 	// 重新写入 jdIopConfig
 	rwMutex.Lock()
-	stbConfig = make(map[string]map[string]string)
-	if err := myViper.Unmarshal(&stbConfig); err != nil {
+	jdVopConfig = make(map[string]map[string]string)
+	if err := myViper.Unmarshal(&jdVopConfig); err != nil {
 		rwMutex.Unlock()
 		log.Panicf("解析配置文件失败: %w", err)
 	}
@@ -60,19 +64,25 @@ func ReadStbConfig() {
 
 // TokenResponse 响应结构体
 type TokenResponse struct {
-	Response[[]TokenResult]
+	Response[TokenResult]
 }
 
 type TokenResult struct {
 	UID                 string `json:"uid"`
 	AccessToken         string `json:"access_token"`  // 匹配文档中的 access_token
 	RefreshToken        string `json:"refresh_token"` // 匹配文档中的 refresh_token
-	Time                string `json:"time"`
-	ExpiresIn           string `json:"expires_in"`            // 匹配文档中的 expires_in
-	RefreshTokenExpires string `json:"refresh_token_expires"` // 匹配文档中的 refresh_token_expires
+	Time                int64  `json:"time"`
+	ExpiresIn           int    `json:"expires_in"`            // 匹配文档中的 expires_in
+	RefreshTokenExpires int64  `json:"refresh_token_expires"` // 匹配文档中的 refresh_token_expires
 }
 
-// refreshAccessToken 获取access token
+// MD5加密函数
+func getMD5(text string) string {
+	hash := md5.Sum([]byte(text))
+	return hex.EncodeToString(hash[:])
+}
+
+// getAccessToken 获取access token
 func refreshAccessToken(clientID, clientSecret, refreshToken string) (*TokenResponse, error) {
 	// 创建resty客户端
 	client := resty.New()
@@ -84,16 +94,13 @@ func refreshAccessToken(clientID, clientSecret, refreshToken string) (*TokenResp
 		"client_secret": clientSecret,
 	}
 
-	config := GetStbConfig()
-	baseUrl := config["stb_shop"]["base_url"] + "refresh_token"
-
 	// 发送请求并获取响应
 	var result TokenResponse
 	resp, err := client.R().
-		SetHeader("Content-Type", "application/json").
-		SetQueryParams(formData).
-		SetResult(&result).
-		Post(baseUrl)
+		SetHeader("Content-Type", "application/x-www-form-urlencoded").
+		SetFormData(formData).SetResult(&result).
+		ForceContentType("application/json"). // 京东侧返回的默认头不正确【Content-Type: text/plain;charset=UTF-8】，需要强制指定
+		Post("https://bizapi.jd.com/oauth2/refreshToken")
 
 	if err != nil {
 		return nil, fmt.Errorf("请求失败: %v", err)
@@ -107,30 +114,46 @@ func refreshAccessToken(clientID, clientSecret, refreshToken string) (*TokenResp
 }
 
 // getAccessToken 获取access token
-func getAccessToken(clientID, clientSecret, code, redirectUrl string) (*TokenResponse, error) {
+func getAccessToken(clientID, clientSecret, username, password string) (*TokenResponse, error) {
 	// 创建resty客户端
 	client := resty.New()
 
+	// 获取当前时间戳
+	timestamp := time.Now().Format("2006-01-02 15:04:05")
+
+	// 对密码进行md5加密（小写）
+	passwordMD5 := getMD5(password)
+
+	// 构造签名字符串
+	signStr := fmt.Sprintf("%s%s%s%s%s%s%s",
+		clientSecret,
+		timestamp,
+		clientID,
+		username,
+		passwordMD5,
+		"access_token",
+		clientSecret)
+
+	// 生成签名（大写）
+	sign := strings.ToUpper(getMD5(signStr))
+
 	// 构造请求参数
 	formData := map[string]string{
-		"grant_type":    "authorization_code",
+		"grant_type":    "access_token",
 		"client_id":     clientID,
 		"client_secret": clientSecret,
-		"redirect_uri":  redirectUrl,
-		"code":          code,
+		"timestamp":     timestamp,
+		"username":      username,
+		"password":      passwordMD5,
+		"sign":          sign,
 	}
-
-	config := GetStbConfig()
-
-	baseUrl := config["stb_shop"]["base_url"] + "access_token"
 
 	// 发送请求并获取响应
 	var result TokenResponse
 	resp, err := client.R().
-		SetHeader("Content-Type", "application/json").
-		SetQueryParams(formData).
-		SetResult(&result).
-		Post(baseUrl)
+		SetHeader("Content-Type", "application/x-www-form-urlencoded").
+		SetFormData(formData).
+		Post("https://bizapi.jd.com/oauth2/accessToken")
 
 	if err != nil {
 		return nil, fmt.Errorf("请求失败: %v", err)
@@ -138,6 +161,12 @@ func getAccessToken(clientID, clientSecret, code, redirectUrl string) (*TokenRes
 
 	if !resp.IsSuccess() {
 		return nil, fmt.Errorf("HTTP状态码错误: %d", resp.StatusCode())
+	}
+
+	// 直接解析响应体
+	err = json.Unmarshal(resp.Body(), &result)
+	if err != nil {
+		return nil, fmt.Errorf("解析响应失败: %v", err)
 	}
 
 	return &result, nil
@@ -176,27 +205,21 @@ func runToken() (bizErr error) {
 		}
 	}()
 
-	config := GetStbConfig()
+	config := GetJdVopConfig()
 
-	clientID := config["stb_shop"]["client_id"]
-	clientSecret := config["stb_shop"]["client_secret"]
+	clientID := config["jd_vop"]["client_id"]
+	clientSecret := config["jd_vop"]["client_secret"]
 	resp, err := refreshAccessToken(clientID, clientSecret, config["token"]["refresh_token"])
-	//resp := TokenResponse{Response[[]TokenResult]{
-	//	Success:       false,
-	//	ResultCode:    "",
-	//	ResultMessage: "",
-	//	Result:        nil,
-	//}}
 	if err != nil {
 		log.Panicf("refreshAccessToken失败: %v\n", err)
 	}
 
 	if !resp.Success {
 		logs.Info("获取token失败: %s %s 。重新获取。\n", resp.ResultCode, resp.ResultMessage)
-		code := config["stb_shop"]["code"]
-		redirectUri := config["stb_shop"]["redirect_uri"]
+		username := config["jd_vop"]["username"]
+		password := config["jd_vop"]["password"]
 		// 获取refresh_token
-		respGetAccessToken, errGetAccessToken := getAccessToken(clientID, clientSecret, code, redirectUri)
+		respGetAccessToken, errGetAccessToken := getAccessToken(clientID, clientSecret, username, password)
 		if errGetAccessToken != nil {
 			log.Panicf("获取token失败: %v\n", errGetAccessToken)
 		}
@@ -214,16 +237,18 @@ func runToken() (bizErr error) {
 	}
 
 	// 更新内存中的配置
-	myViper.Set("token.access_token", resp.Result[0].AccessToken)
-	myViper.Set("token.access_token_time", resp.Result[0].Time)
-	myViper.Set("token.refresh_token", resp.Result[0].RefreshToken)
-	myViper.Set("token.refresh_token_expire", resp.Result[0].RefreshTokenExpires)
+	myViper.Set("token.access_token", resp.Result.AccessToken)
+	myViper.Set("token.access_token_time", resp.Result.Time)
+	myViper.Set("token.access_token_time_format", time.UnixMilli(resp.Result.Time).Format("2006-01-02 15:04:05"))
+	myViper.Set("token.refresh_token", resp.Result.RefreshToken)
+	myViper.Set("token.refresh_token_expire", resp.Result.RefreshTokenExpires)
 
-	ReadStbConfig()
+	ReadJdVopConfig()
 
-	errWriteConfig := myViper.WriteConfig()
-	if errWriteConfig != nil {
-		log.Panicf("本地token写入失败: %v\n", errWriteConfig)
+	err = myViper.WriteConfig()
+	if err != nil {
+		log.Panicf("本地token写入失败: %v\n", err)
 	}
 	return nil
+	//fmt.Printf("%+v\n", GetJdIopConfig())
 }
