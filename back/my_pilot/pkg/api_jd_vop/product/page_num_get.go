@@ -5,7 +5,7 @@ import (
 	"my_pilot/pkg/api_jd_vop"
 )
 
-// GetPageNum 查询池内商品编号
+// GetPageNum 查询商品池编号
 func GetPageNum() (*api_jd_vop.Response[[]PageNumResult], error) {
 
 	config := api_jd_vop.GetJdVopConfig()

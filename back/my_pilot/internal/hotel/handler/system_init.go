@@ -8,7 +8,7 @@ import (
 	"github.com/jinzhu/copier"
 	"golang.org/x/time/rate"
 	"my_pilot/common"
-	"my_pilot/internal/repository"
+	"my_pilot/internal/hotel/repository"
 	"my_pilot/pkg/api_szjl"
 	"regexp"
 	"strings"
