@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/gohouse/t"
@@ -15,7 +16,20 @@ import (
 func main() {
 	//message()
 	repository.InitDbEngine()
-	productCategoryHandler()
+	//productCategoryHandler()
+	page, err := jd_product.QuerySkuByPage("4840", 1)
+	if err != nil {
+		return
+	}
+	fmt.Println(page)
+
+	detail, err := jd_product.GetDetail("100020552102", "")
+	if err != nil {
+		logs.Error(err)
+	}
+	b, _ := json.MarshalIndent(detail, "", "   ")
+	fmt.Println(string(b))
+	fmt.Printf("%#v\n", detail)
 
 }
 

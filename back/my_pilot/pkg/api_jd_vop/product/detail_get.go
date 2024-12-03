@@ -80,9 +80,9 @@ type DetailResult struct {
 	// 规格参数
 	Param string `json:"param"`
 	// 主站上下架状态 (1上架 0下架)
-	State string `json:"state"`
+	State int `json:"state"`
 	// 商品编号
-	Sku string `json:"sku"`
+	Sku int `json:"sku"`
 	// 品牌名称
 	BrandName string `json:"brandName"`
 	// UPC码区分实物、图书、音像、三种场景

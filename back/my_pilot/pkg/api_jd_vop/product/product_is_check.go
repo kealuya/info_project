@@ -7,7 +7,7 @@ import (
 )
 
 // IsCheckProduct  验证商品可售性
-func IsCheckProduct(skuId []string, queryExts string) (*api_jd_vop.Response[DetailIsCheckResult], error) {
+func IsCheckProduct(skuId []string, queryExts string) (*api_jd_vop.Response[[]DetailIsCheckResult], error) {
 
 	config := api_jd_vop.GetJdVopConfig()
 	url := config["jd_vop"]["base_url"] + "product/check"
@@ -27,7 +27,7 @@ func IsCheckProduct(skuId []string, queryExts string) (*api_jd_vop.Response[Deta
 		"queryExts": queryExts,
 	}
 
-	resultResp := &api_jd_vop.Response[DetailIsCheckResult]{}
+	resultResp := &api_jd_vop.Response[[]DetailIsCheckResult]{}
 	resp, errClient := client.SetHeader("Content-Type", "application/x-www-form-urlencoded").
 		SetFormData(formData).
 		SetResult(resultResp).
