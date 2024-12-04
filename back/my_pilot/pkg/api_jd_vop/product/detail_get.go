@@ -2,11 +2,12 @@ package product
 
 import (
 	"fmt"
+	"github.com/gohouse/t"
 	"my_pilot/pkg/api_jd_vop"
 )
 
 // GetDetail  查询商品详情
-func GetDetail(sku, queryExts string) (*api_jd_vop.Response[DetailResult], error) {
+func GetDetail(sku int, queryExts string) (*api_jd_vop.Response[DetailResult], error) {
 
 	config := api_jd_vop.GetJdVopConfig()
 	url := config["jd_vop"]["base_url"] + "product/getDetail"
@@ -46,7 +47,7 @@ func GetDetail(sku, queryExts string) (*api_jd_vop.Response[DetailResult], error
 
 	formData := map[string]string{
 		"token":     token,
-		"sku":       sku,
+		"sku":       t.New(sku).String(),
 		"queryExts": queryExts,
 	}
 

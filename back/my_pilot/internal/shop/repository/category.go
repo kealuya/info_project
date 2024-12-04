@@ -17,6 +17,20 @@ type Category struct {
 	Status   int       `xorm:"'status' tinyint"`
 }
 
+func GetCategoryByCatClass(catClass int) []Category {
+	session := dbEngine.NewSession()
+	defer session.Close()
+
+	errSessionBegin := session.Begin()
+	common.ErrorHandler(errSessionBegin)
+	defer session.Commit()
+
+	categories := make([]Category, 0)
+	errWhere := session.Where("cat_class = ?", catClass).Find(&categories)
+	common.ErrorHandler(errWhere)
+	return categories
+}
+
 func InsertCategory(categories []Category) {
 	session := dbEngine.NewSession()
 	defer session.Close()
