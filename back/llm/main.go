@@ -1,67 +1,75 @@
 package main
 
 import (
-	_ "embed"
 	"fmt"
-	"github.com/spf13/cobra"
-	"io"
+	"github.com/beego/beego/v2/core/logs"
+	_ "github.com/go-sql-driver/mysql"
 	"llm/chat"
-	"os"
+	"time"
+	"xorm.io/xorm"
 )
 
-var chatId string
-var file *os.File
-
-func init() {
-	myFile, err := os.OpenFile("chat.gob", os.O_CREATE|os.O_RDWR, 0755)
+func LogConfigInit() {
+	_ = logs.SetLogger(logs.AdapterConsole)
+	err := logs.SetLogger(logs.AdapterFile, `{"filename":"logs/my.log","level":7,"maxlines":0,"maxsize":0,"daily":true,"maxdays":365,"color":true,"separate":["error", "warning", "info", "debug"]}`)
 	if err != nil {
-		fmt.Println("Failed to open chat.gob:", err)
-		return
+		panic(fmt.Sprintf("初始化日志失败: %v", err))
 	}
-	file = myFile
-	all, _ := io.ReadAll(file)
-	chatId = string(all)
+
+	//输出文件名和行号
+	logs.EnableFuncCallDepth(true)
+	//异步输出log
+	//logs.Async()
+	fmt.Println("初始化日志成功")
+
+}
+
+func KpHandler() {
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		"root",
+		"renhao666",
+		"124.71.171.166",
+		"3306",
+		"hotel_sales",
+	)
+	myEngine, err := xorm.NewEngine("mysql", dsn)
+	if err != nil {
+		logs.Error(err)
+	}
+	defer myEngine.Close()
+
+	queryString, err := myEngine.QueryString("select * from kp order by id")
+	if err != nil {
+		logs.Error(err)
+	}
+	//m := queryString[0]
+
+	for _, m := range queryString {
+
+		bt := m["bt"]
+		id := m["id"]
+
+		start := time.Now()
+
+		c := chat.NewInstance(string(""))
+		br := c.Conversation(bt)
+		elapsed := time.Since(start)
+		seconds := elapsed.Seconds()
+		logs.Info("%v 耗时: %.2f秒\n", m["ywid"], seconds) // 保留2位小数
+		//fmt.Printf("%s", br.Answer)
+		_, err = myEngine.Exec("update kp set llm_nr = ?,elapsed=?,token=? where id = ?", br.Answer, fmt.Sprintf("%.2f", seconds), br.Metadata.Usage.TotalTokens, id)
+		if err != nil {
+			logs.Error(err)
+		}
+		logs.Info("id:%v更新成功", id)
+		//if i == 2 {
+		//	break
+		//}
+	}
 }
 
 func main() {
-	Execute()
-}
-
-var rootCmd = &cobra.Command{
-	Use:   "chat",
-	Short: "大模型",
-	Long:  "大模型程序内集成",
-	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) != 1 {
-			fmt.Println("需要1个参数，也就是询问大模型的问题.")
-			return
-		}
-		query := args[0]
-
-		c := chat.NewInstance(string(chatId))
-		br := c.Conversation(query)
-		chatEncode(br.ConversationId)
-		fmt.Printf("%s", br.Answer)
-	},
-}
-
-func chatEncode(conversationId string) {
-
-	defer file.Close()
-	if chatId != "" {
-		return
-	}
-	// 将数据编码并写入文件
-	_, err := file.WriteString(conversationId)
-	if err != nil {
-		fmt.Println("Failed to encode data:", err)
-		return
-	}
-}
-
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	//Execute()
+	LogConfigInit()
+	KpHandler()
 }

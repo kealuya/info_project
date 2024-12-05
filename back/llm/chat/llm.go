@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-const API_KEY = "app-mVIfxhcLyJ3KBhUhTYMTbjuP"
+const API_KEY = "app-NgrhFkARRZpbzMUudqt8m2RC"
 const API_URL = "http://122.9.41.45/v1/chat-messages"
 
 func NewInstance(conversationID string) Chat {
@@ -79,5 +79,21 @@ type BlockingResponse struct {
 	ConversationId string `json:"conversation_id"`
 	Mode           string `json:"mode"`
 	Answer         string `json:"answer"`
-	CreatedAt      int    `json:"created_at"`
+	Metadata       struct {
+		Usage struct {
+			PromptTokens        int     `json:"prompt_tokens"`
+			PromptUnitPrice     string  `json:"prompt_unit_price"`
+			PromptPriceUnit     string  `json:"prompt_price_unit"`
+			PromptPrice         string  `json:"prompt_price"`
+			CompletionTokens    int     `json:"completion_tokens"`
+			CompletionUnitPrice string  `json:"completion_unit_price"`
+			CompletionPriceUnit string  `json:"completion_price_unit"`
+			CompletionPrice     string  `json:"completion_price"`
+			TotalTokens         int     `json:"total_tokens"`
+			TotalPrice          string  `json:"total_price"`
+			Currency            string  `json:"currency"`
+			Latency             float64 `json:"latency"`
+		} `json:"usage"`
+		CreatedAt int `json:"created_at"`
+	}
 }
