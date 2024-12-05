@@ -11,6 +11,10 @@ import (
 	xlog "xorm.io/xorm/log"
 )
 
+func init() {
+	InitDbEngine()
+}
+
 var dbEngine *xorm.Engine
 
 func InitDbEngine() {
