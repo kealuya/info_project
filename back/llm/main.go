@@ -1,10 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/beego/beego/v2/core/logs"
 	_ "github.com/go-sql-driver/mysql"
 	"llm/chat"
+	"slices"
 	"time"
 	"xorm.io/xorm"
 )
@@ -36,6 +38,12 @@ func KpHandler() {
 	if err != nil {
 		logs.Error(err)
 	}
+
+	// 设置连接池参数
+	myEngine.SetMaxIdleConns(10)           // 最大空闲连接数
+	myEngine.SetMaxOpenConns(100)          // 最大连接数
+	myEngine.SetConnMaxLifetime(time.Hour) // 连接最大生存时间
+
 	defer myEngine.Close()
 
 	queryString, err := myEngine.QueryString("select * from kp order by id")
@@ -44,27 +52,53 @@ func KpHandler() {
 	}
 	//m := queryString[0]
 
-	for _, m := range queryString {
+	for i, m := range queryString {
 
-		bt := m["bt"]
+		nr := m["nr"]
 		id := m["id"]
+
+		replayIds := []string{"187", "188", "189", "191",
+			"192",
+			"193",
+			"194",
+			"195",
+			"196"}
+
+		if !slices.Contains(replayIds, id) {
+			continue
+		}
 
 		start := time.Now()
 
 		c := chat.NewInstance(string(""))
-		br := c.Conversation(bt)
+		br, errConversation := c.Conversation(nr)
+		if errConversation != nil {
+			logs.Error(m["id"], errConversation)
+			continue
+		}
 		elapsed := time.Since(start)
 		seconds := elapsed.Seconds()
 		logs.Info("%v 耗时: %.2f秒\n", m["ywid"], seconds) // 保留2位小数
+
+		logs.Info(br.Answer)
+
+		mm := make(map[string]string)
+
+		errJson := json.Unmarshal([]byte(br.Answer), &mm)
+		if errJson != nil {
+			logs.Error(id, errJson)
+			continue
+		}
+
 		//fmt.Printf("%s", br.Answer)
-		_, err = myEngine.Exec("update kp set llm_nr = ?,elapsed=?,token=? where id = ?", br.Answer, fmt.Sprintf("%.2f", seconds), br.Metadata.Usage.TotalTokens, id)
+		_, err = myEngine.Exec("update kp set llm_nr = ?,llm_bt = ?,elapsed=?,token=? where id = ?", mm["summary"], mm["title"], fmt.Sprintf("%.2f", seconds), br.Metadata.Usage.TotalTokens, id)
 		if err != nil {
 			logs.Error(err)
 		}
 		logs.Info("id:%v更新成功", id)
-		//if i == 2 {
-		//	break
-		//}
+		if i == 2 {
+			//break
+		}
 	}
 }
 

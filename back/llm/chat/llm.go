@@ -4,7 +4,6 @@ import (
 	_ "embed"
 	"fmt"
 	"github.com/go-resty/resty/v2"
-	"os"
 )
 
 const API_KEY = "app-NgrhFkARRZpbzMUudqt8m2RC"
@@ -29,7 +28,7 @@ type Chat struct {
 	ConversationID string
 }
 
-func (receiver *Chat) Conversation(query string) BlockingResponse {
+func (receiver *Chat) Conversation(query string) (*BlockingResponse, error) {
 
 	// 将请求体序列化为JSON字符串
 	chatStr := ChatStruct{
@@ -49,17 +48,15 @@ func (receiver *Chat) Conversation(query string) BlockingResponse {
 		SetResult(&br).
 		Post(API_URL)
 	if err != nil {
-		fmt.Println("Error request:", err)
-		os.Exit(1)
+		return nil, fmt.Errorf("Error request: %w", err)
 	}
 
 	// 打印响应状态和数据
 	if resp.StatusCode() != 200 {
-		fmt.Println("Error server response:", resp.Error())
-		os.Exit(1)
+		return nil, fmt.Errorf("Error server response: %v", resp)
 	}
 
-	return br
+	return &br, nil
 }
 
 type ChatStruct struct {
