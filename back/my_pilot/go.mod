@@ -14,7 +14,6 @@ require (
 	github.com/shopspring/decimal v1.3.1
 	github.com/spf13/viper v1.19.0
 	github.com/streadway/amqp v1.1.0
-	golang.org/x/sync v0.7.0
 	golang.org/x/time v0.6.0
 	xorm.io/xorm v1.3.9
 )
